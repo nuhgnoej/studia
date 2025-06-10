@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "type": "objective",
+    "question": "HTTP는 무엇의 약자인가?",
+    "choices": [
+      "Hyper Text Transfer Protocol",
+      "High Transfer Text Port",
+      "Hyperlink Tag Test Page",
+      "Home Tool Transfer Protocol"
+    ],
+    "answer": "Hyper Text Transfer Protocol",
+    "explanation": "HTTP는 웹에서 데이터를 주고받기 위한 프로토콜입니다."
+  },
+  {
+    "id": 2,
+    "type": "subjective",
+    "question": "REST의 4가지 구성 요소를 쓰시오.",
+    "choices": null,
+    "answer": "Resource, URI, Method, Representation",
+    "explanation": "REST는 자원의 표현, URI, 메서드, 상태를 통해 구성됩니다."
+  }
+]
