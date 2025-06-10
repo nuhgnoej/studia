@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "generate": "tsx scripts/generateQuestionFileMap.ts"
+    "generate": "tsx scripts/generateQuestionFileMap.ts",
+    "dev": "expo start --tunnel"
   },
   "jest": {
     "preset": "jest-expo"

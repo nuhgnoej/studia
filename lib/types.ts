@@ -5,6 +5,7 @@ export type Question = {
   choices?: string[];
   answer: string;
   explanation?: string;
+  weight?: number; // 🎯 새로 추가됨 (반복 학습용)
 };
 
 export type UserAnswer = {
@@ -30,4 +31,22 @@ export type AnswerRecord = {
 export type QuestionSet = {
   name: string; // 예: "네트워크 기초"
   file: string; // 예: "basic-network.json"
+};
+
+export type QuestionProgress = {
+  id: number;
+  question: string;
+  weight: number;
+  lastAnsweredAt?: string;
+  isMastered: boolean;
+};
+
+export type RawQuestionRow = {
+  id: number;
+  type: string;
+  question: string;
+  choices: string | null;
+  answer: string;
+  explanation: string;
+  weight: number;
 };
