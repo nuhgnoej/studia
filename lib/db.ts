@@ -59,15 +59,15 @@ export async function insertQuestions(
   for (const q of questions) {
     await db.runAsync(
       `
-      INSERT INTO questions (id, type, question, choices, answer, explanation)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        type = excluded.type,
-        question = excluded.question,
-        choices = excluded.choices,
-        answer = excluded.answer,
-        explanation = excluded.explanation;
-      `,
+  INSERT INTO questions (id, type, question, choices, answer, explanation)
+  VALUES (?, ?, ?, ?, ?, ?)
+  ON CONFLICT(id) DO UPDATE SET
+    type = excluded.type,
+    question = excluded.question,
+    choices = excluded.choices,
+    answer = excluded.answer,
+    explanation = excluded.explanation    
+  `,
       [
         q.id,
         q.type,
@@ -126,7 +126,7 @@ export async function insertAnswer(
   record: Omit<AnswerRecord, "id" | "answered_at">
 ) {
   const db = await getDatabase();
-  console.log("DB 가져옴");
+  // console.log("DB 가져옴");
 
   await db.runAsync(
     `INSERT INTO answers (question_id, user_answer, is_correct)

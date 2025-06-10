@@ -8,7 +8,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { insertAnswer } from "@/lib/db";
 
 export default function SubjectiveQuestion({
@@ -20,30 +20,22 @@ export default function SubjectiveQuestion({
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    // console.log("submitted 상태:", submitted);
-  }, [submitted]);
+  const handleSubmit = () => {
+    if (!input.trim()) return;
+    setSubmitted(true);
+  };
 
-  const handleSubmit = async () => {
-    if (submitted) return;
-
+  const handleMarkAnswer = async (correct: boolean) => {
     try {
-      const trimmed = input.trim();
-      const correct =
-        trimmed.toLowerCase() === question.answer.trim().toLowerCase();
-
       await insertAnswer({
         question_id: question.id,
-        user_answer: trimmed,
+        user_answer: input.trim(),
         is_correct: correct,
       });
 
-      // console.log("handleSubmit 진입");
-
       setIsCorrect(correct);
-      setSubmitted(true);
     } catch (e) {
-      console.error("handleSubmit 에러", e);
+      console.error("insertAnswer 에러", e);
     }
   };
 
@@ -71,52 +63,52 @@ export default function SubjectiveQuestion({
             }}
           />
 
-          {!submitted && (
+          {!submitted ? (
             <Button
               title="제출하기"
               onPress={handleSubmit}
               disabled={!input.trim()}
             />
-          )}
-
-          {submitted && (
-            <View style={{ marginTop: 16 }}>
-              <Text
+          ) : (
+            <>
+              <View
                 style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  color: isCorrect ? "green" : "red",
-                  marginBottom: 8,
+                  backgroundColor: "#f8f8f8",
+                  padding: 10,
+                  borderRadius: 6,
+                  borderWidth: 1,
+                  borderColor: "#ddd",
+                  marginBottom: 12,
                 }}
               >
-                {isCorrect ? "정답입니다!" : "오답입니다."}
-              </Text>
+                <Text style={{ fontSize: 14, marginBottom: 4 }}>
+                  ✅ 정답:{" "}
+                  <Text style={{ fontWeight: "bold" }}>{question.answer}</Text>
+                </Text>
+                <Text style={{ fontSize: 14 }}>
+                  📘 설명: {question.explanation}
+                </Text>
+              </View>
 
-              {!isCorrect && (
-                <View
-                  style={{
-                    backgroundColor: "#f8f8f8",
-                    padding: 10,
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: "#ddd",
-                  }}
-                >
-                  <Text style={{ fontSize: 14, marginBottom: 4 }}>
-                    ✅ 정답:{" "}
-                    <Text style={{ fontWeight: "bold" }}>
-                      {question.answer}
-                    </Text>
-                  </Text>
-                  <Text style={{ fontSize: 14 }}>
-                    📘 설명: {question.explanation}
-                  </Text>
+              {isCorrect === null ? (
+                <View style={{ flexDirection: "row", gap: 12 }}>
+                  <Button
+                    title="정답으로 인정"
+                    onPress={() => handleMarkAnswer(true)}
+                  />
+                  <Button
+                    title="오답으로 처리"
+                    onPress={() => handleMarkAnswer(false)}
+                    color="red"
+                  />
                 </View>
+              ) : (
+                <Text style={{ marginTop: 16 }}>
+                  ✅ 제출 완료됨 ({isCorrect ? "정답" : "오답"})
+                </Text>
               )}
-            </View>
+            </>
           )}
-
-          {submitted && <Text>✅ 제출 완료됨</Text>}
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>

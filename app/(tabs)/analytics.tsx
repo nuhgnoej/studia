@@ -1,5 +1,6 @@
 // app/(tabs)/analytics.tsx
-
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import { getDatabase } from "@/lib/db";
@@ -9,26 +10,28 @@ type Row = {
   question: string;
   total_attempts: number;
   correct_count: number;
+  weight: number;
 };
 
 export default function AnalyticsScreen() {
   const [data, setData] = useState<Row[]>([]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const db = await getDatabase();
-      const rows = await db.getAllAsync<Row>(`
-        SELECT id, question, total_attempts, correct_count
+  useFocusEffect(
+    useCallback(() => {
+      const fetchStats = async () => {
+        const db = await getDatabase();
+        const rows = await db.getAllAsync<Row>(`
+        SELECT id, question, total_attempts, correct_count,weight
         FROM questions
         WHERE total_attempts > 0
         ORDER BY total_attempts DESC
       `);
+        setData(rows);
+      };
 
-      setData(rows);
-    };
-
-    fetchStats();
-  }, []);
+      fetchStats();
+    }, [])
+  );
 
   const renderAccuracy = (row: Row) => {
     const ratio = row.correct_count / row.total_attempts;
@@ -39,6 +42,7 @@ export default function AnalyticsScreen() {
         <Text style={styles.question}>{row.question}</Text>
         <Text style={styles.item}>시도 횟수: {row.total_attempts}</Text>
         <Text style={styles.item}>정답 수: {row.correct_count}</Text>
+        <Text style={styles.item}>가중치: {row.weight}</Text>
         <Text style={styles.item}>
           정답률: {percent}% {mastered ? "✅ 숙달됨" : "🔁 학습 중"}
         </Text>

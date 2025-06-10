@@ -18,7 +18,7 @@ export default function IndexScreen() {
     try {
       setLoading(true);
       await initDatabase(); // 데이터베이스 생성
-      await db.runAsync(`DELETE FROM questions`); // 기존 데이터베이스 삭제
+      // await db.runAsync(`DELETE FROM questions`); // 기존 데이터베이스 삭제
       await loadQuestionsFromFile(filename); // QuestionFileMap 파일에서 파일명 읽어오기
       const loaded = await getAllQuestions();
       setQuestions(loaded);
