@@ -1,77 +1,98 @@
 // app/(tabs)/two.tsx
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
-import { View, Text } from "@/components/Themed";
-import { getAllQuestions, initDatabase } from "@/lib/db";
+import { getQuestionById, getQuestionCount } from "@/lib/db";
+import ObjectiveQuestion from "@/components/ObjectiveQuestion";
+import SubjectiveQuestion from "@/components/SubjectiveQuestion";
+import { View, Text, Button, StyleSheet } from "react-native";
 import { Question } from "@/lib/types";
-import { loadDummyQuestions } from "@/lib/loadDummy";
 
-export default function TabTwoScreen() {
-  const [questions, setQuestions] = useState<Question[]>([]);
+export default function QuestionScreen() {
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const questionId = Number(id);
+  const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
-
-  //  useEffect(() => {
-  //     (async () => {
-  //       await initDatabase();
-  //       await loadDummyQuestions(); // 더미 삽입
-  //     })();
-  //   }, []);
+  const [notFound, setNotFound] = useState(false);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
 
   useEffect(() => {
     (async () => {
-      try {
-        await initDatabase();
-        await loadDummyQuestions(); // 더미 삽입
-        const result = await getAllQuestions();
-        const parsed: Question[] = result.map((q: any) => ({
-          ...q,
-          choices: q.choices ? JSON.parse(q.choices) : [],
-        }));
-        setQuestions(parsed);
-      } catch (e) {
-        console.error("문제 불러오기 실패", e);
-      } finally {
-        setLoading(false);
+      setLoading(true);
+      setNotFound(false);
+
+      const q = await getQuestionById(questionId);
+      const count = await getQuestionCount();
+      setTotalCount(count);
+
+      if (!q) {
+        setNotFound(true);
+      } else {
+        setQuestion(q);
       }
+
+      setLoading(false);
     })();
-  }, []);
+  }, [questionId]);
+
+  if (loading) return <Text style={styles.centered}>로딩 중...</Text>;
+  if (notFound)
+    return <Text style={styles.centered}>존재하지 않는 문제입니다.</Text>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>`문제 목록({questions.length})`</Text>
+      {/* 문제 표시 영역 */}
+      <View style={styles.questionSection}>
+        <Text style={styles.metaText}>
+          문제 {questionId} · {question?.type}
+        </Text>
+        {question!.type === "objective" ? (
+          <ObjectiveQuestion question={question!} />
+        ) : (
+          <SubjectiveQuestion question={question!} />
+        )}
+      </View>
 
-      {loading && <ActivityIndicator size="large" color="#888" />}
-
-      {!loading && questions.length === 0 && (
-        <Text style={styles.emptyText}>아직 입력된 문제가 없습니다. 😢</Text>
-      )}
-
-      {!loading &&
-        questions.map((q) => (
-          <View key={q.id} style={styles.questionBox}>
-            <Text style={styles.question}>{q.question}</Text>
-            {q.type === "objective" &&
-              q.choices?.map((c, i) => (
-                <Text key={i} style={styles.choice}>
-                  • {c}
-                </Text>
-              ))}
-          </View>
-        ))}
+      {/* 하단 버튼 영역 */}
+      <View style={styles.buttonSection}>
+        {totalCount && questionId < totalCount ? (
+          <Button
+            title="다음 문제"
+            onPress={() => router.replace(`/two?id=${questionId + 1}`)}
+          />
+        ) : (
+          <Button
+            title="완료 - 홈으로 돌아가기"
+            onPress={() => router.push("/")}
+          />
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 12 },
-  emptyText: {
-    fontSize: 16,
-    color: "#999",
-    marginTop: 24,
-    textAlign: "center",
+  container: {
+    flex: 1,
+    padding: 16,
+    justifyContent: "space-between",
   },
-  questionBox: { marginBottom: 24 },
-  question: { fontSize: 16, marginBottom: 8 },
-  choice: { marginLeft: 12, fontSize: 14, color: "#666" },
+  questionSection: {
+    flexGrow: 1,
+    gap: 12,
+  },
+  buttonSection: {
+    paddingTop: 24,
+    paddingBottom: 8,
+  },
+  metaText: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 8,
+  },
+  centered: {
+    textAlign: "center",
+    marginTop: 100,
+    fontSize: 18,
+  },
 });

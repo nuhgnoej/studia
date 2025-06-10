@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "type": "objective",
+    "question": "로드 밸런서의 주요 목적은?",
+    "choices": ["데이터베이스 암호화", "서버 부하 분산", "UI 렌더링", "클라이언트 인증"],
+    "answer": "서버 부하 분산",
+    "explanation": "로드 밸런서는 트래픽을 여러 서버에 분산시켜 성능을 향상시킵니다."
+  },
+  {
+    "id": 2,
+    "type": "subjective",
+    "question": "캐시를 사용하는 이유를 서술하시오.",
+    "choices": null,
+    "answer": "응답 속도 향상과 서버 부하 감소",
+    "explanation": "자주 요청되는 데이터를 임시 저장하여 효율을 높입니다."
+  },
+  {
+    "id": 3,
+    "type": "objective",
+    "question": "RDB와 NoSQL의 차이 중 맞는 것은?",
+    "choices": ["NoSQL은 스키마 고정", "RDB는 수평 확장이 쉬움", "RDB는 테이블 기반", "NoSQL은 관계 기반"],
+    "answer": "RDB는 테이블 기반",
+    "explanation": "RDB는 테이블 간 관계를 기반으로 설계됩니다."
+  },
+  {
+    "id": 4,
+    "type": "subjective",
+    "question": "CDN의 역할을 설명하시오.",
+    "choices": null,
+    "answer": "정적 자산을 전 세계에 분산하여 빠르게 전달",
+    "explanation": "CDN은 사용자의 위치에 가까운 서버에서 파일을 제공합니다."
+  },
+  {
+    "id": 5,
+    "type": "objective",
+    "question": "트래픽 급증 상황에서 고려해야 할 시스템 요소는?",
+    "choices": ["데이터 정렬", "요소 정렬", "스케일링", "라우팅"],
+    "answer": "스케일링",
+    "explanation": "시스템 확장성 확보를 위해 스케일링이 필요합니다."
+  }
+]
