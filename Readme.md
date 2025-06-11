@@ -90,7 +90,7 @@ studia/
 | answer           | TEXT    | 정답 텍스트                             |
 | explanation      | TEXT    | 해설                                    |
 | total_attempts   | INTEGER | 총 시도 횟수                            |
-| correct_attempts | INTEGER | 정답 시도 횟수                          |
+| correct_count | INTEGER | 정답 시도 횟수                          |
 | weight           | REAL    | 문제 가중치 (기본값 1.0)                |
 
 ### `answers` 테이블
@@ -109,7 +109,7 @@ studia/
 
 - 초기값: `1.0`
 - 정답 시: `weight = max(weight - 0.1, 0.1)`
-- 오답 시: `weight = min(weight + 0.1, 10.0)`
+- 오답 시: `weight = weight + 0.3` (최소값 0.1 적용)
 - 가중치가 높을수록 **출제 확률 증가**, 낮을수록 **출제 빈도 감소**
 - 분석 페이지에서 이 가중치를 바탕으로 **학습 우선순위**를 시각화
 
