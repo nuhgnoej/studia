@@ -1,17 +1,12 @@
-import { getAllQuestions, initDatabase } from "@/lib/db";
-import { Question } from "@/lib/types";
+import { initDatabase } from "@/lib/db";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, Text, View, StyleSheet } from "react-native";
 import { questionFileMap } from "@/lib/questionFileMap";
 import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
-import * as SQLite from "expo-sqlite";
-
-const db = SQLite.openDatabaseSync("studiaDatabase");
 
 export default function IndexScreen() {
   const router = useRouter();
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadSetAndStart = async (filename: string) => {
@@ -20,8 +15,6 @@ export default function IndexScreen() {
       await initDatabase(); // 데이터베이스 생성
       // await db.runAsync(`DELETE FROM questions`); // 기존 데이터베이스 삭제
       await loadQuestionsFromFile(filename); // QuestionFileMap 파일에서 파일명 읽어오기
-      const loaded = await getAllQuestions();
-      setQuestions(loaded);
       router.push({ pathname: "/two", params: { id: "1" } });
     } catch (e) {
       console.error("문제 세트 로드 실패", e);
