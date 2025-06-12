@@ -1,0 +1,81 @@
+[
+  {
+    "id": 1,
+    "type": "objective",
+    "question": "HRSG 비상 시 운전방법 설명이 아닌 것은?",
+    "choices": [
+      "고수위 시 S/H 내 응축수가 모두 배수될 때까지 S/H Outlet Drain 시킨다.",
+      "저수위 시 Drum 금속온도가 급수온도보다 40도 이상일 경우 Drum에 급수해서는 안된다.",
+      "드럼 수위의 감소 원인으로는 Tube Leak가 있다.",
+      "드럼 수위가 고수위로 넘쳐도 운전에는 지장이 없다."
+    ],
+    "answer": "드럼 수위가 고수위로 넘쳐도 운전에는 지장이 없다.",
+    "explanation": "고수위는 워터해머나 장비 손상 위험이 있어 운전에 지장을 줄 수 있다."
+  },
+  {
+    "id": 2,
+    "type": "objective",
+    "question": "HRSG 설비보호를 위해 가스터빈을 감발운전하는 것은 무엇인가?",
+    "choices": [
+      "HRSG Emergency Stop On",
+      "GT Runback",
+      "HRSG On",
+      "HRSG Ready for GT Stop"
+    ],
+    "answer": "GT Runback",
+    "explanation": "GT Runback은 HRSG를 보호하기 위해 가스터빈 출력을 빠르게 줄이는 자동 제어 기능이다."
+  },
+  {
+    "id": 3,
+    "type": "objective",
+    "question": "HRSG 저온부식 방지를 위한 대책으로 잘못된 것은?",
+    "choices": [
+      "전열관 외면 온도를 노점이상으로 유지하기 위해 급수온도를 노점 정도로 운전한다.",
+      "배기가스온도가 100~130도 범위에서 부식감량은 최대가 되며 노점 이하로 떨어지면 부식감량은 급증한다.",
+      "무유황연료 사용 시는 급소온도를 수분노점이하로 운전할 수 있다.",
+      "연료 중 황 함량이 높아지면 급수온도는 더 높여야 한다."
+    ],
+    "answer": "무유황연료 사용 시는 급소온도를 수분노점이하로 운전할 수 있다.",
+    "explanation": "노점 이하로 운전하면 부식이 급격히 증가할 수 있으므로 연료 종류와 관계없이 노점 이상으로 유지해야 한다."
+  },
+  {
+    "id": 4,
+    "type": "objective",
+    "question": "HRSG 정상 운전 중에 정지된 HP BFP 정비를 위해 Pump 내부의 물을 DRN 시 조작하지 않아도 되는 밸브는?",
+    "choices": [
+      "Leak-off Vv Close",
+      "Warm-up Line Vv Close",
+      "Pump Suction Vv Close",
+      "냉각수 Vv Close"
+    ],
+    "answer": "냉각수 Vv Close",
+    "explanation": "냉각수 밸브는 펌프 내부 물과 직접 연관되지 않으므로 DRN 시 조작할 필요가 없다."
+  },
+  {
+    "id": 5,
+    "type": "objective",
+    "question": "HRSG를 설계할 때 PPT(Pinch Point Temp)를 낮추었을 때 전열면적과의 관계는?",
+    "choices": [
+      "증발기 면적 감소",
+      "절탄기 면적 감소",
+      "증발기 면적 증가",
+      "절탄기 면적 증가"
+    ],
+    "answer": "증발기 면적 증가",
+    "explanation": "PPT가 낮아질수록 증기 발생을 위한 열교환면적이 넓어져야 하므로 증발기 면적이 증가한다."
+  },
+  {
+    "id": 6,
+    "type": "objective",
+    "question": "HRSG에 관한 내용으로 틀린 것은?",
+    "choices": [
+      "LP Steam System의 목적은 배기가스로부터 열 회수에 의해 LP Steam을 생산하고 LP Turbine에 증기를 공급하기 위한 것이다.",
+      "LP Evaporator는 LP Drum 에서부터 강제순환 루프를 통해 증기를 생산한다.",
+      "LP Superheater는 요구되는 온도조건까지 LP Drum에서부터 발생된 포화증기를 가열한다.",
+      "IP Steam System은 GT 배기가스에 포함된 열에너지로부터 IP 증기를 생산하고 GT Combustor Cooler에 증기를 공급하기 위한 것이다."
+    ],
+    "answer": "LP Evaporator는 LP Drum 에서부터 강제순환 루프를 통해 증기를 생산한다.",
+    "explanation": "LP Evaporator는 일반적으로 자연순환 방식이며, 강제순환은 HP/MP 계통에서 주로 사용된다."
+  }
+  
+]

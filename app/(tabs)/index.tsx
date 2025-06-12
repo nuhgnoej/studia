@@ -37,7 +37,7 @@ export default function IndexScreen() {
       {Object.entries(questionFileMap).map(([filename, entry], idx) => (
         <View key={idx} style={styles.buttonWrapper}>
           <Button
-            title={entry.name}
+            title={`${entry.name} (${entry.data.length}문제)`}
             onPress={() => loadSetAndStart(filename)}
             disabled={loading}
           />
