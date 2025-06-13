@@ -1,84 +1,114 @@
 // lib/db.ts
 
 import * as SQLite from "expo-sqlite";
+import { Platform } from "react-native";
 import type { AnswerRecord, Question, RawQuestionRow } from "./types";
 
-let db: SQLite.SQLiteDatabase;
+let db: SQLite.SQLiteDatabase | null = null;
 
 export async function getDatabase() {
   if (!db) {
-    db = await SQLite.openDatabaseAsync("studiaDatabase");
+    db = await SQLite.openDatabaseAsync("studia.db");
   }
   return db;
 }
 
-// 초기 테이블 생성
 export async function initDatabase() {
   const db = await getDatabase();
 
-  await db.execAsync(`PRAGMA journal_mode = WAL;`);
-  // await db.execAsync(`DROP TABLE IF EXISTS questions;`); // 디버깅용 임시 쿼리문
-  await db.execAsync(`
+  // answers 테이블은 유지하고 questions와 subjects 테이블만 초기화
+  await db.runAsync("DROP TABLE IF EXISTS questions");
+  await db.runAsync("DROP TABLE IF EXISTS subjects");
+
+  // subjects 테이블 생성
+  await db.runAsync(`
+    CREATE TABLE IF NOT EXISTS subjects (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      created_at DATETIME NOT NULL
+    )
+  `);
+
+  // questions 테이블 생성
+  await db.runAsync(`
     CREATE TABLE IF NOT EXISTS questions (
-      id INTEGER PRIMARY KEY NOT NULL,
-      type TEXT NOT NULL DEFAULT 'objective',
+      id INTEGER NOT NULL,
+      subject_id TEXT NOT NULL,
+      type TEXT NOT NULL,
       question TEXT NOT NULL,
       choices TEXT,
       answer TEXT NOT NULL,
       explanation TEXT,
-      weight REAL DEFAULT 1.0,
-      total_attempts INTEGER DEFAULT 0,
-      correct_count INTEGER DEFAULT 0
-    );
+      created_at DATETIME NOT NULL,
+      PRIMARY KEY (id, subject_id),
+      FOREIGN KEY (subject_id) REFERENCES subjects(id)
+    )
   `);
 
-  await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS answers (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      question_id INTEGER NOT NULL,
-      user_answer TEXT NOT NULL,
-      is_correct INTEGER NOT NULL,
-      answered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (question_id) REFERENCES questions(id)
-    );
-  `);
-}
+  // answers 테이블이 없을 경우에만 생성
+  const answersTableExists = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='answers'"
+  );
 
-export async function insertQuestions(
-  questions: {
-    id: number;
-    type: string;
-    question: string;
-    choices: string[] | null;
-    answer: string;
-    explanation: string;
-  }[]
-) {
-  const db = await getDatabase();
-
-  for (const q of questions) {
-    await db.runAsync(
-      `
-  INSERT INTO questions (id, type, question, choices, answer, explanation)
-  VALUES (?, ?, ?, ?, ?, ?)
-  ON CONFLICT(id) DO UPDATE SET
-    type = excluded.type,
-    question = excluded.question,
-    choices = excluded.choices,
-    answer = excluded.answer,
-    explanation = excluded.explanation    
-  `,
-      [
-        q.id,
-        q.type,
-        q.question,
-        JSON.stringify(q.choices),
-        q.answer,
-        q.explanation,
-      ]
-    );
+  if (!answersTableExists || answersTableExists.count === 0) {
+    await db.runAsync(`
+      CREATE TABLE IF NOT EXISTS answers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        question_id INTEGER NOT NULL,
+        subject_id TEXT NOT NULL,
+        user_answer TEXT NOT NULL,
+        is_correct INTEGER NOT NULL,
+        created_at DATETIME NOT NULL,
+        FOREIGN KEY (question_id, subject_id) REFERENCES questions(id, subject_id)
+      )
+    `);
   }
 }
+
+export const insertSubject = async (id: string, name: string) => {
+  const db = await getDatabase();
+  await db.runAsync(
+    "INSERT OR REPLACE INTO subjects (id, name) VALUES (?, ?)",
+    [id, name]
+  );
+};
+
+export const getQuestionById = async (id: number): Promise<Question | null> => {
+  const db = await getDatabase();
+  const question = await db.getFirstAsync<Question>(
+    "SELECT * FROM questions WHERE id = ?",
+    id
+  );
+  return question;
+};
+
+export const getQuestionCount = async (): Promise<number> => {
+  const db = await getDatabase();
+  const result = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM questions"
+  );
+  return result?.count || 0;
+};
+
+export const insertAnswer = async ({
+  question_id,
+  subject_id,
+  user_answer,
+  is_correct,
+}: {
+  question_id: number;
+  subject_id: string;
+  user_answer: string;
+  is_correct: boolean;
+}) => {
+  const db = await getDatabase();
+  await db.runAsync(
+    `INSERT INTO answers (
+      question_id, subject_id, user_answer, is_correct, created_at
+    ) VALUES (?, ?, ?, ?, datetime('now'))`,
+    [question_id, subject_id, user_answer, is_correct ? 1 : 0]
+  );
+};
 
 export async function getAllQuestions(): Promise<Question[]> {
   const db = await getDatabase();
@@ -93,71 +123,6 @@ export async function getAllQuestions(): Promise<Question[]> {
     explanation: row.explanation ?? "",
     weight: row.weight ?? 1.0,
   }));
-}
-
-export async function getQuestionById(id: number): Promise<Question | null> {
-  const db = await getDatabase();
-  const row = (await db.getFirstAsync(
-    `SELECT * FROM questions WHERE id = ?`,
-    id
-  )) as any;
-  if (!row) return null;
-
-  return {
-    id: row.id,
-    type: row.type,
-    question: row.question,
-    answer: row.answer,
-    explanation: row.explanation ?? "",
-    choices: row.choices ? JSON.parse(row.choices) : [],
-    weight: row.weight ?? 1.0,
-  };
-}
-
-export async function getQuestionCount() {
-  const db = await getDatabase();
-  const row = (await db.getFirstAsync(
-    `SELECT COUNT(*) AS count FROM questions`
-  )) as { count: number };
-  return row?.count ?? 0;
-}
-
-export async function insertAnswer(
-  record: Omit<AnswerRecord, "id" | "answered_at">
-) {
-  const db = await getDatabase();
-  // console.log("DB 가져옴");
-
-  await db.runAsync(
-    `INSERT INTO answers (question_id, user_answer, is_correct)
-     VALUES (?, ?, ?)`,
-    [record.question_id, record.user_answer, record.is_correct ? 1 : 0]
-  );
-
-  // console.log("INSERT 완료");
-
-  await db.runAsync(
-    `UPDATE questions
-   SET total_attempts = total_attempts + 1,
-       correct_count = correct_count + ?
-   WHERE id = ?`,
-    [record.is_correct ? 1 : 0, record.question_id]
-  );
-
-  await updateQuestionWeight(record.question_id, record.is_correct);
-}
-
-export async function updateQuestionWeight(
-  questionId: number,
-  isCorrect: boolean
-) {
-  const db = await getDatabase();
-  const delta = isCorrect ? -0.1 : 0.3;
-
-  await db.runAsync(
-    `UPDATE questions SET weight = MAX(0.1, weight + ?) WHERE id = ?`,
-    [delta, questionId]
-  );
 }
 
 export async function getWeightedRandomQuestion(): Promise<Question | null> {

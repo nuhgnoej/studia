@@ -1,11 +1,13 @@
 export type Question = {
   id: number;
+  subject_id?: string;
   type: "objective" | "subjective";
   question: string;
-  choices?: string[];
+  choices: string[];
   answer: string;
-  explanation?: string;
-  weight?: number; // 🎯 새로 추가됨 (반복 학습용)
+  explanation: string;
+  weight?: number;
+  created_at?: string;
 };
 
 export type UserAnswer = {

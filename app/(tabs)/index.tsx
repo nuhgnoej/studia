@@ -1,21 +1,45 @@
-import { initDatabase } from "@/lib/db";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Text, View, StyleSheet } from "react-native";
 import { questionFileMap } from "@/lib/questionFileMap";
 import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
+import { getDatabase } from "@/lib/db";
 
 export default function IndexScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const loadSetAndStart = async (filename: string) => {
+  // 앱 최초 실행 시 데이터베이스 테이블 존재 여부 확인
+  useEffect(() => {
+    const checkDatabase = async () => {
+      try {
+        const db = await getDatabase();
+        const tableCheck = await db.getFirstAsync<{ count: number }>(
+          "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='questions'"
+        );
+        
+        if (!tableCheck || tableCheck.count === 0) {
+          // 테이블이 없을 경우에만 초기화
+          const { initDatabase } = require("@/lib/db");
+          await initDatabase();
+        }
+      } catch (error) {
+        console.error("데이터베이스 확인 중 오류:", error);
+      }
+    };
+    
+    checkDatabase();
+  }, []);
+
+  const loadSetAndNavigate = async (filename: string) => {
     try {
       setLoading(true);
-      await initDatabase(); // 데이터베이스 생성
-      // await db.runAsync(`DELETE FROM questions`); // 기존 데이터베이스 삭제
-      await loadQuestionsFromFile(filename); // QuestionFileMap 파일에서 파일명 읽어오기
-      router.push({ pathname: "/two", params: { id: "1" } });
+      await loadQuestionsFromFile(filename); // 문제 세트 로드
+      // 과목 시작 페이지로 이동
+      router.push({
+        pathname: "/subject/[id]",
+        params: { id: filename }
+      });
     } catch (e) {
       console.error("문제 세트 로드 실패", e);
     } finally {
@@ -31,7 +55,7 @@ export default function IndexScreen() {
         <View key={idx} style={styles.buttonWrapper}>
           <Button
             title={`${entry.name} (${entry.data.length}문제)`}
-            onPress={() => loadSetAndStart(filename)}
+            onPress={() => loadSetAndNavigate(filename)}
             disabled={loading}
           />
         </View>
@@ -45,7 +69,7 @@ export default function IndexScreen() {
         </Text>
         <Button
           title="풀이 결과 분석 보기"
-          onPress={() => router.push("/analytics")}
+          onPress={() => router.push("/(tabs)/analytics")}
         />
       </View>
     </View>
@@ -54,25 +78,22 @@ export default function IndexScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    gap: 12,
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#fff",
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 12,
+    marginBottom: 24,
+    textAlign: "center",
   },
   buttonWrapper: {
-    marginVertical: 4,
-  },
-  countText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#555",
+    marginBottom: 12,
   },
   loading: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "gray",
+    textAlign: "center",
+    marginTop: 12,
+    color: "#666",
   },
 });

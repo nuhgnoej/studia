@@ -1,3 +1,4 @@
+import React from "react";
 import { Question } from "@/lib/types";
 import {
   Text,
@@ -11,11 +12,17 @@ import {
 import { useState } from "react";
 import { insertAnswer } from "@/lib/db";
 
+interface SubjectiveQuestionProps {
+  question: Question;
+  onAnswer: (answer: string) => void;
+  showAnswer: boolean;
+}
+
 export default function SubjectiveQuestion({
   question,
-}: {
-  question: Question;
-}) {
+  onAnswer,
+  showAnswer,
+}: SubjectiveQuestionProps) {
   const [input, setInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -27,13 +34,19 @@ export default function SubjectiveQuestion({
 
   const handleMarkAnswer = async (correct: boolean) => {
     try {
+      if (!question.subject_id) {
+        throw new Error("subject_id가 없습니다");
+      }
+      
       await insertAnswer({
         question_id: question.id,
+        subject_id: question.subject_id,
         user_answer: input.trim(),
         is_correct: correct,
       });
 
       setIsCorrect(correct);
+      onAnswer(correct ? "know" : "dont_know");
     } catch (e) {
       console.error("insertAnswer 에러", e);
     }
@@ -51,19 +64,19 @@ export default function SubjectiveQuestion({
             placeholder="정답을 입력하세요"
             value={input}
             onChangeText={setInput}
-            editable={!submitted}
+            editable={!submitted && !showAnswer}
             style={{
-              borderColor: submitted ? "#999" : "#ccc",
+              borderColor: submitted || showAnswer ? "#999" : "#ccc",
               borderWidth: 1,
               padding: 12,
               borderRadius: 6,
-              backgroundColor: submitted ? "#f0f0f0" : "#fff",
+              backgroundColor: submitted || showAnswer ? "#f0f0f0" : "#fff",
               fontSize: 16,
               marginBottom: 12,
             }}
           />
 
-          {!submitted ? (
+          {!submitted && !showAnswer ? (
             <Button
               title="제출하기"
               onPress={handleSubmit}
@@ -83,14 +96,18 @@ export default function SubjectiveQuestion({
               >
                 <Text style={{ fontSize: 14, marginBottom: 4 }}>
                   ✅ 정답:{" "}
-                  <Text style={{ fontWeight: "bold" }}>{question.answer}</Text>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {Array.isArray(question.answer)
+                      ? question.answer.join(", ")
+                      : question.answer}
+                  </Text>
                 </Text>
                 <Text style={{ fontSize: 14 }}>
                   📘 설명: {question.explanation}
                 </Text>
               </View>
 
-              {isCorrect === null ? (
+              {!showAnswer && isCorrect === null && (
                 <View style={{ flexDirection: "row", gap: 12 }}>
                   <Button
                     title="정답으로 인정"
@@ -102,10 +119,6 @@ export default function SubjectiveQuestion({
                     color="red"
                   />
                 </View>
-              ) : (
-                <Text style={{ marginTop: 16 }}>
-                  ✅ 제출 완료됨 ({isCorrect ? "정답" : "오답"})
-                </Text>
               )}
             </>
           )}

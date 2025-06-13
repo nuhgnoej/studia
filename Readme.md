@@ -31,7 +31,7 @@ studia/
 ├── app/
 │   └── (tabs)/
 │       ├── index.tsx              # 문제 세트 선택 화면
-│       ├── two.tsx                # 문제 풀이 화면 (임시)
+│       ├── question.tsx           # 문제 풀이 화면
 │       └── analytics.tsx          # 학습 분석 화면
 ├── assets/
 │   └── questions/                 # JSON 문제 세트 저장 위치
