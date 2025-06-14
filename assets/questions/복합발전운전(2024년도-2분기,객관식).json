@@ -76,6 +76,52 @@
     ],
     "answer": "LP Evaporator는 LP Drum 에서부터 강제순환 루프를 통해 증기를 생산한다.",
     "explanation": "LP Evaporator는 일반적으로 자연순환 방식이며, 강제순환은 HP/MP 계통에서 주로 사용된다."
+  },
+  {
+    "id": 7,
+    "type": "objective",
+    "question": "HRSG의 Pinch Point Temp를 낮게 설계하면 증가되는 것이 아닌것은?",
+    "choices": ["GT 효율", "전체 열 회수량", "전열면적", "가스측 통풍손실"],
+    "answer": "GT 효율",
+    "explanation": "Pinch Point Temp를 낮추면 열 회수 효율과 전열면적, 통풍손실은 증가하지만, GT 효율에는 직접적인 영향이 없다."
+  },
+  {
+    "id": 8,
+    "type": "objective",
+    "question": "HRSG의 Tube Failure 시 점검 및 조치사항에 대해 기술하였다. 적절하지 못한 것은?",
+    "choices": [
+      "HP, IP, LP Feed Water Isolation Vv와 HP, IP, LP SH Outlet Vv를 Open 한다.",
+      "Pressure가 감소한 후에 서서히 Boiler를 냉각한다.",
+      "HP, IP, LP SH Startup Vent를 Open 한다.",
+      "즉시 GT 배기 Flow를 확인한다."
+    ],
+    "answer": "HP, IP, LP Feed Water Isolation Vv와 HP, IP, LP SH Outlet Vv를 Open 한다.",
+    "explanation": "Tube Failure 시에는 고압 수나 증기의 유출을 방지하기 위해 관련 밸브는 'Close' 해야 하며, 'Open'은 적절하지 않다."
+  },
+  {
+    "id": 9,
+    "type": "objective",
+    "question": "HRSG 급수제어에 관한 설명이다. 틀린 것은?",
+    "choices": [
+      "기동 시 급수제어는 Drum Level이 심하게 변하므로 Steam flow 요소제어로 안정시킨다.",
+      "급수제어의 목적은 드럼의 수위를 목표치 이내로 유지하는 것이다.",
+      "드럼 수위가 낮으면 보일러 수의 순환부족으로 Tube의 국부과열 및 Drum의 손상이 우려된다.",
+      "정상 운전 시 급수제어는 Drum Level, Feedwater Flow, Steam Flow의 3요소 제어를 한다."
+    ],
+    "answer": "기동 시 급수제어는 Drum Level이 심하게 변하므로 Steam flow 요소제어로 안정시킨다.",
+    "explanation": "기동 시에는 급수 흐름과 드럼 수위 변화가 크므로 '급수 흐름(Feedwater Flow)' 위주의 제어가 아닌 'Steam Flow 요소'만으로는 제어가 어렵다. 따라서 틀린 설명이다."
+  },
+  {
+    "id": 10,
+    "type": "objective",
+    "question": "HRSG의 안전밸브(SAFETY VV) 조정에 관한 내용 중 부적절한 것은?",
+    "choices": [
+      "안전변 조정 시는 설정압의 85% 이하로 압력을 낮춘 후 조정",
+      "분출압력을 높일 때에는 조정 스크류로 조정",
+      "분출 정지압을 높일 때에는 상부 조정링으로 조절",
+      "분출 정지압을 낮출 때에는 하부 조정링으로 조절"
+    ],
+    "answer": "분출 정지압을 낮출 때에는 하부 조정링으로 조절",
+    "explanation": "분출 정지압을 낮출 때는 일반적으로 '상부 조정링'을 이용하며, 하부 조정링은 주로 분출 시작 압력(팝압) 조정에 사용된다."
   }
-  
 ]
