@@ -1,11 +1,23 @@
 // app/(tabs)/analytics.tsx
+import React from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
-import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, Alert, Pressable, ViewStyle } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import { getDatabase } from "@/lib/db";
+import { questionFileMap } from "@/lib/questionFileMap";
 
-type Row = {
+type SubjectStats = {
+  subject_id: string;
+  subject_name: string;
+  total_questions: number;
+  total_attempts: number;
+  correct_count: number;
+  objective_count: number;
+  subjective_count: number;
+};
+
+type QuestionStats = {
   id: number;
   subject_id: string;
   question: string;
@@ -15,7 +27,9 @@ type Row = {
 };
 
 export default function AnalyticsScreen() {
-  const [data, setData] = useState<Row[]>([]);
+  const [subjectStats, setSubjectStats] = useState<SubjectStats[]>([]);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [questionStats, setQuestionStats] = useState<QuestionStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,32 +47,25 @@ export default function AnalyticsScreen() {
             throw new Error("데이터베이스 연결에 실패했습니다.");
           }
 
-          // 먼저 테이블이 존재하는지 확인
-          const tableCheck = await db.getFirstAsync<{ count: number }>(
-            "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='questions'"
-          );
-
-          if (!tableCheck || tableCheck.count === 0) {
-            throw new Error("데이터베이스가 초기화되지 않았습니다.");
-          }
-
-          const rows = await db.getAllAsync<Row>(`
+          // 과목별 통계 가져오기
+          const stats = await db.getAllAsync<SubjectStats>(`
             SELECT 
-              q.id,
-              q.subject_id,
-              q.question,
-              q.type,
+              s.id as subject_id,
+              s.name as subject_name,
+              COUNT(DISTINCT q.id) as total_questions,
               COUNT(a.id) as total_attempts,
-              SUM(CASE WHEN a.is_correct = 1 THEN 1 ELSE 0 END) as correct_count
-            FROM questions q
+              SUM(CASE WHEN a.is_correct = 1 THEN 1 ELSE 0 END) as correct_count,
+              SUM(CASE WHEN q.type = 'objective' THEN 1 ELSE 0 END) as objective_count,
+              SUM(CASE WHEN q.type = 'subjective' THEN 1 ELSE 0 END) as subjective_count
+            FROM subjects s
+            LEFT JOIN questions q ON s.id = q.subject_id
             LEFT JOIN answers a ON q.id = a.question_id AND q.subject_id = a.subject_id
-            GROUP BY q.id, q.subject_id
-            HAVING total_attempts > 0
-            ORDER BY total_attempts DESC
+            GROUP BY s.id, s.name
+            ORDER BY s.name
           `);
 
           if (isMounted) {
-            setData(rows || []);
+            setSubjectStats(stats || []);
           }
         } catch (error) {
           console.error("통계 로딩 에러:", error);
@@ -84,19 +91,118 @@ export default function AnalyticsScreen() {
     }, [])
   );
 
-  const renderAccuracy = (row: Row) => {
-    const ratio = row.correct_count / row.total_attempts;
-    const percent = (ratio * 100).toFixed(1);
-    const mastered = ratio >= 0.8 && row.total_attempts >= 3;
+  const handleSubjectPress = async (subjectId: string) => {
+    try {
+      setLoading(true);
+      const db = await getDatabase();
+      
+      const stats = await db.getAllAsync<QuestionStats>(`
+        SELECT 
+          q.id,
+          q.subject_id,
+          q.question,
+          q.type,
+          COUNT(a.id) as total_attempts,
+          SUM(CASE WHEN a.is_correct = 1 THEN 1 ELSE 0 END) as correct_count
+        FROM questions q
+        LEFT JOIN answers a ON q.id = a.question_id AND q.subject_id = a.subject_id
+        WHERE q.subject_id = ?
+        GROUP BY q.id, q.subject_id
+        ORDER BY q.id
+      `, [subjectId]);
+
+      setQuestionStats(stats || []);
+      setSelectedSubject(subjectId);
+    } catch (error) {
+      console.error("문제별 통계 로딩 에러:", error);
+      Alert.alert("오류", "문제별 통계를 불러오는 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderSubjectCard = (subject: SubjectStats) => {
+    const accuracy = subject.total_attempts > 0 
+      ? (subject.correct_count / subject.total_attempts * 100).toFixed(1)
+      : "0.0";
+    
+    const progressWidth = `${accuracy}%` as ViewStyle["width"];
+    
     return (
-      <View key={`${row.subject_id}-${row.id}`} style={styles.card}>
-        <Text style={styles.question}>{row.question}</Text>
-        <Text style={styles.item}>문제 유형: {row.type === "objective" ? "객관식" : "주관식"}</Text>
-        <Text style={styles.item}>시도 횟수: {row.total_attempts}</Text>
-        <Text style={styles.item}>정답 수: {row.correct_count}</Text>
-        <Text style={styles.item}>
-          정답률: {percent}% {mastered ? "✅ 숙달됨" : "🔁 학습 중"}
-        </Text>
+      <Pressable
+        key={subject.subject_id}
+        style={[
+          styles.subjectCard,
+          selectedSubject === subject.subject_id && styles.selectedSubjectCard
+        ]}
+        onPress={() => handleSubjectPress(subject.subject_id)}
+      >
+        <View style={styles.subjectHeader}>
+          <Text style={styles.subjectName}>{subject.subject_name}</Text>
+          <FontAwesome 
+            name={selectedSubject === subject.subject_id ? "chevron-up" : "chevron-down"} 
+            size={16} 
+            color="#666" 
+          />
+        </View>
+        
+        <View style={styles.statsGrid}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{subject.total_questions}</Text>
+            <Text style={styles.statLabel}>전체 문제</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{subject.objective_count}</Text>
+            <Text style={styles.statLabel}>객관식</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{subject.subjective_count}</Text>
+            <Text style={styles.statLabel}>주관식</Text>
+          </View>
+        </View>
+
+        {subject.total_attempts > 0 && (
+          <View style={styles.progressSection}>
+            <Text style={styles.progressLabel}>전체 정답률</Text>
+            <View style={styles.progressBar}>
+              <View 
+                style={[
+                  styles.progressFill, 
+                  { width: progressWidth }
+                ]} 
+              />
+            </View>
+            <Text style={styles.progressText}>{accuracy}%</Text>
+          </View>
+        )}
+      </Pressable>
+    );
+  };
+
+  const renderQuestionCard = (question: QuestionStats) => {
+    const accuracy = question.total_attempts > 0 
+      ? (question.correct_count / question.total_attempts * 100).toFixed(1)
+      : "0.0";
+    
+    const mastered = Number(accuracy) >= 80 && question.total_attempts >= 3;
+
+    return (
+      <View key={`${question.subject_id}-${question.id}`} style={styles.questionCard}>
+        <Text style={styles.questionText}>{question.question}</Text>
+        <View style={styles.questionStats}>
+          <Text style={styles.questionType}>
+            {question.type === "objective" ? "객관식" : "주관식"}
+          </Text>
+          <Text style={styles.questionAttempts}>
+            시도: {question.total_attempts}회
+          </Text>
+          <Text style={[
+            styles.questionAccuracy,
+            mastered && styles.masteredText
+          ]}>
+            정답률: {accuracy}% {mastered ? "✅" : "🔄"}
+          </Text>
+        </View>
       </View>
     );
   };
@@ -118,10 +224,19 @@ export default function AnalyticsScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>📘 문제별 학습 현황</Text>
-      {data.length > 0 ? (
-        data.map(renderAccuracy)
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>📊 학습 현황 분석</Text>
+      
+      {subjectStats.length > 0 ? (
+        <>
+          {subjectStats.map(renderSubjectCard)}
+          {selectedSubject && questionStats.length > 0 && (
+            <View style={styles.questionsSection}>
+              <Text style={styles.sectionTitle}>문제별 학습 현황</Text>
+              {questionStats.map(renderQuestionCard)}
+            </View>
+          )}
+        </>
       ) : (
         <Text style={styles.emptyText}>아직 풀이한 문제가 없습니다.</Text>
       )}
@@ -131,31 +246,15 @@ export default function AnalyticsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: "#fff",
-    flexGrow: 1,
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 16,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-  },
-  card: {
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: "#f2f2f2",
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  question: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  item: {
-    fontSize: 14,
-    marginBottom: 4,
+    color: "#333",
   },
   loadingText: {
     textAlign: "center",
@@ -167,12 +266,131 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 100,
     fontSize: 18,
-    color: "#F44336",
+    color: "#f44336",
   },
   emptyText: {
     textAlign: "center",
-    marginTop: 40,
-    fontSize: 16,
+    marginTop: 100,
+    fontSize: 18,
     color: "#666",
+  },
+  subjectCard: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  selectedSubjectCard: {
+    borderColor: "#4CAF50",
+    borderWidth: 2,
+  },
+  subjectHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  subjectName: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
+  },
+  statsGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  statItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#666",
+  },
+  progressSection: {
+    marginTop: 8,
+  },
+  progressLabel: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 4,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#4CAF50",
+  },
+  progressText: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
+    textAlign: "right",
+  },
+  questionsSection: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 12,
+  },
+  questionCard: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  questionText: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 12,
+  },
+  questionStats: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  questionType: {
+    fontSize: 14,
+    color: "#666",
+    backgroundColor: "#f0f0f0",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  questionAttempts: {
+    fontSize: 14,
+    color: "#666",
+  },
+  questionAccuracy: {
+    fontSize: 14,
+    color: "#666",
+  },
+  masteredText: {
+    color: "#4CAF50",
+    fontWeight: "600",
   },
 });
