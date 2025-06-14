@@ -45,7 +45,7 @@ export default function SubjectStartScreen() {
     }
   };
 
-  const handleStart = async (type: "objective" | "subjective") => {
+  const handleStart = async () => {
     try {
       setLoading(true);
       // 문제 세트 로드
@@ -54,13 +54,17 @@ export default function SubjectStartScreen() {
         throw new Error("문제 세트를 찾을 수 없습니다.");
       }
 
-      // 해당 타입의 첫 번째 문제 ID 찾기
-      const firstQuestion = entry.data.find(q => q.type === type);
+      // 현재 선택된 과목의 타입 확인 (파일명에서 추출)
+      const isSubjective = (id as string).includes("주관식");
+      
+      // 해당 타입의 첫 번째 문제 찾기
+      const firstQuestion = entry.data.find(q => q.type === (isSubjective ? "subjective" : "objective"));
       if (!firstQuestion) {
-        throw new Error(`${type === "objective" ? "객관식" : "주관식"} 문제가 없습니다.`);
+        throw new Error(`${isSubjective ? "주관식" : "객관식"} 문제가 없습니다.`);
       }
 
-      router.push(`/(tabs)/question?id=${firstQuestion.id}`);
+      // 과목 ID와 문제 ID를 함께 전달
+      router.push(`/(tabs)/question?subjectId=${id}&questionId=${firstQuestion.id}`);
     } catch (error) {
       console.error("문제 시작 에러:", error);
       alert(error instanceof Error ? error.message : "문제를 시작할 수 없습니다.");
@@ -115,33 +119,17 @@ export default function SubjectStartScreen() {
         </View>
 
         <View style={styles.buttonContainer}>
-          {objectiveCount > 0 && (
-            <Pressable
-              style={[styles.startButton, styles.objectiveButton]}
-              onPress={() => handleStart("objective")}
-              disabled={loading}
-            >
-              <FontAwesome name="list" size={24} color="white" />
-              <Text style={styles.buttonText}>객관식 시작</Text>
-              <Text style={styles.buttonSubtext}>
-                {objectiveCount}문제
-              </Text>
-            </Pressable>
-          )}
-
-          {subjectiveCount > 0 && (
-            <Pressable
-              style={[styles.startButton, styles.subjectiveButton]}
-              onPress={() => handleStart("subjective")}
-              disabled={loading}
-            >
-              <FontAwesome name="pencil" size={24} color="white" />
-              <Text style={styles.buttonText}>주관식 시작</Text>
-              <Text style={styles.buttonSubtext}>
-                {subjectiveCount}문제
-              </Text>
-            </Pressable>
-          )}
+          <Pressable
+            style={[styles.startButton]}
+            onPress={handleStart}
+            disabled={loading}
+          >
+            <FontAwesome name="play" size={24} color="white" />
+            <Text style={styles.buttonText}>학습 시작</Text>
+            <Text style={styles.buttonSubtext}>
+              {questionCount}문제
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
     </>
@@ -221,12 +209,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     backgroundColor: "#4CAF50",
-  },
-  objectiveButton: {
-    backgroundColor: "#2196F3",
-  },
-  subjectiveButton: {
-    backgroundColor: "#FF9800",
   },
   buttonText: {
     color: "white",

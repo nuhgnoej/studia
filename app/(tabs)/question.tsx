@@ -7,11 +7,11 @@ import SubjectiveQuestion from "@/components/SubjectiveQuestion";
 import { View, Text, StyleSheet, ScrollView, Pressable, Modal } from "react-native";
 import { Question } from "@/lib/types";
 import { FontAwesome } from "@expo/vector-icons";
+import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
 
 export default function QuestionScreen() {
-  const { id } = useLocalSearchParams();
+  const { subjectId, questionId } = useLocalSearchParams();
   const router = useRouter();
-  const questionId = Number(id);
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -21,7 +21,7 @@ export default function QuestionScreen() {
 
   useEffect(() => {
     loadQuestion();
-  }, [questionId]);
+  }, [subjectId, questionId]);
 
   const loadQuestion = async () => {
     try {
@@ -29,16 +29,36 @@ export default function QuestionScreen() {
       setNotFound(false);
 
       const db = await getDatabase();
-      const q = await db.getFirstAsync<Question>(
-        "SELECT * FROM questions WHERE id = ?",
-        [questionId]
-      );
-
+      
+      // 먼저 문제가 있는지 확인
       const count = await db.getFirstAsync<{ count: number }>(
-        "SELECT COUNT(*) as count FROM questions"
+        "SELECT COUNT(*) as count FROM questions WHERE subject_id = ?",
+        [subjectId as string]
       );
 
-      setTotalCount(count?.count || 0);
+      // 문제가 없으면 자동으로 로드
+      if (!count || count.count === 0) {
+        try {
+          await loadQuestionsFromFile(subjectId as string);
+        } catch (error) {
+          console.error("문제 세트 로드 에러:", error);
+          setNotFound(true);
+          return;
+        }
+      }
+
+      // 문제 로드
+      const q = await db.getFirstAsync<Question>(
+        "SELECT * FROM questions WHERE id = ? AND subject_id = ?",
+        [Number(questionId), subjectId as string]
+      );
+
+      const updatedCount = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) as count FROM questions WHERE subject_id = ?",
+        [subjectId as string]
+      );
+
+      setTotalCount(updatedCount?.count || 0);
 
       if (!q) {
         setNotFound(true);
@@ -69,8 +89,8 @@ export default function QuestionScreen() {
     try {
       // 답변 저장
       await insertAnswer({
-        question_id: questionId,
-        subject_id: question.subject_id,
+        question_id: Number(questionId),
+        subject_id: subjectId as string,
         user_answer: answer,
         is_correct: isCorrect,
       });
@@ -78,18 +98,17 @@ export default function QuestionScreen() {
       if (answer === "dont_know") {
         setShowAnswer(true);
       } else {
-        setShowAnswer(false); // "알아요" 선택 시 showAnswer 상태 초기화
+        setShowAnswer(false);
         // 다음 문제 찾기
         const db = await getDatabase();
         const nextQuestion = await db.getFirstAsync<Question>(
           "SELECT * FROM questions WHERE id > ? AND subject_id = ? AND type = ? ORDER BY id ASC LIMIT 1",
-          [questionId, question.subject_id, question.type]
+          [Number(questionId), subjectId as string, question.type]
         );
 
         if (nextQuestion) {
-          router.replace(`/(tabs)/question?id=${nextQuestion.id}`);
+          router.replace(`/(tabs)/question?subjectId=${subjectId}&questionId=${nextQuestion.id}`);
         } else {
-          setShowAnswer(false); // 분석 화면으로 이동 전 showAnswer 상태 초기화
           router.push("/(tabs)/analytics");
         }
       }
@@ -109,11 +128,11 @@ export default function QuestionScreen() {
       // 다음 문제 찾기
       const nextQuestion = await db.getFirstAsync<Question>(
         "SELECT * FROM questions WHERE id > ? AND subject_id = ? AND type = ? ORDER BY id ASC LIMIT 1",
-        [questionId, question.subject_id, question.type]
+        [Number(questionId), subjectId as string, question.type]
       );
 
       if (nextQuestion) {
-        router.replace(`/(tabs)/question?id=${nextQuestion.id}`);
+        router.replace(`/(tabs)/question?subjectId=${subjectId}&questionId=${nextQuestion.id}`);
       } else {
         router.push("/(tabs)/analytics");
       }
@@ -177,19 +196,19 @@ export default function QuestionScreen() {
         </View>
 
         <View style={styles.navigationButtons}>
-          {questionId > 1 && question && (
+          {Number(questionId) > 1 && question && (
             <Pressable
               style={[styles.navButton, styles.prevButton]}
               onPress={async () => {
                 try {
                   const db = await getDatabase();
                   const prevQuestion = await db.getFirstAsync<Question>(
-                    "SELECT * FROM questions WHERE id < ? AND type = ? ORDER BY id DESC LIMIT 1",
-                    [questionId, question.type]
+                    "SELECT * FROM questions WHERE id < ? AND subject_id = ? AND type = ? ORDER BY id DESC LIMIT 1",
+                    [Number(questionId), subjectId as string, question.type]
                   );
 
                   if (prevQuestion) {
-                    router.replace(`/(tabs)/question?id=${prevQuestion.id}`);
+                    router.replace(`/(tabs)/question?subjectId=${subjectId}&questionId=${prevQuestion.id}`);
                   } else {
                     router.push("/(tabs)/analytics");
                   }
@@ -203,19 +222,19 @@ export default function QuestionScreen() {
               <Text style={styles.navButtonText}>이전 문제</Text>
             </Pressable>
           )}
-          {totalCount && questionId < totalCount && question && (
+          {totalCount && Number(questionId) < totalCount && question && (
             <Pressable
               style={[styles.navButton, styles.nextButton]}
               onPress={async () => {
                 try {
                   const db = await getDatabase();
                   const nextQuestion = await db.getFirstAsync<Question>(
-                    "SELECT * FROM questions WHERE id > ? AND type = ? ORDER BY id ASC LIMIT 1",
-                    [questionId, question.type]
+                    "SELECT * FROM questions WHERE id > ? AND subject_id = ? AND type = ? ORDER BY id ASC LIMIT 1",
+                    [Number(questionId), subjectId as string, question.type]
                   );
 
                   if (nextQuestion) {
-                    router.replace(`/(tabs)/question?id=${nextQuestion.id}`);
+                    router.replace(`/(tabs)/question?subjectId=${subjectId}&questionId=${nextQuestion.id}`);
                   } else {
                     router.push("/(tabs)/analytics");
                   }
@@ -261,7 +280,7 @@ export default function QuestionScreen() {
               onPress={handleNext}
             >
               <Text style={styles.modalButtonText}>
-                {totalCount && questionId < totalCount ? "다음 문제" : "분석 화면으로"}
+                {totalCount && Number(questionId) < totalCount ? "다음 문제" : "분석 화면으로"}
               </Text>
             </Pressable>
           </View>
