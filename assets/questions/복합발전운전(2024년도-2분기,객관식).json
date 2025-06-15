@@ -243,5 +243,167 @@
     ],
     "answer": "계통 외란 시 동태안정도를 개선시키는 장치이다.",
     "explanation": "PSS는 전력계통의 외란에 의해 발전기가 불안정해지는 것을 방지하고 동기 안정도를 향상시킨다."
+  },
+  {
+    "id": 21,
+    "type": "objective",
+    "question": "Rotor의 추력을 지지하여 축 방향의 위치를 정해주는 역할을 하는 것은?",
+    "choices": ["Journal BRG", "Dovetailed Groove", "Thrust BRG", "Shim pad"],
+    "answer": "Thrust BRG",
+    "explanation": "Thrust Bearing(추력 베어링)은 회전자의 축방향 위치를 고정하고 축방향 하중을 지지하는 역할을 한다."
+  },
+  {
+    "id": 22,
+    "type": "objective",
+    "question": "S/T Cold Start-Up 하여 병입 후 S/T HP Diff Expansion 이 증가되었다. 증가폭을 감소시키려면?",
+    "choices": [
+      "Main STM Flow를 감소시킨다.",
+      "Main STM Temp를 증가시킨다.",
+      "Main STM Flow를 감소시키고 Main STM Temp를 증가시킨다.",
+      "Main STM Flow를 증가시키고 Main STM Temp를 감소시킨다."
+    ],
+    "answer": "Main STM Flow를 증가시키고 Main STM Temp를 감소시킨다.",
+    "explanation": "증기 온도를 낮추고 유량을 증가시키면 온도 상승에 따른 비대칭 팽창을 완화할 수 있다."
+  },
+  {
+    "id": 23,
+    "type": "objective",
+    "question": "SF6 가스의 높은 절연성능과 소호성능을 이용한 차단기는?",
+    "choices": ["VCB", "OCB", "ABB", "GCB"],
+    "answer": "GCB",
+    "explanation": "GCB(Gas Circuit Breaker)는 SF6 가스를 사용하여 절연 및 아크 소호 기능을 수행한다."
+  },
+  {
+    "id": 24,
+    "type": "objective",
+    "question": "Shaft Seal 계통 설치 목적이 아닌 것은?",
+    "choices": [
+      "기동 후에 터빈의 저압부로의 공기 유입 차단",
+      "터빈 고압부의 과잉증기가 Turbine Room으로 누입 방지",
+      "터빈 고압부의 과잉증기의 Bearing Housing으로의 누입 방지",
+      "Shaft 과열방지"
+    ],
+    "answer": "Shaft 과열방지",
+    "explanation": "Shaft Seal 계통은 누설 방지와 외부 공기 유입 차단이 목적이지 과열 방지는 해당되지 않는다."
+  },
+  {
+    "id": 25,
+    "type": "objective",
+    "question": "SMP란 각 시간대 별로 전력수요를 맞추기 위하여 가동한 발전기 중 가장 ( ) 발전기의 비용이다. 괄호 안에 알맞은 답은?",
+    "choices": ["낮은", "비싼", "많은", "저렴한"],
+    "answer": "비싼",
+    "explanation": "SMP(System Marginal Price)는 가장 비싼 발전기의 한계비용을 기준으로 한다."
+  },
+  {
+    "id": 26,
+    "type": "objective",
+    "question": "ST Differential Expansion High의 원인이 아닌 것은?",
+    "choices": [
+      "STM 압력, 온도 변화율이 과대할 경우",
+      "Thrust BRG이 손상된 경우",
+      "부하 증감발률 과대할 경우",
+      "STM 압력이 높은 경우"
+    ],
+    "answer": "STM 압력이 높은 경우",
+    "explanation": "압력 자체보다는 급격한 온도 또는 부하 변화, 기계적 손상이 주 원인이다."
+  },
+  {
+    "id": 27,
+    "type": "objective",
+    "question": "ST Gland Steam System에 대하여 옳게 설명한 것은?",
+    "choices": [
+      "터빈 Casing Cover를 들어 올려 Outer Gland를 제거한다.",
+      "HIP의 배기 압력이 X영역 압력보다 높을 경우 Outer Seal Ring으로 배출된다.",
+      "배기 영역 압력이 증가할 수록 HP-IP은 자체 일봉을 위하여 Seal STM 양은 증가한다.",
+      "터빈의 물 유입을 방지하기 위한 계통이다."
+    ],
+    "answer": "배기 영역 압력이 증가할 수록 HP-IP은 자체 일봉을 위하여 Seal STM 양은 증가한다.",
+    "explanation": "Seal Steam은 외부 유입 차단 및 내부 증기 누설 방지를 위해 영역 압력에 따라 조정된다."
+  },
+  {
+    "id": 28,
+    "type": "objective",
+    "question": "ST H2 Purity Low의 원인이 아닌 것은?",
+    "choices": [
+      "Seal Ring의 마모가 심한 경우",
+      "H2 Control Cabinet의 AC 전원 상실",
+      "Scavenging Flow가 너무 많은 경우",
+      "순도 미달 H2 Gas를 공급한 경우"
+    ],
+    "answer": "Scavenging Flow가 너무 많은 경우",
+    "explanation": "Scavenging Flow 증가 자체는 H2 순도를 낮추지 않으며, 과도할 경우 오히려 배출이 강화되어 순도 유지에 도움될 수 있다."
+  },
+  {
+    "id": 29,
+    "type": "objective",
+    "question": "ST Turbine 물 유입 시 예상 징후로 잘못된 것은?",
+    "choices": [
+      "터빈 베어링 진동이 상승한다.",
+      "터빈 Casing 상하 온도차가 상승한다.",
+      "터빈 로터 편심이 증가된다.",
+      "출력이 저하된다."
+    ],
+    "answer": "출력이 저하된다.",
+    "explanation": "물 유입 시에는 오히려 순간적으로 출력이 상승할 수 있으나 장기적으로는 손상을 야기한다."
+  },
+  {
+    "id": 30,
+    "type": "objective",
+    "question": "ST 발전기의 냉각에 사용되는 수소의 특징이 아닌 것은?",
+    "choices": [
+      "수소의 밀도는 공기밀도의 약 1/4이다.",
+      "수소는 공기의 약 7배의 열전도성을 가지고 있다.",
+      "강제대류 하에서는 공기보다 약 50% 이상의 열전달능력을 가지고 있다.",
+      "수소의 사용은 공기 중에서 회전할 때 생기는 회전기계의 풍손을 증가시킨다."
+    ],
+    "answer": "수소의 사용은 공기 중에서 회전할 때 생기는 회전기계의 풍손을 증가시킨다.",
+    "explanation": "수소는 밀도가 낮아 풍손을 줄이는 효과가 있어 회전 손실을 줄인다."
+  },
+  {
+    "id": 31,
+    "type": "objective",
+    "question": "ST 정상운전 중 복수기 진공이 저하되었을 경우 점검사항과 관련이 먼 것은?",
+    "choices": [
+      "Condenser Hot well 이 높은지 확인한다.",
+      "Vacuum Pump의 Separator 내 Seal Water Level이 정상인지 확인한다.",
+      "운전 중인 Vacuum Pump의 출구 MOV가 열려 있는지 확인한다.",
+      "Receiver Tank Level이 Low-Low 상태인지 확인한다."
+    ],
+    "answer": "Condenser Hot well 이 높은지 확인한다.",
+    "explanation": "Hot well 수위는 진공 형성과 직접적인 관련은 없다."
+  },
+  {
+    "id": 32,
+    "type": "objective",
+    "question": "STM TBN Casing에 대한 설명 중 틀린 것은?",
+    "choices": [
+      "케이싱은 구조상 고압, 중압, 저압 케이싱으로 구분한다.",
+      "분해 및 조립이 쉽도록 수평 중심 면에서 상,하 2분하여 볼트로 결합한다.",
+      "저압 터빈 케이싱 하부는 복수기와 연결되어 있다.",
+      "열팽창이 자유롭고 형상이 변하는 구조이어야 한다."
+    ],
+    "answer": "열팽창이 자유롭고 형상이 변하는 구조이어야 한다.",
+    "explanation": "열팽창은 고려되어야 하지만 구조물의 형상이 변하는 것은 바람직하지 않다."
+  },
+  {
+    "id": 33,
+    "type": "objective",
+    "question": "STM TBN 발전기 규격 중 틀린 것은?",
+    "choices": [
+      "형식 - 수소냉각",
+      "정격속도 - 3600RPM",
+      "중성점 접지 - 변압기 접지",
+      "여자방식 - Thyrister"
+    ],
+    "answer": "여자방식 - Thyrister",
+    "explanation": "정확한 표기는 'Thyristor'이며, 틀린 철자이다."
+  },
+  {
+    "id": 34,
+    "type": "objective",
+    "question": "STM TBN에 사용되는 밀봉장치 중 아닌 것은?",
+    "choices": ["래비린스 패킹", "탄소 패킹", "수밀봉 패킹", "유밀봉 패킹"],
+    "answer": "수밀봉 패킹",
+    "explanation": "STM TBN에는 일반적으로 기체 밀봉 방식인 래비린스 또는 탄소 패킹 등이 사용된다."
   }
 ]
