@@ -1,225 +1,293 @@
+// app/(tabs)/question.tsx
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { getDatabase, insertAnswer } from "@/lib/db";
+import ObjectiveQuestion from "@/components/ObjectiveQuestion";
+import SubjectiveQuestion from "@/components/SubjectiveQuestion";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Modal,
+  Alert,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { getDatabase } from "@/lib/db";
-import { questionFileMap } from "@/lib/questionFileMap";
+import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
+import { Question } from "@/lib/types";
 
-type Subject = {
-  name: string;
-};
-
-export default function SubjectStartScreen() {
-  const { id } = useLocalSearchParams();
+export default function QuestionScreen() {
+  const { filename, questionId } = useLocalSearchParams();
   const router = useRouter();
+
+  const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
-  const [subjectName, setSubjectName] = useState("");
-  const [questionCount, setQuestionCount] = useState(0);
+  const [notFound, setNotFound] = useState(false);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [userAnswer, setUserAnswer] = useState<string | null>(null);
 
   useEffect(() => {
-    loadSubjectData();
-  }, [id]);
-
-  const loadSubjectData = async () => {
-    try {
-      const db = await getDatabase();
-      
-      // 과목 정보 가져오기
-      const subject = await db.getFirstAsync<Subject>(
-        "SELECT name FROM subjects WHERE id = ?",
-        [id as string]
-      );
-
-      // 문제 세트에서 문제 수 가져오기
-      const entry = questionFileMap[id as keyof typeof questionFileMap];
-      const count = entry?.data.length || 0;
-
-      if (subject) {
-        setSubjectName(subject.name);
-      }
-      setQuestionCount(count);
-    } catch (error) {
-      console.error("과목 데이터 로딩 에러:", error);
-    } finally {
-      setLoading(false);
+    if (!filename) {
+      Alert.alert("오류", "유효하지 않은 접근입니다.", [
+        { text: "확인", onPress: () => router.replace("/") },
+      ]);
     }
-  };
+  }, [filename]);
 
-  const handleStart = async () => {
+  useEffect(() => {
+    loadQuestion();
+  }, [filename, questionId]);
+
+  const loadQuestion = async () => {
     try {
       setLoading(true);
-      // 문제 세트 로드
-      const entry = questionFileMap[id as keyof typeof questionFileMap];
-      if (!entry) {
-        throw new Error("문제 세트를 찾을 수 없습니다.");
+      setNotFound(false);
+      const db = await getDatabase();
+
+      const count = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) as count FROM questions WHERE subject_id = ?",
+        [filename as string]
+      );
+
+      if (!count || count.count === 0) {
+        try {
+          await loadQuestionsFromFile(filename as string);
+        } catch (error) {
+          console.error("문제 세트 로드 에러:", error);
+          setNotFound(true);
+          return;
+        }
       }
 
-      // 현재 선택된 과목의 타입 확인 (파일명에서 추출)
-      const isSubjective = (id as string).includes("주관식");
-      
-      // 해당 타입의 첫 번째 문제 찾기
-      const firstQuestion = entry.data.find(q => q.type === (isSubjective ? "subjective" : "objective"));
-      if (!firstQuestion) {
-        throw new Error(`${isSubjective ? "주관식" : "객관식"} 문제가 없습니다.`);
-      }
+      const q = await db.getFirstAsync<Question>(
+        "SELECT * FROM questions WHERE id = ? AND subject_id = ?",
+        [Number(questionId), filename as string]
+      );
 
-      // 과목 ID와 문제 ID를 함께 전달
-      router.push(`/(tabs)/question?subjectId=${id}&questionId=${firstQuestion.id}`);
+      const updatedCount = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) as count FROM questions WHERE subject_id = ?",
+        [filename as string]
+      );
+      setTotalCount(updatedCount?.count || 0);
+
+      if (!q) {
+        setNotFound(true);
+      } else {
+        if (typeof q.choices === "string") q.choices = JSON.parse(q.choices);
+        if (typeof q.answer === "string") q.answer = JSON.parse(q.answer);
+        setQuestion(q);
+      }
     } catch (error) {
-      console.error("문제 시작 에러:", error);
-      alert(error instanceof Error ? error.message : "문제를 시작할 수 없습니다.");
+      console.error("문제 로딩 에러:", error);
+      setNotFound(true);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>로딩 중...</Text>
-      </View>
-    );
-  }
+  const handleAnswer = async (answer: string) => {
+    if (!question) return;
+    setUserAnswer(answer);
+    const isCorrect = answer === "know";
 
-  const objectiveCount = questionFileMap[id as keyof typeof questionFileMap]?.data.filter(q => q.type === "objective").length || 0;
-  const subjectiveCount = questionFileMap[id as keyof typeof questionFileMap]?.data.filter(q => q.type === "subjective").length || 0;
+    try {
+      await insertAnswer({
+        question_id: Number(questionId),
+        subject_id: filename as string,
+        user_answer: answer,
+        is_correct: isCorrect,
+      });
+
+      if (answer === "dont_know") {
+        setShowAnswer(true);
+      } else {
+        setShowAnswer(false);
+        const db = await getDatabase();
+        const nextQuestion = await db.getFirstAsync<Question>(
+          "SELECT * FROM questions WHERE id > ? AND subject_id = ? AND type = ? ORDER BY id ASC LIMIT 1",
+          [Number(questionId), filename as string, question.type]
+        );
+        if (nextQuestion) {
+          router.replace(
+            `/(tabs)/question?filename=${filename}&questionId=${nextQuestion.id}`
+          );
+        } else {
+          router.push("/(tabs)/analytics");
+        }
+      }
+    } catch (error) {
+      console.error("답변 저장 에러:", error);
+      alert("답변을 저장하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleNext = async () => {
+    if (!question) return;
+    setShowAnswer(false);
+    setUserAnswer(null);
+    try {
+      const db = await getDatabase();
+      const nextQuestion = await db.getFirstAsync<Question>(
+        "SELECT * FROM questions WHERE id > ? AND subject_id = ? AND type = ? ORDER BY id ASC LIMIT 1",
+        [Number(questionId), filename as string, question.type]
+      );
+      if (nextQuestion) {
+        router.replace(
+          `/(tabs)/question?filename=${filename}&questionId=${nextQuestion.id}`
+        );
+      } else {
+        router.push("/(tabs)/analytics");
+      }
+    } catch (error) {
+      console.error("다음 문제 로딩 에러:", error);
+      alert("다음 문제를 불러오는 중 오류가 발생했습니다.");
+    }
+  };
+
+  if (loading) return <Text style={styles.centered}>로딩 중...</Text>;
+  if (notFound)
+    return <Text style={styles.centered}>존재하지 않는 문제입니다.</Text>;
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: subjectName || "과목 선택",
-          headerBackTitle: "뒤로",
-        }}
-      />
-      <ScrollView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{subjectName}</Text>
-          <Text style={styles.subtitle}>학습을 시작해보세요</Text>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statsCard}>
-            <Text style={styles.statsTitle}>문제 현황</Text>
-            <View style={styles.statsGrid}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{questionCount}</Text>
-                <Text style={styles.statLabel}>전체 문제</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{objectiveCount}</Text>
-                <Text style={styles.statLabel}>객관식</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{subjectiveCount}</Text>
-                <Text style={styles.statLabel}>주관식</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={[styles.startButton]}
-            onPress={handleStart}
-            disabled={loading}
-          >
-            <FontAwesome name="play" size={24} color="white" />
-            <Text style={styles.buttonText}>학습 시작</Text>
-            <Text style={styles.buttonSubtext}>
-              {questionCount}문제
-            </Text>
-          </Pressable>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.questionSection}>
+          <Text style={styles.metaText}>
+            문제 {questionId} ·{" "}
+            {question?.type === "objective" ? "객관식" : "주관식"}
+          </Text>
+          {question?.type === "objective" ? (
+            <ObjectiveQuestion
+              question={question}
+              onAnswer={handleAnswer}
+              showAnswer={showAnswer}
+            />
+          ) : (
+            <SubjectiveQuestion
+              question={question}
+              onAnswer={handleAnswer}
+              showAnswer={showAnswer}
+            />
+          )}
         </View>
       </ScrollView>
-    </>
+
+      <View style={styles.buttonSection}>
+        <View style={styles.answerButtons}>
+          <Pressable
+            style={[styles.answerButton, styles.knowButton]}
+            onPress={() => handleAnswer("know")}
+          >
+            <Text style={styles.answerButtonText}>알아요</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.answerButton, styles.dontKnowButton]}
+            onPress={() => handleAnswer("dont_know")}
+          >
+            <Text style={styles.answerButtonText}>모르겠어요</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <Modal
+        visible={showAnswer}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowAnswer(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>정답</Text>
+            <View style={styles.answerContent}>
+              <Text style={styles.answerLabel}>정답:</Text>
+              <Text style={styles.answerText}>
+                {Array.isArray(question?.answer)
+                  ? question.answer.join(", ")
+                  : question?.answer}
+              </Text>
+              {question?.explanation && (
+                <>
+                  <Text style={styles.answerLabel}>설명:</Text>
+                  <Text style={styles.explanationText}>
+                    {question.explanation}
+                  </Text>
+                </>
+              )}
+            </View>
+            <Pressable
+              style={[styles.modalButton, styles.nextButton]}
+              onPress={handleNext}
+            >
+              <Text style={styles.modalButtonText}>
+                {totalCount && Number(questionId) < totalCount
+                  ? "다음 문제"
+                  : "분석 화면으로"}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  header: {
-    padding: 24,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-  },
-  loadingText: {
-    textAlign: "center",
-    marginTop: 100,
-    fontSize: 18,
-    color: "#666",
-  },
-  statsContainer: {
-    padding: 16,
-    gap: 16,
-  },
-  statsCard: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 16,
-  },
-  statsGrid: {
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { padding: 16 },
+  questionSection: { gap: 12 },
+  buttonSection: { padding: 16, gap: 16 },
+  answerButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  statItem: {
-    alignItems: "center",
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#666",
-  },
-  buttonContainer: {
-    padding: 16,
     gap: 12,
   },
-  startButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor: "#4CAF50",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 12,
+  answerButton: {
     flex: 1,
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  buttonSubtext: {
-    color: "white",
-    fontSize: 14,
-    opacity: 0.8,
+  knowButton: { backgroundColor: "#4CAF50" },
+  dontKnowButton: { backgroundColor: "#F44336" },
+  answerButtonText: { color: "white", fontSize: 16, fontWeight: "600" },
+  metaText: { fontSize: 16, color: "#666", marginBottom: 8 },
+  centered: { textAlign: "center", marginTop: 100, fontSize: 18 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
-}); 
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 20,
+    width: "90%",
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  answerContent: { gap: 12, marginBottom: 20 },
+  answerLabel: { fontSize: 16, fontWeight: "600", color: "#666" },
+  answerText: { fontSize: 18, color: "#333", marginBottom: 8 },
+  explanationText: { fontSize: 16, color: "#666", lineHeight: 24 },
+  modalButton: {
+    backgroundColor: "#4CAF50",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  modalButtonText: { color: "white", fontSize: 16, fontWeight: "600" },
+  nextButton: { justifyContent: "center" },
+});

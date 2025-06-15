@@ -2,9 +2,17 @@
 import React from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Alert, Pressable, ViewStyle } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Pressable,
+  ViewStyle,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { getDatabase } from "@/lib/db";
+import { getDatabase, resetAnswerDatabase } from "@/lib/db";
 import { questionFileMap } from "@/lib/questionFileMap";
 
 type SubjectStats = {
@@ -26,6 +34,14 @@ type QuestionStats = {
   correct_count: number;
 };
 
+function hasAnswerData(stats: SubjectStats[]): boolean {
+  return stats.some((stat) => stat.total_attempts > 0);
+}
+
+function getAttemptedStats(stats: SubjectStats[]): SubjectStats[] {
+  return stats.filter((stat) => stat.total_attempts > 0);
+}
+
 export default function AnalyticsScreen() {
   const [subjectStats, setSubjectStats] = useState<SubjectStats[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -41,7 +57,7 @@ export default function AnalyticsScreen() {
         try {
           setLoading(true);
           setError(null);
-          
+
           const db = await getDatabase();
           if (!db) {
             throw new Error("데이터베이스 연결에 실패했습니다.");
@@ -70,7 +86,11 @@ export default function AnalyticsScreen() {
         } catch (error) {
           console.error("통계 로딩 에러:", error);
           if (isMounted) {
-            setError(error instanceof Error ? error.message : "통계를 불러오는 중 오류가 발생했습니다.");
+            setError(
+              error instanceof Error
+                ? error.message
+                : "통계를 불러오는 중 오류가 발생했습니다."
+            );
             Alert.alert(
               "오류",
               "통계를 불러오는 중 문제가 발생했습니다. 앱을 다시 시작해주세요."
@@ -95,8 +115,9 @@ export default function AnalyticsScreen() {
     try {
       setLoading(true);
       const db = await getDatabase();
-      
-      const stats = await db.getAllAsync<QuestionStats>(`
+
+      const stats = await db.getAllAsync<QuestionStats>(
+        `
         SELECT 
           q.id,
           q.subject_id,
@@ -109,7 +130,9 @@ export default function AnalyticsScreen() {
         WHERE q.subject_id = ?
         GROUP BY q.id, q.subject_id
         ORDER BY q.id
-      `, [subjectId]);
+      `,
+        [subjectId]
+      );
 
       setQuestionStats(stats || []);
       setSelectedSubject(subjectId);
@@ -122,30 +145,35 @@ export default function AnalyticsScreen() {
   };
 
   const renderSubjectCard = (subject: SubjectStats) => {
-    const accuracy = subject.total_attempts > 0 
-      ? (subject.correct_count / subject.total_attempts * 100).toFixed(1)
-      : "0.0";
-    
+    const accuracy =
+      subject.total_attempts > 0
+        ? ((subject.correct_count / subject.total_attempts) * 100).toFixed(1)
+        : "0.0";
+
     const progressWidth = `${accuracy}%` as ViewStyle["width"];
-    
+
     return (
       <Pressable
         key={subject.subject_id}
         style={[
           styles.subjectCard,
-          selectedSubject === subject.subject_id && styles.selectedSubjectCard
+          selectedSubject === subject.subject_id && styles.selectedSubjectCard,
         ]}
         onPress={() => handleSubjectPress(subject.subject_id)}
       >
         <View style={styles.subjectHeader}>
           <Text style={styles.subjectName}>{subject.subject_name}</Text>
-          <FontAwesome 
-            name={selectedSubject === subject.subject_id ? "chevron-up" : "chevron-down"} 
-            size={16} 
-            color="#666" 
+          <FontAwesome
+            name={
+              selectedSubject === subject.subject_id
+                ? "chevron-up"
+                : "chevron-down"
+            }
+            size={16}
+            color="#666"
           />
         </View>
-        
+
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{subject.total_questions}</Text>
@@ -165,12 +193,7 @@ export default function AnalyticsScreen() {
           <View style={styles.progressSection}>
             <Text style={styles.progressLabel}>전체 정답률</Text>
             <View style={styles.progressBar}>
-              <View 
-                style={[
-                  styles.progressFill, 
-                  { width: progressWidth }
-                ]} 
-              />
+              <View style={[styles.progressFill, { width: progressWidth }]} />
             </View>
             <Text style={styles.progressText}>{accuracy}%</Text>
           </View>
@@ -180,14 +203,18 @@ export default function AnalyticsScreen() {
   };
 
   const renderQuestionCard = (question: QuestionStats) => {
-    const accuracy = question.total_attempts > 0 
-      ? (question.correct_count / question.total_attempts * 100).toFixed(1)
-      : "0.0";
-    
+    const accuracy =
+      question.total_attempts > 0
+        ? ((question.correct_count / question.total_attempts) * 100).toFixed(1)
+        : "0.0";
+
     const mastered = Number(accuracy) >= 80 && question.total_attempts >= 3;
 
     return (
-      <View key={`${question.subject_id}-${question.id}`} style={styles.questionCard}>
+      <View
+        key={`${question.subject_id}-${question.id}`}
+        style={styles.questionCard}
+      >
         <Text style={styles.questionText}>{question.question}</Text>
         <View style={styles.questionStats}>
           <Text style={styles.questionType}>
@@ -196,10 +223,9 @@ export default function AnalyticsScreen() {
           <Text style={styles.questionAttempts}>
             시도: {question.total_attempts}회
           </Text>
-          <Text style={[
-            styles.questionAccuracy,
-            mastered && styles.masteredText
-          ]}>
+          <Text
+            style={[styles.questionAccuracy, mastered && styles.masteredText]}
+          >
             정답률: {accuracy}% {mastered ? "✅" : "🔄"}
           </Text>
         </View>
@@ -225,11 +251,60 @@ export default function AnalyticsScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      {hasAnswerData(subjectStats) && (
+        <View style={{ marginVertical: 10 }}>
+          <Text style={{ textAlign: "center", color: "#999", marginBottom: 8 }}>
+            아래 버튼을 눌러 모든 풀이 기록을 초기화할 수 있습니다.
+          </Text>
+          <Pressable
+            onPress={() => {
+              Alert.alert(
+                "정말 초기화할까요?",
+                "모든 풀이 기록이 삭제되며 복구할 수 없습니다.",
+                [
+                  { text: "취소", style: "cancel" },
+                  {
+                    text: "초기화",
+                    style: "destructive",
+                    onPress: async () => {
+                      try {
+                        await resetAnswerDatabase();
+                        setSubjectStats([]);
+                        setQuestionStats([]);
+                        setSelectedSubject(null);
+                        Alert.alert(
+                          "초기화 완료",
+                          "풀이 기록이 삭제되었습니다."
+                        );
+                      } catch (err) {
+                        console.error("초기화 실패:", err);
+                        Alert.alert("오류", "초기화 중 문제가 발생했습니다.");
+                      }
+                    },
+                  },
+                ]
+              );
+            }}
+            style={{
+              marginTop: 0,
+              alignSelf: "center",
+              backgroundColor: "#f44336",
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "600" }}>
+              풀이 기록 전체 초기화
+            </Text>
+          </Pressable>
+        </View>
+      )}
       <Text style={styles.title}>📊 학습 현황 분석</Text>
-      
-      {subjectStats.length > 0 ? (
+
+      {hasAnswerData(subjectStats) ? (
         <>
-          {subjectStats.map(renderSubjectCard)}
+          {getAttemptedStats(subjectStats).map(renderSubjectCard)}
           {selectedSubject && questionStats.length > 0 && (
             <View style={styles.questionsSection}>
               <Text style={styles.sectionTitle}>문제별 학습 현황</Text>

@@ -1,11 +1,25 @@
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
-import { Button, Text, View, StyleSheet, Pressable, Modal, TextInput, Alert } from "react-native";
+import {
+  Button,
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  Modal,
+  TextInput,
+  Alert,
+} from "react-native";
 import { questionFileMap } from "@/lib/questionFileMap";
 import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
-import { getDatabase } from "@/lib/db";
+import {
+  getDatabase,
+  resetAllDatabases,
+  syncDatabaseWithQuestionFileMap,
+} from "@/lib/db";
 import { FontAwesome } from "@expo/vector-icons";
-import * as DocumentPicker from 'expo-document-picker';
+import * as DocumentPicker from "expo-document-picker";
+import { ActivityIndicator } from "react-native";
 
 type DocumentPickerResult = {
   canceled: boolean;
@@ -22,7 +36,18 @@ export default function IndexScreen() {
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSetName, setNewSetName] = useState("");
-  const [selectedFile, setSelectedFile] = useState<DocumentPickerResult | null>(null);
+  const [selectedFile, setSelectedFile] = useState<DocumentPickerResult | null>(
+    null
+  );
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
+
+  const refreshAvailableSubjects = async () => {
+    const db = await getDatabase();
+    const results = await db.getAllAsync<{ subject_id: string }>(
+      "SELECT DISTINCT subject_id FROM questions"
+    );
+    setAvailableSubjects(results.map((r) => r.subject_id));
+  };
 
   // 앱 최초 실행 시 데이터베이스 테이블 존재 여부 확인
   useEffect(() => {
@@ -32,7 +57,7 @@ export default function IndexScreen() {
         const tableCheck = await db.getFirstAsync<{ count: number }>(
           "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='questions'"
         );
-        
+
         if (!tableCheck || tableCheck.count === 0) {
           // 테이블이 없을 경우에만 초기화
           const { initDatabase } = require("@/lib/db");
@@ -42,8 +67,12 @@ export default function IndexScreen() {
         console.error("데이터베이스 확인 중 오류:", error);
       }
     };
-    
+
     checkDatabase();
+  }, []);
+
+  useEffect(() => {
+    refreshAvailableSubjects();
   }, []);
 
   const loadSetAndNavigate = async (filename: string) => {
@@ -71,9 +100,9 @@ export default function IndexScreen() {
       }
 
       const file = result.assets[0];
-      
+
       // 파일명에서 확장자 제거
-      const fileNameWithoutExt = file.name.replace('.json', '');
+      const fileNameWithoutExt = file.name.replace(".json", "");
       setNewSetName(fileNameWithoutExt);
       setSelectedFile(result);
     } catch (error) {
@@ -82,114 +111,121 @@ export default function IndexScreen() {
     }
   };
 
-  const handleAddSet = async () => {
-    if (!selectedFile || selectedFile.canceled || !selectedFile.assets?.[0]) {
-      Alert.alert("알림", "JSON 파일을 선택해주세요.");
-      return;
-    }
+  // const handleAddSet = async () => {
+  //   if (!selectedFile || selectedFile.canceled || !selectedFile.assets?.[0]) {
+  //     Alert.alert("알림", "JSON 파일을 선택해주세요.");
+  //     return;
+  //   }
 
-    if (!newSetName.trim()) {
-      Alert.alert("알림", "문제 세트 이름을 입력해주세요.");
-      return;
-    }
+  //   if (!newSetName.trim()) {
+  //     Alert.alert("알림", "문제 세트 이름을 입력해주세요.");
+  //     return;
+  //   }
 
-    try {
-      setLoading(true);
-      const db = await getDatabase();
-      
-      // 파일명 생성 (공백 제거 및 특수문자 처리)
-      const sanitizedName = newSetName.trim().replace(/[^a-zA-Z0-9가-힣]/g, "");
-      const filename = `${sanitizedName}.json`;
-      
-      // 이미 존재하는 파일명인지 확인
-      if (questionFileMap[filename as keyof typeof questionFileMap]) {
-        Alert.alert("알림", "이미 존재하는 문제 세트 이름입니다.");
-        return;
-      }
+  //   try {
+  //     setLoading(true);
+  //     const db = await getDatabase();
 
-      // 선택된 파일을 앱의 assets/questions 디렉토리로 복사
-      const file = selectedFile.assets[0];
-      // TODO: 실제 파일 시스템에 파일을 복사하는 로직 구현 필요
-      // 현재는 임시로 파일 내용을 읽어서 처리
-      const response = await fetch(file.uri);
-      const jsonData = await response.json();
+  //     // 파일명 생성 (공백 제거 및 특수문자 처리)
+  //     const sanitizedName = newSetName.trim().replace(/[^a-zA-Z0-9가-힣]/g, "");
+  //     const filename = `${sanitizedName}.json`;
 
-      // subjects 테이블에 새 과목 추가
-      await db.runAsync(
-        "INSERT INTO subjects (id, name) VALUES (?, ?)",
-        [filename, newSetName.trim()]
-      );
+  //     // 이미 존재하는 파일명인지 확인
+  //     if (questionFileMap[filename as keyof typeof questionFileMap]) {
+  //       Alert.alert("알림", "이미 존재하는 문제 세트 이름입니다.");
+  //       return;
+  //     }
 
-      // questions 테이블에 문제 데이터 추가
-      for (const question of jsonData.data) {
-        await db.runAsync(
-          "INSERT INTO questions (id, subject_id, question, type, options, answer) VALUES (?, ?, ?, ?, ?, ?)",
-          [
-            question.id,
-            filename,
-            question.question,
-            question.type,
-            JSON.stringify(question.options || []),
-            question.answer
-          ]
-        );
-      }
+  //     // 선택된 파일을 앱의 assets/questions 디렉토리로 복사
+  //     const file = selectedFile.assets[0];
+  //     // TODO: 실제 파일 시스템에 파일을 복사하는 로직 구현 필요
+  //     // 현재는 임시로 파일 내용을 읽어서 처리
+  //     const response = await fetch(file.uri);
+  //     const jsonData = await response.json();
 
-      // 모달 닫기 및 상태 초기화
-      setShowAddModal(false);
-      setNewSetName("");
-      setSelectedFile(null);
+  //     // subjects 테이블에 새 과목 추가
+  //     await db.runAsync("INSERT INTO subjects (id, name) VALUES (?, ?)", [
+  //       filename,
+  //       newSetName.trim(),
+  //     ]);
 
-      Alert.alert(
-        "성공",
-        "새로운 문제 세트가 추가되었습니다.",
-        [
-          {
-            text: "확인",
-            onPress: () => {
-              router.replace("/");
-            }
-          }
-        ]
-      );
-    } catch (error) {
-      console.error("문제 세트 추가 에러:", error);
-      Alert.alert("오류", "문제 세트를 추가하는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     // questions 테이블에 문제 데이터 추가
+  //     for (const question of jsonData.data) {
+  //       await db.runAsync(
+  //         "INSERT INTO questions (id, subject_id, question, type, options, answer) VALUES (?, ?, ?, ?, ?, ?)",
+  //         [
+  //           question.id,
+  //           filename,
+  //           question.question,
+  //           question.type,
+  //           JSON.stringify(question.options || []),
+  //           question.answer,
+  //         ]
+  //       );
+  //     }
+
+  //     // 모달 닫기 및 상태 초기화
+  //     setShowAddModal(false);
+  //     setNewSetName("");
+  //     setSelectedFile(null);
+
+  //     Alert.alert("성공", "새로운 문제 세트가 추가되었습니다.", [
+  //       {
+  //         text: "확인",
+  //         onPress: () => {
+  //           router.replace("/");
+  //         },
+  //       },
+  //     ]);
+  //   } catch (error) {
+  //     console.error("문제 세트 추가 에러:", error);
+  //     Alert.alert("오류", "문제 세트를 추가하는 중 오류가 발생했습니다.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>문제 세트를 선택하세요</Text>
-        <Pressable
+        {/* <Pressable
           style={styles.addButton}
           onPress={() => setShowAddModal(true)}
           disabled={loading}
         >
           <FontAwesome name="plus" size={16} color="white" />
           <Text style={styles.addButtonText}>새 문제 세트</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
 
-      {Object.entries(questionFileMap).map(([filename, entry], idx) => (
-        <Pressable
-          key={idx}
-          style={styles.setCard}
-          onPress={() => loadSetAndNavigate(filename)}
-          disabled={loading}
-        >
-          <View style={styles.setInfo}>
-            <Text style={styles.setName}>{entry.name}</Text>
-            <Text style={styles.setMeta}>
-              {entry.data.length}문제 · {filename.includes("주관식") ? "주관식" : "객관식"}
-            </Text>
-          </View>
-          <FontAwesome name="chevron-right" size={16} color="#666" />
-        </Pressable>
-      ))}
+      {Object.entries(questionFileMap)
+        .filter(([filename]) => availableSubjects.includes(filename))
+        .map(([filename, entry], idx) => (
+          <Pressable
+            key={idx}
+            style={styles.setCard}
+            onPress={() => loadSetAndNavigate(filename)}
+            disabled={loading}
+          >
+            <View style={styles.setInfo}>
+              <Text style={styles.setName}>{entry.name}</Text>
+              <Text style={styles.setMeta}>{entry.data.length}문제</Text>
+            </View>
+            <FontAwesome name="chevron-right" size={16} color="#666" />
+          </Pressable>
+        ))}
+
+      {availableSubjects.length === 0 && (
+        <View style={{ marginTop: 32, alignItems: "center" }}>
+          <Text style={{ color: "#999", fontSize: 16 }}>
+            문제 세트가 없습니다.
+          </Text>
+          <Text style={{ color: "#999", fontSize: 14, marginTop: 4 }}>
+            문제 DB와 동기화해주세요.
+          </Text>
+        </View>
+      )}
 
       {loading && (
         <View style={styles.loadingOverlay}>
@@ -197,7 +233,7 @@ export default function IndexScreen() {
         </View>
       )}
 
-      <Modal
+      {/* <Modal
         visible={showAddModal}
         transparent={true}
         animationType="fade"
@@ -206,11 +242,8 @@ export default function IndexScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>새 문제 세트 추가</Text>
-            
-            <Pressable
-              style={styles.filePickerButton}
-              onPress={pickFile}
-            >
+
+            <Pressable style={styles.filePickerButton} onPress={pickFile}>
               <FontAwesome name="file" size={20} color="#4CAF50" />
               <Text style={styles.filePickerText}>
                 {selectedFile?.assets?.[0]?.name || "JSON 파일 선택"}
@@ -247,9 +280,9 @@ export default function IndexScreen() {
             </View>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
 
-      <View style={styles.analyticsSection}>
+      {/* <View style={styles.analyticsSection}>
         <Text style={styles.analyticsTitle}>📊 나의 풀이 기록</Text>
         <Pressable
           style={styles.analyticsButton}
@@ -258,7 +291,79 @@ export default function IndexScreen() {
           <Text style={styles.analyticsButtonText}>풀이 결과 분석 보기</Text>
           <FontAwesome name="bar-chart" size={16} color="#4CAF50" />
         </Pressable>
-      </View>
+      </View> */}
+      {__DEV__ && (
+        <View style={styles.devButtonContainer}>
+          <Text style={styles.analyticsTitle}>⚙️ 개발자 도구</Text>
+
+          {/* 초기화 버튼 */}
+          <Pressable
+            style={[styles.devButton, styles.resetButton]}
+            onPress={() => {
+              Alert.alert(
+                "DB 전체 초기화",
+                "문제 세트와 과목 데이터가 모두 삭제됩니다.",
+                [
+                  { text: "취소", style: "cancel" },
+                  {
+                    text: "초기화",
+                    style: "destructive",
+                    onPress: async () => {
+                      try {
+                        setLoading(true);
+                        await resetAllDatabases();
+                        await refreshAvailableSubjects();
+                      } catch (e) {
+                        console.error("초기화 실패:", e);
+                        Alert.alert("에러", "초기화 중 문제가 발생했습니다.");
+                      } finally {
+                        setLoading(false);
+                      }
+                    },
+                  },
+                ]
+              );
+            }}
+            disabled={loading}
+          >
+            <Text style={styles.devButtonText}>🧹 문제 DB 전체 초기화</Text>
+          </Pressable>
+
+          {/* 동기화 버튼 */}
+          <Pressable
+            style={[
+              styles.devButton,
+              styles.syncButton,
+              loading && { opacity: 0.6 },
+            ]}
+            onPress={async () => {
+              if (loading) return;
+              try {
+                setLoading(true);
+                await syncDatabaseWithQuestionFileMap();
+                await refreshAvailableSubjects();
+              } catch (e) {
+                console.error("동기화 실패:", e);
+                Alert.alert("에러", "동기화 중 문제가 발생했습니다.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.devButtonText}>🔄 문제 DB 동기화</Text>
+              {loading && (
+                <ActivityIndicator
+                  size="small"
+                  color="#4CAF50"
+                  style={styles.spinnerMargin}
+                />
+              )}
+            </View>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }
@@ -434,5 +539,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     flex: 1,
+  },
+  devButtonContainer: {
+    marginTop: 32,
+    gap: 12,
+  },
+  devButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: "#f5f5f5",
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  devButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
+  syncButton: {
+    backgroundColor: "#e8f5e9",
+    borderColor: "#4CAF50",
+  },
+  resetButton: {
+    backgroundColor: "#fff5f5",
+    borderColor: "#f44336",
+  },
+  spinnerMargin: {
+    marginLeft: 8,
   },
 });
