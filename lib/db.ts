@@ -313,6 +313,61 @@ export async function getAnswersBySubjectId(
     question_id: row.question_id,
     user_answer: row.user_answer,
     is_correct: row.is_correct,
-    answered_at: row.answered_at,
+    created_at: row.created_at,
+  }));
+}
+
+// export async function getWrongAnswersBySubjectId(
+//   subject_id: string
+// ): Promise<Question[]> {
+//   const db = await getDatabase();
+//   const questions = await db.getAllAsync<Question>(
+//     `
+//     SELECT q.*
+//     FROM answers a
+//     JOIN questions q ON a.question_id = q.id
+//     WHERE a.subject_id = ? AND a.is_correct = 0 AND q.subject_id = ?
+//     GROUP BY a.question_id
+//     `,
+//     [subject_id, subject_id]
+//   );
+
+//   return questions.map((q) => ({
+//     ...q,
+//     choices:
+//       q.type === "objective" && typeof q.choices === "string"
+//         ? JSON.parse(q.choices)
+//         : q.choices ?? null,
+//   }));
+// }
+
+export async function getWrongAnswersBySubjectId(
+  subject_id: string
+): Promise<Question[]> {
+  const db = await getDatabase();
+  const questions = await db.getAllAsync<Question>(
+    `
+    SELECT q.*
+    FROM questions q
+    JOIN (
+      SELECT question_id, MAX(created_at) AS latest
+      FROM answers
+      WHERE subject_id = ?
+      GROUP BY question_id
+    ) latest_answers
+    ON q.id = latest_answers.question_id
+    JOIN answers a
+    ON a.question_id = latest_answers.question_id AND a.created_at = latest_answers.latest
+    WHERE a.is_correct = 0 AND q.subject_id = ?
+    `,
+    [subject_id, subject_id]
+  );
+
+  return questions.map((q) => ({
+    ...q,
+    choices:
+      q.type === "objective" && typeof q.choices === "string"
+        ? JSON.parse(q.choices)
+        : q.choices ?? null,
   }));
 }

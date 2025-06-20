@@ -1,13 +1,17 @@
 import ObjectiveQuestion from "@/components/ObjectiveQuestion";
 import SubjectiveQuestion from "@/components/SubjectiveQuestion";
-import { getQuestionsBySubjectId, insertAnswer } from "@/lib/db";
+import {
+  getQuestionsBySubjectId,
+  getWrongAnswersBySubjectId,
+  insertAnswer,
+} from "@/lib/db";
 import { Question } from "@/lib/types";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
 export default function QuizScreen() {
-  const { filename } = useLocalSearchParams();
+  const { filename, mode } = useLocalSearchParams();
   const subject_id = filename as string;
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -17,17 +21,21 @@ export default function QuizScreen() {
 
   // 화면 컴포넌트 안에서
   const navigation = useNavigation();
+  const quizMode = mode as string | undefined;
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `과목: ${filename}`, // 원하는 텍스트로 바꾸기
+      title: `${filename}`, // 원하는 텍스트로 바꾸기
     });
   }, [navigation, filename]);
 
   useEffect(() => {
     const load = async () => {
-      const q = await getQuestionsBySubjectId(subject_id);
-      setQuestions(q);
+      const questions =
+        quizMode === "wrong"
+          ? await getWrongAnswersBySubjectId(subject_id)
+          : await getQuestionsBySubjectId(subject_id);
+      setQuestions(questions);
     };
     load();
   }, [subject_id]);

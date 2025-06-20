@@ -1,3 +1,5 @@
+// app/subject/[filename]/index.tsx
+
 import { getQuestionCountBySubjectId } from "@/lib/db";
 import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -8,17 +10,14 @@ export default function SubjectStartScreen() {
   const router = useRouter();
   const [count, setCount] = useState<number | null>(null);
   const { filename } = useLocalSearchParams();
-
-  // 화면 컴포넌트 안에서
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `과목: ${filename}`, // 원하는 텍스트로 바꾸기
+      title: `${filename}`,
     });
   }, [navigation, filename]);
 
-  // json -> db 문제 업로딩
   useEffect(() => {
     const fetchQuestion = async () => {
       await loadQuestionsFromFile(filename as string);
@@ -26,7 +25,6 @@ export default function SubjectStartScreen() {
     fetchQuestion();
   }, [filename]);
 
-  // 문제 세트 숫자 카운팅
   useEffect(() => {
     const fetchCount = async () => {
       const result = await getQuestionCountBySubjectId(filename as string);
@@ -37,16 +35,33 @@ export default function SubjectStartScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>과목: {filename}</Text>
+      <Text style={styles.title}>{filename}</Text>
       <Text style={styles.subtitle}>총 문제 수: {count ?? "..."}</Text>
-      <Pressable
-        style={styles.button}
-        onPress={() => {
-          router.push(`/subject/${filename}/quiz`);
-        }}
-      >
-        <Text style={styles.buttonText}>문제 풀기 시작</Text>
-      </Pressable>
+
+      <View style={styles.buttonContainer}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => {
+            router.push(`/subject/${filename}/quiz`);
+          }}
+        >
+          <Text style={styles.buttonText}>🚀 문제 풀기 시작</Text>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            styles.secondaryButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => router.push(`/subject/${filename}/quiz?mode=wrong`)}
+        >
+          <Text style={styles.buttonText}>❌ 틀린 문제만 풀기</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -54,31 +69,50 @@ export default function SubjectStartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 48,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f7fa",
   },
   title: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 12,
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 32,
+    color: "#777",
+    marginBottom: 36,
+    textAlign: "center",
+  },
+  buttonContainer: {
+    width: "100%",
+    gap: 16,
   },
   button: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 12,
+    backgroundColor: "#007aff",
+    paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  secondaryButton: {
+    backgroundColor: "#ff3b30",
+  },
+  buttonPressed: {
+    opacity: 0.85,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "600",
   },
 });
