@@ -2,8 +2,8 @@ import ObjectiveQuestion from "@/components/ObjectiveQuestion";
 import SubjectiveQuestion from "@/components/SubjectiveQuestion";
 import { getQuestionsBySubjectId, insertAnswer } from "@/lib/db";
 import { Question } from "@/lib/types";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
 export default function QuizScreen() {
@@ -14,6 +14,15 @@ export default function QuizScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+
+  // 화면 컴포넌트 안에서
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: `과목: ${filename}`, // 원하는 텍스트로 바꾸기
+    });
+  }, [navigation, filename]);
 
   useEffect(() => {
     const load = async () => {

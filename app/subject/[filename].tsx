@@ -1,13 +1,22 @@
 import { getQuestionCountBySubjectId } from "@/lib/db";
 import { loadQuestionsFromFile } from "@/lib/loadQuestionsFromFile";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 
 export default function SubjectStartScreen() {
   const router = useRouter();
   const [count, setCount] = useState<number | null>(null);
   const { filename } = useLocalSearchParams();
+
+  // 화면 컴포넌트 안에서
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: `과목: ${filename}`, // 원하는 텍스트로 바꾸기
+    });
+  }, [navigation, filename]);
 
   // json -> db 문제 업로딩
   useEffect(() => {
@@ -33,9 +42,7 @@ export default function SubjectStartScreen() {
       <Pressable
         style={styles.button}
         onPress={() => {
-          router.push(
-            `/subject/${filename}/quiz`
-          );
+          router.push(`/subject/${filename}/quiz`);
         }}
       >
         <Text style={styles.buttonText}>문제 풀기 시작</Text>
