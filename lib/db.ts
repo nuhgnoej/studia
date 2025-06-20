@@ -1,7 +1,7 @@
 // lib/db.ts
 
 import * as SQLite from "expo-sqlite";
-import type { Question, RawQuestionRow } from "./types";
+import type { AnswerRecord, Question, RawQuestionRow } from "./types";
 // import { questionFileMap } from "@/lib/questionFileMap";
 
 let db: SQLite.SQLiteDatabase | null = null;
@@ -298,5 +298,21 @@ export async function getQuestionsBySubjectId(
     answer: row.answer,
     explanation: row.explanation ?? "",
     weight: row.weight ?? 1.0,
+  }));
+}
+
+export async function getAnswersBySubjectId(
+  subjectId: string
+): Promise<AnswerRecord[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync(
+    `SELECT * FROM answers WHERE subject_id = ? ORDER BY id ASC`,
+    [subjectId]
+  );
+  return rows.map((row: any) => ({
+    question_id: row.question_id,
+    user_answer: row.user_answer,
+    is_correct: row.is_correct,
+    answered_at: row.answered_at,
   }));
 }
