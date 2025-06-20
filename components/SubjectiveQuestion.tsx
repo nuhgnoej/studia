@@ -8,7 +8,7 @@ export default function SubjectiveQuestion({
   isAnswered,
 }: {
   question: Question;
-  onSubmit: (answer: string, isCorrect: boolean) => void;
+  onSubmit: (answer: string, isCorrect: boolean, autoNext: boolean) => void;
   isAnswered: boolean;
 }) {
   const [input, setInput] = useState("");
@@ -19,7 +19,7 @@ export default function SubjectiveQuestion({
   };
 
   const handleFinalSubmit = (isCorrect: boolean) => {
-    onSubmit(input.trim(), isCorrect);
+    onSubmit(input.trim(), isCorrect, true);
     setShowAnswer(false);
   };
 

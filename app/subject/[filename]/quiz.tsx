@@ -29,7 +29,8 @@ export default function QuizScreen() {
 
   const handleSubmitAnswer = async (
     userAnswer: string,
-    isCorrectOverride?: boolean
+    isCorrectOverride?: boolean,
+    autoNext: boolean = false
   ) => {
     const current = questions[currentIndex];
 
@@ -54,6 +55,13 @@ export default function QuizScreen() {
 
     setIsAnswered(true);
     setIsCorrect(isCorrect);
+
+    if (autoNext && currentIndex < questions.length - 1) {
+      setTimeout(() => {
+        setCurrentIndex((prev) => prev + 1);
+        setIsAnswered(false);
+      }, 1);
+    }
   };
 
   const handleNext = () => {
@@ -88,9 +96,7 @@ export default function QuizScreen() {
           ) : (
             <SubjectiveQuestion
               question={currentQuestion}
-              onSubmit={(answer, isCorrect) =>
-                handleSubmitAnswer(answer, isCorrect)
-              }
+              onSubmit={handleSubmitAnswer}
               isAnswered={isAnswered}
             />
           )}
