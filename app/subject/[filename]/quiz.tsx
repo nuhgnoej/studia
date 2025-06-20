@@ -1,0 +1,130 @@
+import ObjectiveQuestion from "@/components/ObjectiveQuestion";
+import SubjectiveQuestion from "@/components/SubjectiveQuestion";
+import { getQuestionsBySubjectId, insertAnswer } from "@/lib/db";
+import { Question } from "@/lib/types";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+
+export default function QuizScreen() {
+  const { filename } = useLocalSearchParams();
+  const subject_id = filename as string;
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      const q = await getQuestionsBySubjectId(subject_id);
+      setQuestions(q);
+    };
+    load();
+  }, [subject_id]);
+
+  const currentQuestion = questions[currentIndex];
+  const progress =
+    questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
+
+  const handleSubmitAnswer = async (
+    userAnswer: string,
+    isCorrectOverride?: boolean
+  ) => {
+    const current = questions[currentIndex];
+
+    const correctAnswer = JSON.parse(current.answer);
+
+    const isCorrect =
+      typeof isCorrectOverride === "boolean"
+        ? isCorrectOverride
+        : userAnswer === correctAnswer;
+
+    console.log("userAnswer: ", userAnswer);
+    console.log("correctAnswer: ", correctAnswer);
+    console.log("기계적 판단: ", userAnswer === correctAnswer);
+    console.log("최종 판단: ", isCorrect);
+
+    await insertAnswer({
+      question_id: current.id,
+      subject_id,
+      user_answer: userAnswer,
+      is_correct: isCorrect,
+    });
+
+    setIsAnswered(true);
+    setIsCorrect(isCorrect);
+  };
+
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+      setIsAnswered(false);
+    } else {
+      alert("퀴즈를 모두 완료했습니다!");
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.progressText}>
+        문제 {currentIndex + 1} / {questions.length}
+      </Text>
+      <View style={styles.progressBarContainer}>
+        <View
+          style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
+        />
+      </View>
+
+      {currentQuestion ? (
+        <>
+          {currentQuestion.type === "objective" ? (
+            <ObjectiveQuestion
+              question={currentQuestion}
+              onSubmit={handleSubmitAnswer}
+              isAnswered={isAnswered}
+              isCorrect={isCorrect}
+            />
+          ) : (
+            <SubjectiveQuestion
+              question={currentQuestion}
+              onSubmit={(answer, isCorrect) =>
+                handleSubmitAnswer(answer, isCorrect)
+              }
+              isAnswered={isAnswered}
+            />
+          )}
+
+          {isAnswered && <Button title="다음 문제" onPress={handleNext} />}
+        </>
+      ) : (
+        <Text>문제를 불러오는 중입니다...</Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    flex: 1,
+  },
+  progressText: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: "#555",
+    fontWeight: "500",
+  },
+  progressBarContainer: {
+    height: 8,
+    width: "100%",
+    backgroundColor: "#eee",
+    borderRadius: 4,
+    marginBottom: 16,
+    overflow: "hidden",
+  },
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: "#007AFF",
+  },
+});

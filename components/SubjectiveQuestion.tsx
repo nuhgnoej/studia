@@ -1,129 +1,145 @@
-import React from "react";
 import { Question } from "@/lib/types";
-import {
-  Text,
-  TextInput,
-  View,
-  Button,
-  ScrollView,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
 import { useState } from "react";
-import { insertAnswer } from "@/lib/db";
-
-interface SubjectiveQuestionProps {
-  question: Question;
-  onAnswer: (answer: string) => void;
-  showAnswer: boolean;
-}
+import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
 
 export default function SubjectiveQuestion({
   question,
-  onAnswer,
-  showAnswer,
-}: SubjectiveQuestionProps) {
+  onSubmit,
+  isAnswered,
+}: {
+  question: Question;
+  onSubmit: (answer: string, isCorrect: boolean) => void;
+  isAnswered: boolean;
+}) {
   const [input, setInput] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
 
-  const handleSubmit = () => {
-    if (!input.trim()) return;
-    setSubmitted(true);
+  const handleRevealAnswer = () => {
+    setShowAnswer(true);
   };
 
-  const handleMarkAnswer = async (correct: boolean) => {
-    try {
-      if (!question.subject_id) {
-        throw new Error("subject_id가 없습니다");
-      }
-      
-      await insertAnswer({
-        question_id: question.id,
-        subject_id: question.subject_id,
-        user_answer: input.trim(),
-        is_correct: correct,
-      });
-
-      setIsCorrect(correct);
-      onAnswer(correct ? "know" : "dont_know");
-    } catch (e) {
-      console.error("insertAnswer 에러", e);
-    }
+  const handleFinalSubmit = (isCorrect: boolean) => {
+    onSubmit(input.trim(), isCorrect);
+    setShowAnswer(false);
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView keyboardShouldPersistTaps="handled">
-        <View style={{ padding: 16 }}>
-          <Text style={{ fontSize: 18, marginBottom: 12 }}>
-            {question.question}
-          </Text>
+    <View>
+      {/* 문제 텍스트 */}
+      <Text style={styles.questionText}>{question.question}</Text>
 
-          <TextInput
-            placeholder="정답을 입력하세요"
-            value={input}
-            onChangeText={setInput}
-            editable={!submitted && !showAnswer}
-            style={{
-              borderColor: submitted || showAnswer ? "#999" : "#ccc",
-              borderWidth: 1,
-              padding: 12,
-              borderRadius: 6,
-              backgroundColor: submitted || showAnswer ? "#f0f0f0" : "#fff",
-              fontSize: 16,
-              marginBottom: 12,
-            }}
-          />
+      {/* 사용자 입력 */}
+      <TextInput
+        style={styles.input}
+        value={input}
+        onChangeText={setInput}
+        placeholder="정답을 입력하세요"
+        editable={!isAnswered && !showAnswer}
+      />
 
-          {!submitted && !showAnswer ? (
-            <Button
-              title="제출하기"
-              onPress={handleSubmit}
-              disabled={!input.trim()}
-            />
-          ) : (
-            <>
-              <View
-                style={{
-                  backgroundColor: "#f8f8f8",
-                  padding: 10,
-                  borderRadius: 6,
-                  borderWidth: 1,
-                  borderColor: "#ddd",
-                  marginBottom: 12,
-                }}
-              >
-                <Text style={{ fontSize: 14, marginBottom: 4 }}>
-                  ✅ 정답:{" "}
-                  <Text style={{ fontWeight: "bold" }}>
-                    {Array.isArray(question.answer)
-                      ? question.answer.join(", ")
-                      : question.answer}
-                  </Text>
-                </Text>
-                <Text style={{ fontSize: 14 }}>
-                  📘 설명: {question.explanation}
-                </Text>
-              </View>
+      {/* 정답 보기 버튼 */}
+      {!showAnswer && (
+        <Pressable style={styles.primaryButton} onPress={handleRevealAnswer}>
+          <Text style={styles.primaryButtonText}>정답 보기</Text>
+        </Pressable>
+      )}
 
-              {!showAnswer && isCorrect === null && (
-                <View style={{ flexDirection: "row", gap: 12 }}>
-                  <Button
-                    title="정답으로 인정"
-                    onPress={() => handleMarkAnswer(true)}
-                  />
-                  <Button
-                    title="오답으로 처리"
-                    onPress={() => handleMarkAnswer(false)}
-                    color="red"
-                  />
-                </View>
-              )}
-            </>
-          )}
+      {/* 정답 피드백 + 정답/오답 버튼 */}
+      {showAnswer && (
+        <View style={styles.feedbackBox}>
+          <Text style={styles.answerLabel}>정답</Text>
+          <Text style={styles.answerText}>{question.answer}</Text>
+          <Text style={styles.explanationText}>{question.explanation}</Text>
+
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={[styles.resultButton, { backgroundColor: "#4CAF50" }]}
+              onPress={() => handleFinalSubmit(true)}
+            >
+              <Text style={styles.resultButtonText}>정답으로 처리</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.resultButton, { backgroundColor: "#F44336" }]}
+              onPress={() => handleFinalSubmit(false)}
+            >
+              <Text style={styles.resultButtonText}>오답으로 처리</Text>
+            </Pressable>
+          </View>
         </View>
-      </ScrollView>
-    </TouchableWithoutFeedback>
+      )}
+
+      {/* 이미 제출된 경우 */}
+      {isAnswered && (
+        <View style={styles.feedbackBox}>
+          <Text style={styles.feedbackText}>답안이 제출되었습니다.</Text>
+        </View>
+      )}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  questionText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  input: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 16,
+  },
+  primaryButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  primaryButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  feedbackBox: {
+    marginTop: 16,
+    padding: 12,
+    backgroundColor: "#f1f1f1",
+    borderRadius: 8,
+  },
+  answerLabel: {
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  answerText: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: "#333",
+  },
+  explanationText: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 12,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  resultButton: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  resultButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  feedbackText: {
+    fontSize: 16,
+    color: "#555",
+  },
+});

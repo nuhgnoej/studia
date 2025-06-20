@@ -1,9 +1,8 @@
 // lib/db.ts
 
 import * as SQLite from "expo-sqlite";
-import { Platform } from "react-native";
-import type { AnswerRecord, Question, RawQuestionRow } from "./types";
-import { questionFileMap } from "@/lib/questionFileMap";
+import type { Question, RawQuestionRow } from "./types";
+// import { questionFileMap } from "@/lib/questionFileMap";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -83,10 +82,21 @@ export const getQuestionById = async (id: number): Promise<Question | null> => {
   return question;
 };
 
-export const getQuestionCount = async (): Promise<number> => {
+export const getToalQuestionCount = async (): Promise<number> => {
   const db = await getDatabase();
   const result = await db.getFirstAsync<{ count: number }>(
     "SELECT COUNT(*) as count FROM questions"
+  );
+  return result?.count || 0;
+};
+
+export const getQuestionCountBySubjectId = async (
+  subjectId: string
+): Promise<number> => {
+  const db = await getDatabase();
+  const result = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM questions WHERE subject_id = ?",
+    [subjectId]
   );
   return result?.count || 0;
 };
@@ -227,46 +237,66 @@ export async function removeAllDatabases() {
   await removeSubjectDatabase();
 }
 
-export async function syncDatabaseWithQuestionFileMap() {
+// export async function syncDatabaseWithQuestionFileMap() {
+//   const db = await getDatabase();
+
+//   const rows = await db.getAllAsync<{ subject_id: string }>(
+//     "SELECT DISTINCT subject_id FROM questions"
+//   );
+//   const existingSubjects = rows.map((r) => r.subject_id);
+
+//   // 기존에 있지만 사라진 subject 제거
+//   for (const subjectId of existingSubjects) {
+//     if (!questionFileMap[subjectId]) {
+//       await db.runAsync("DELETE FROM questions WHERE subject_id = ?", [
+//         subjectId,
+//       ]);
+//       await db.runAsync("DELETE FROM subjects WHERE id = ?", [subjectId]);
+//     }
+//   }
+
+//   // 새롭게 추가된 subject 동기화
+//   for (const [filename, entry] of Object.entries(questionFileMap)) {
+//     if (!existingSubjects.includes(filename)) {
+//       await db.runAsync(
+//         "INSERT OR IGNORE INTO subjects (id, name, created_at) VALUES (?, ?, datetime('now'))",
+//         [filename, entry.name]
+//       );
+
+//       for (const q of entry.data) {
+//         await db.runAsync(
+//           "INSERT INTO questions (id, subject_id, type, question, choices, answer, explanation, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))",
+//           [
+//             q.id,
+//             filename,
+//             q.type,
+//             q.question,
+//             JSON.stringify(q.choices || []),
+//             q.answer,
+//             q.explanation || "",
+//           ]
+//         );
+//       }
+//     }
+//   }
+// }
+
+export async function getQuestionsBySubjectId(
+  subjectId: string
+): Promise<Question[]> {
   const db = await getDatabase();
-
-  const rows = await db.getAllAsync<{ subject_id: string }>(
-    "SELECT DISTINCT subject_id FROM questions"
+  const rows = await db.getAllAsync(
+    `SELECT * FROM questions WHERE subject_id = ? ORDER BY id ASC`,
+    [subjectId]
   );
-  const existingSubjects = rows.map((r) => r.subject_id);
 
-  // 기존에 있지만 사라진 subject 제거
-  for (const subjectId of existingSubjects) {
-    if (!questionFileMap[subjectId]) {
-      await db.runAsync("DELETE FROM questions WHERE subject_id = ?", [
-        subjectId,
-      ]);
-      await db.runAsync("DELETE FROM subjects WHERE id = ?", [subjectId]);
-    }
-  }
-
-  // 새롭게 추가된 subject 동기화
-  for (const [filename, entry] of Object.entries(questionFileMap)) {
-    if (!existingSubjects.includes(filename)) {
-      await db.runAsync(
-        "INSERT OR IGNORE INTO subjects (id, name, created_at) VALUES (?, ?, datetime('now'))",
-        [filename, entry.name]
-      );
-
-      for (const q of entry.data) {
-        await db.runAsync(
-          "INSERT INTO questions (id, subject_id, type, question, choices, answer, explanation, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))",
-          [
-            q.id,
-            filename,
-            q.type,
-            q.question,
-            JSON.stringify(q.choices || []),
-            q.answer,
-            q.explanation || "",
-          ]
-        );
-      }
-    }
-  }
+  return rows.map((row: any) => ({
+    id: row.id,
+    type: row.type,
+    question: row.question,
+    choices: row.choices ? JSON.parse(row.choices) : [],
+    answer: row.answer,
+    explanation: row.explanation ?? "",
+    weight: row.weight ?? 1.0,
+  }));
 }
