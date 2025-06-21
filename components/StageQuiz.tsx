@@ -5,8 +5,9 @@ import SubjectiveQuestion from "@/components/SubjectiveQuestion";
 import StageSummary from "@/components/StageSummary";
 import { Question } from "@/lib/types";
 import { insertAnswer } from "@/lib/db";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
+import { useNavigation } from "expo-router";
 
 type Props = {
   questions: Question[];
@@ -21,6 +22,14 @@ export default function StageQuiz({
   stageSize = 10,
   onComplete,
 }: Props) {
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "문제풀이",
+    });
+  }, [navigation]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -78,6 +87,12 @@ export default function StageQuiz({
     setIsStageSummary(false);
   };
 
+  const handleRetryStage = () => {
+    setCurrentIndex(stageStart);
+    setIsAnswered(false);
+    setIsStageSummary(false);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.stageText}>
@@ -91,6 +106,7 @@ export default function StageQuiz({
           stageNumber={currentStage}
           questionIds={questions.slice(stageStart, stageEnd).map((q) => q.id)}
           onContinue={handleContinueToNextStage}
+          onRetry={handleRetryStage}
         />
       ) : currentQuestion ? (
         <>

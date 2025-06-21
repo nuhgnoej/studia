@@ -52,3 +52,10 @@ export type RawQuestionRow = {
   explanation: string;
   weight: number;
 };
+
+export type AnswerStats = {
+  question_id: number;
+  total_attempts: number;
+  correct_attempts: number;
+  latest_answer: string;
+};

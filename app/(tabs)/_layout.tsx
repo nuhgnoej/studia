@@ -44,6 +44,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "세팅",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <TabBarIcon name="cog" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

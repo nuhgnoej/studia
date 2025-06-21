@@ -1,7 +1,12 @@
 // lib/db.ts
 
 import * as SQLite from "expo-sqlite";
-import type { AnswerRecord, Question, RawQuestionRow } from "./types";
+import type {
+  AnswerRecord,
+  AnswerStats,
+  Question,
+  RawQuestionRow,
+} from "./types";
 // import { questionFileMap } from "@/lib/questionFileMap";
 
 let db: SQLite.SQLiteDatabase | null = null;
@@ -325,4 +330,50 @@ export async function getAnswerSummaryByQuestionIds(
   );
 
   return results;
+}
+
+export async function getAnswerStatsForQuestions(
+  subject_id: string,
+  question_ids: number[]
+): Promise<AnswerStats[]> {
+  const db = await getDatabase();
+
+  const placeholders = question_ids.map(() => "?").join(",");
+  const params = [subject_id, ...question_ids];
+
+  const query = `
+    SELECT
+      question_id,
+      COUNT(*) AS total_attempts,
+      SUM(is_correct) AS correct_attempts,
+      (
+        SELECT user_answer
+        FROM answers AS latest
+        WHERE latest.question_id = a.question_id AND latest.subject_id = a.subject_id
+        ORDER BY latest.created_at DESC
+        LIMIT 1
+      ) AS latest_answer
+    FROM answers AS a
+    WHERE subject_id = ? AND question_id IN (${placeholders})
+    GROUP BY question_id
+  `;
+
+  const rows = await db.getAllAsync<AnswerStats>(query, params);
+  return rows;
+}
+
+export async function getCorrectAnswerByQuestionAndSubjectId(
+  subject_id: string,
+  question_id: number
+): Promise<string | null> {
+  const db = await getDatabase();
+
+  const result = await db.getFirstAsync<{
+    answer: string;
+  }>(`SELECT answer FROM questions WHERE subject_id = ? AND id = ?`, [
+    subject_id,
+    question_id,
+  ]);
+
+  return result?.answer ?? null;
 }
