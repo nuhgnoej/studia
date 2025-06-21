@@ -303,3 +303,26 @@ export async function getWrongAnswersBySubjectId(
         : q.choices ?? null,
   }));
 }
+
+export async function getAnswerSummaryByQuestionIds(
+  subjectId: string,
+  questionIds: number[]
+): Promise<{ question_id: number; count: number; correct_count: number }[]> {
+  const db = await getDatabase();
+  const placeholders = questionIds.map(() => "?").join(", ");
+  const results = await db.getAllAsync<any>(
+    `
+    SELECT
+      question_id,
+      COUNT(*) AS count,
+      SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) AS correct_count
+    FROM answers
+    WHERE subject_id = ?
+      AND question_id IN (${placeholders})
+    GROUP BY question_id
+  `,
+    [subjectId, ...questionIds]
+  );
+
+  return results;
+}
