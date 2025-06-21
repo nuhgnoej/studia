@@ -237,50 +237,6 @@ export async function removeAllDatabases() {
   await removeSubjectDatabase();
 }
 
-// export async function syncDatabaseWithQuestionFileMap() {
-//   const db = await getDatabase();
-
-//   const rows = await db.getAllAsync<{ subject_id: string }>(
-//     "SELECT DISTINCT subject_id FROM questions"
-//   );
-//   const existingSubjects = rows.map((r) => r.subject_id);
-
-//   // 기존에 있지만 사라진 subject 제거
-//   for (const subjectId of existingSubjects) {
-//     if (!questionFileMap[subjectId]) {
-//       await db.runAsync("DELETE FROM questions WHERE subject_id = ?", [
-//         subjectId,
-//       ]);
-//       await db.runAsync("DELETE FROM subjects WHERE id = ?", [subjectId]);
-//     }
-//   }
-
-//   // 새롭게 추가된 subject 동기화
-//   for (const [filename, entry] of Object.entries(questionFileMap)) {
-//     if (!existingSubjects.includes(filename)) {
-//       await db.runAsync(
-//         "INSERT OR IGNORE INTO subjects (id, name, created_at) VALUES (?, ?, datetime('now'))",
-//         [filename, entry.name]
-//       );
-
-//       for (const q of entry.data) {
-//         await db.runAsync(
-//           "INSERT INTO questions (id, subject_id, type, question, choices, answer, explanation, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))",
-//           [
-//             q.id,
-//             filename,
-//             q.type,
-//             q.question,
-//             JSON.stringify(q.choices || []),
-//             q.answer,
-//             q.explanation || "",
-//           ]
-//         );
-//       }
-//     }
-//   }
-// }
-
 export async function getQuestionsBySubjectId(
   subjectId: string
 ): Promise<Question[]> {
@@ -316,30 +272,6 @@ export async function getAnswersBySubjectId(
     created_at: row.created_at,
   }));
 }
-
-// export async function getWrongAnswersBySubjectId(
-//   subject_id: string
-// ): Promise<Question[]> {
-//   const db = await getDatabase();
-//   const questions = await db.getAllAsync<Question>(
-//     `
-//     SELECT q.*
-//     FROM answers a
-//     JOIN questions q ON a.question_id = q.id
-//     WHERE a.subject_id = ? AND a.is_correct = 0 AND q.subject_id = ?
-//     GROUP BY a.question_id
-//     `,
-//     [subject_id, subject_id]
-//   );
-
-//   return questions.map((q) => ({
-//     ...q,
-//     choices:
-//       q.type === "objective" && typeof q.choices === "string"
-//         ? JSON.parse(q.choices)
-//         : q.choices ?? null,
-//   }));
-// }
 
 export async function getWrongAnswersBySubjectId(
   subject_id: string

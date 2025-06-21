@@ -6,7 +6,7 @@ export async function loadQuestionsFromFile(filename: string) {
   try {
     const db = await getDatabase();
     const entry = questionFileMap[filename as keyof typeof questionFileMap];
-    
+
     if (!entry) {
       throw new Error("문제 세트를 찾을 수 없습니다.");
     }
@@ -18,10 +18,7 @@ export async function loadQuestionsFromFile(filename: string) {
     );
 
     // 기존 문제 삭제
-    await db.runAsync(
-      "DELETE FROM questions WHERE subject_id = ?",
-      [filename]
-    );
+    await db.runAsync("DELETE FROM questions WHERE subject_id = ?", [filename]);
 
     // 새 문제 추가
     for (const question of entry.data) {
@@ -31,7 +28,7 @@ export async function loadQuestionsFromFile(filename: string) {
       }
 
       await db.runAsync(
-        `INSERT INTO questions (
+        `INSERT OR REPLACE INTO questions (
           id, subject_id, type, question, choices, answer, explanation, created_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
         [

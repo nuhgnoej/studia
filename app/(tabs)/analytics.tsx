@@ -57,7 +57,10 @@ export default function AnalyticsScreen() {
         {Object.entries(questionFileMap).map(([filename, { name }]) => (
           <Pressable
             key={filename}
-            style={styles.button}
+            style={({ pressed }) => [
+              styles.button,
+              pressed && styles.buttonPressed,
+            ]}
             onPress={() => handlePress(filename)}
           >
             <Text style={styles.buttonText}>{name}</Text>
@@ -82,7 +85,9 @@ export default function AnalyticsScreen() {
             ))}
           </View>
         ) : (
-          <Text>풀이 이력이 없습니다.</Text>
+          <View style={styles.emptyMessageContainer}>
+            <Text style={styles.emptyMessageText}>풀이 이력이 없습니다.</Text>
+          </View>
         )
       ) : null}
       {/* 초기화 버튼 */}
@@ -129,10 +134,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   button: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#e5e7eb", // Tailwind의 gray-200에 해당
     padding: 12,
     borderRadius: 8,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#cbd5e1", // Tailwind의 gray-300
   },
   buttonText: {
     fontSize: 16,
@@ -161,5 +168,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 14,
+  },
+  buttonPressed: {
+    opacity: 0.85,
+    backgroundColor: "#d1d5db", // gray-300 (눌렀을 때 더 어두운 회색)
+  },
+  emptyMessageContainer: {
+    alignItems: "center", // 수평 가운데
+    justifyContent: "center", // 수직 가운데 (추가하려면 height 필요)
+    paddingVertical: 40, // 위아래 여백
+  },
+  emptyMessageText: {
+    fontSize: 16,
+    color: "#888",
   },
 });

@@ -6,18 +6,21 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 export default function HomeScreen() {
   const router = useRouter();
 
-  const handlePress = (filename: string) => {
-    router.push(`/subject/${filename}`);
+  const handlePress = (filename: string, name: string) => {
+    router.push(`/subject/${filename}?name=${name}`);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>과목 선택</Text>
+      <Text style={styles.title}>과목 선택(JSON)</Text>
       {Object.entries(questionFileMap).map(([filename, { name }]) => (
         <Pressable
           key={filename}
-          style={styles.button}
-          onPress={() => handlePress(filename)}
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => handlePress(filename, name)}
         >
           <Text style={styles.buttonText}>{name}</Text>
         </Pressable>
@@ -42,5 +45,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
+  },
+  buttonPressed: {
+    opacity: 0.9,
   },
 });
