@@ -27,6 +27,9 @@ export default function SubjectiveQuestion({
     <View>
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.question}</Text>
+      {question.question.explanation ? (
+        <Text style={styles.questionText}>{question.question.explanation}</Text>
+      ) : null}
 
       {/* 사용자 입력 */}
       <TextInput
@@ -49,12 +52,7 @@ export default function SubjectiveQuestion({
         <View style={styles.feedbackBox}>
           <Text style={styles.answerLabel}>정답</Text>
           <Text style={styles.answerText}>{question.answer}</Text>
-          {/* 설명이 여러 줄일 수 있으므로 map으로 렌더링 */}
-          {question.question.explanation.map((exp, idx) => (
-            <Text key={idx} style={styles.explanationText}>
-              {exp}
-            </Text>
-          ))}
+          <Text>{question.explanation}</Text>
 
           <View style={styles.buttonRow}>
             <Pressable

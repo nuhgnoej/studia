@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "generate": "tsx scripts/generateQuestionFileMap.ts",
-    "dev": "expo start --tunnel"
+    "dev": "expo start --tunnel -c"
   },
   "jest": {
     "preset": "jest-expo"
@@ -18,11 +18,12 @@
     "@expo/vector-icons": "^14.1.0",
     "@react-navigation/native": "^7.1.6",
     "eas-cli": "^16.10.0",
-    "expo": "53.0.12",
+    "expo": "^53.0.13",
     "expo-asset": "^11.1.5",
+    "expo-document-picker": "~13.1.6",
     "expo-font": "~13.3.1",
     "expo-linking": "~7.1.5",
-    "expo-router": "~5.1.0",
+    "expo-router": "^5.1.1",
     "expo-splash-screen": "~0.30.9",
     "expo-sqlite": "~15.2.12",
     "expo-status-bar": "~2.2.3",
@@ -34,8 +35,7 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
-    "react-native-web": "~0.20.0",
-    "expo-document-picker": "~13.1.6"
+    "react-native-web": "~0.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

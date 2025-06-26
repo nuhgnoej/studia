@@ -52,8 +52,10 @@
       "id": 3,
       "type": "subjective",
       "question": {
-        "question": "괄호 안에 알맞은 말을 쓰시오.\n\"ST Main Oil Tank는 운전 중 거품 발생에 대비하여 상부에 약 (   )% 정도의 공간이 있고, 윤활유 청정기는 윤활유의 (           ) 및 (               )을 방지하기 위해 설치된다.\"",
-        "explanation": []
+        "question": "괄호 안에 알맞은 말을 쓰시오.",
+        "explanation": [
+          "ST Main Oil Tank는 운전 중 거품 발생에 대비하여 상부에 약 (   )% 정도의 공간이 있고, 윤활유 청정기는 윤활유의 (   ) 및 (   )을 방지하기 위해 설치된다."
+        ]
       },
       "choices": null,
       "answer": ["30", "열화", "금속표면부식"],
@@ -64,8 +66,10 @@
       "id": 4,
       "type": "subjective",
       "question": {
-        "question": "괄호 안에 알맞은 말을 쓰시오.\n\"ST Vacuum Pump의 운전 Mode는 초기 (         ) Mode와 정상 운전 시 (         ) Mode가 있다.\"",
-        "explanation": []
+        "question": "괄호 안에 알맞은 말을 쓰시오.",
+        "explanation": [
+          "ST Vacuum Pump의 운전 Mode는 초기 (   ) Mode와 정상 운전 시 (   ) Mode가 있다."
+        ]
       },
       "choices": null,
       "answer": ["Hogging", "Holding"],

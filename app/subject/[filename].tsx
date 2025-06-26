@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { questionFileMap } from "@/lib/questionFileMap";
+import MetadataCard from "@/components/MetadataCard";
 
 
 export default function SubjectStartScreen() {
@@ -139,9 +140,7 @@ export default function SubjectStartScreen() {
         </View>
       </View>
       <View>
-        <Text>
-          {JSON.stringify(meta)}
-        </Text>
+        <MetadataCard meta={meta} />
       </View>
     </View>
   );

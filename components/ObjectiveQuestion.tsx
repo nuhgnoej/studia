@@ -59,12 +59,9 @@ export default function ObjectiveQuestion({
           >
             {isCorrect ? "정답입니다!" : "오답입니다!"}
           </Text>
-          {/* 설명이 여러 줄일 수 있으므로 map으로 렌더링 */}
-          {/* {question.question.explanation.map((exp, idx) => (
-            <Text key={idx} style={styles.explanationText}>
-              {exp}
-            </Text>
-          ))} */}
+          {question.explanation ? (
+            <Text style={styles.explanationText}>{question.explanation}</Text>
+          ) : null}
         </View>
       )}
     </View>
