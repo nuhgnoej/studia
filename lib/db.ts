@@ -44,6 +44,7 @@ export async function initDatabase() {
       choices TEXT,
       answer TEXT NOT NULL,
       explanation TEXT,
+      weight REAL DEFAULT 1.0,
       created_at DATETIME NOT NULL,
       PRIMARY KEY (id, subject_id),
       FOREIGN KEY (subject_id) REFERENCES subjects(id)
@@ -376,4 +377,19 @@ export async function getCorrectAnswerByQuestionAndSubjectId(
   ]);
 
   return result?.answer ?? null;
+}
+
+export async function getWeightsBySubjectId(subjectId: string) {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{
+    id: number;
+    weight: number;
+  }>(`SELECT id, weight FROM questions WHERE subject_id = ?`, [subjectId]);
+
+  const weightMap = new Map<number, number>();
+  for (const row of rows) {
+    weightMap.set(row.id, row.weight);
+  }
+
+  return weightMap;
 }

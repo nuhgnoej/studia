@@ -29,8 +29,8 @@ export async function loadQuestionsFromFile(filename: string) {
 
       await db.runAsync(
         `INSERT OR REPLACE INTO questions (
-          id, subject_id, type, question, choices, answer, explanation, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+          id, subject_id, type, question, choices, answer, explanation, weight,created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,datetime('now'))`,
         [
           question.id,
           filename,
@@ -39,6 +39,7 @@ export async function loadQuestionsFromFile(filename: string) {
           JSON.stringify(question.choices || []),
           question.answer,
           question.explanation || null,
+          1.0,
         ]
       );
     }

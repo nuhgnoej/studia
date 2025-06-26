@@ -1,7 +1,11 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useState } from "react";
-import { getAnswersBySubjectId, resetAnswerDatabase } from "@/lib/db";
+import {
+  getAnswersBySubjectId,
+  getWeightsBySubjectId,
+  resetAnswerDatabase,
+} from "@/lib/db";
 import { questionFileMap } from "@/lib/questionFileMap";
 import { AnswerRecord } from "@/lib/types";
 
@@ -14,6 +18,7 @@ export default function AnalyticsScreen() {
     count: number;
     correctCount: number;
     accuracy: number;
+    weight?: number;
   };
 
   const aggregateStats = (records: AnswerRecord[]): QuestionStats[] => {
@@ -41,7 +46,16 @@ export default function AnalyticsScreen() {
 
   const handlePress = async (filename: string) => {
     const results = await getAnswersBySubjectId(filename);
-    setQuestionStats(aggregateStats(results));
+    const stats = aggregateStats(results);
+
+    const weightMap = await getWeightsBySubjectId(filename);
+
+    const merged = stats.map((q) => ({
+      ...q,
+      weight: weightMap.get(q.question_id) ?? 1.0,
+    }));
+
+    setQuestionStats(merged);
     setHasLoaded(true);
   };
 
@@ -73,13 +87,16 @@ export default function AnalyticsScreen() {
           <View style={styles.section}>
             <Text style={styles.subtitle}>문제별 정답 통계</Text>
             {questionStats.map((q) => (
-              <View key={q.question_id} style={styles.statBox}>
+              <View style={styles.statBox} key={q.question_id}>
                 <Text style={styles.statText}>📘 문제 ID: {q.question_id}</Text>
                 <Text style={styles.statText}>
                   시도: {q.count}회 / 정답: {q.correctCount}회
                 </Text>
                 <Text style={styles.statText}>
                   정답률: {(q.accuracy * 100).toFixed(1)}%
+                </Text>
+                <Text style={styles.statText}>
+                  가중치: {q.weight!.toFixed(3)}
                 </Text>
               </View>
             ))}
