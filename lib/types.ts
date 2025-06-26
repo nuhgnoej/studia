@@ -1,18 +1,3 @@
-export type Question = {
-  id: number;
-  subject_id?: string;
-  type: "objective" | "subjective";
-  question: {
-    question: string;
-    explanation: string[];
-  };
-  choices: string[];
-  answer: string;
-  explanation: string;
-  weight?: number;
-  created_at?: string;
-};
-
 export type UserAnswer = {
   questionId: number;
   userInput: string;
@@ -61,4 +46,49 @@ export type AnswerStats = {
   total_attempts: number;
   correct_attempts: number;
   latest_answer: string;
+};
+
+export type Metadata = {
+  id: string;
+  title: string;
+  description: string;
+  subject: string;
+  category: string[];
+  difficulty: string;
+  version: string;
+  created_at: string;
+  updated_at: string;
+  author: string;
+  source: string;
+  tags: string[];
+  license: string;
+  num_questions: number;
+};
+
+export type Question = {
+  id: number;
+  type: string;
+  subject_id?: string;
+  question: {
+    question: string;
+    explanation: string[];
+  };
+  choices?: string[] | null;
+  answer: string;
+  explanation: string;
+  tags?: string[];
+  weight?: number;
+  created_at?: string;
+};
+
+export type QuestionFile = {
+  metadata: Metadata;
+  questions: Question[];
+};
+
+export type QuestionFileMap = {
+  [filename: string]: {
+    name: string;
+    data: QuestionFile;
+  };
 };

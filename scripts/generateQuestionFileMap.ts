@@ -7,17 +7,24 @@ const QUESTIONS_DIR = path.resolve(__dirname, "../assets/questions");
 const OUTPUT_FILE = path.resolve(__dirname, "../lib/questionFileMap.ts");
 
 function generate() {
-  const files = fs.readdirSync(QUESTIONS_DIR).filter(f => f.endsWith(".json"));
+  const files = fs
+    .readdirSync(QUESTIONS_DIR)
+    .filter((f) => f.endsWith(".json"));
 
   const importStatements = files.map((filename, index) => {
     const varName = `q${index}`;
     return `import ${varName} from "@/assets/questions/${filename}";`;
   });
 
+  const importStatementOfType = `import { QuestionFileMap } from "./types";`;
+
   const mapEntries = files.map((filename, index) => {
     const varName = `q${index}`;
     const displayName = path.basename(filename, ".json").replace(/-/g, " ");
-    return `  "${filename}": {\n    name: "${displayName}",\n    data: ${varName},\n  },`;
+    return `  "${filename}": {
+    name: ${varName}.metadata?.title ?? "${displayName}",
+    data: ${varName},
+  },`;
   });
 
   const output = `// 🔄 자동 생성된 파일 – 수정하지 마세요!
@@ -25,7 +32,9 @@ function generate() {
 
 ${importStatements.join("\n")}
 
-export const questionFileMap = {
+${importStatementOfType}
+
+export const questionFileMap : QuestionFileMap = {
 ${mapEntries.join("\n")}
 };
 `;

@@ -21,7 +21,7 @@ export async function loadQuestionsFromFile(filename: string) {
     await db.runAsync("DELETE FROM questions WHERE subject_id = ?", [filename]);
 
     // 새 문제 추가
-    for (const question of entry.data) {
+    for (const question of entry.data.questions) {
       if (!question.id) {
         console.error("문제 ID가 없습니다:", question);
         continue;
@@ -35,9 +35,9 @@ export async function loadQuestionsFromFile(filename: string) {
           question.id,
           filename,
           question.type,
-          question.question,
+          JSON.stringify(question.question),
           JSON.stringify(question.choices || []),
-          JSON.stringify(question.answer),
+          question.answer,
           question.explanation || null,
         ]
       );

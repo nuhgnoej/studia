@@ -12,6 +12,8 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { questionFileMap } from "@/lib/questionFileMap";
+
 
 export default function SubjectStartScreen() {
   const router = useRouter();
@@ -20,6 +22,8 @@ export default function SubjectStartScreen() {
 
   const [count, setCount] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  const meta = questionFileMap[filename as string]?.data?.metadata;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -133,6 +137,11 @@ export default function SubjectStartScreen() {
             )}
           </Pressable>
         </View>
+      </View>
+      <View>
+        <Text>
+          {JSON.stringify(meta)}
+        </Text>
       </View>
     </View>
   );

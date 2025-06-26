@@ -133,7 +133,7 @@ export async function getAllQuestions(): Promise<Question[]> {
   return rows.map((row: any) => ({
     id: row.id,
     type: row.type,
-    question: row.question,
+    question: JSON.parse(row.question),
     choices: row.choices ? JSON.parse(row.choices) : [],
     answer: row.answer,
     explanation: row.explanation ?? "",
@@ -156,7 +156,7 @@ export async function getWeightedRandomQuestion(): Promise<Question | null> {
       return {
         id: row.id,
         type: row.type as "objective" | "subjective",
-        question: row.question,
+        question: JSON.parse(row.question),
         choices: row.choices ? JSON.parse(row.choices) : [],
         answer: row.answer,
         explanation: row.explanation ?? "",
@@ -254,7 +254,7 @@ export async function getQuestionsBySubjectId(
   return rows.map((row: any) => ({
     id: row.id,
     type: row.type,
-    question: row.question,
+    question: JSON.parse(row.question),
     choices: row.choices ? JSON.parse(row.choices) : [],
     answer: row.answer,
     explanation: row.explanation ?? "",
