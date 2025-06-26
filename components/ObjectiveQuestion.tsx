@@ -1,5 +1,5 @@
 import { Question } from "@/lib/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View, Pressable, StyleSheet } from "react-native";
 
 export default function ObjectiveQuestion({
@@ -14,6 +14,14 @@ export default function ObjectiveQuestion({
   isCorrect: boolean;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (question.choices) {
+      const shuffled = [...question.choices].sort(() => Math.random() - 0.5);
+      setShuffledChoices(shuffled);
+    }
+  }, [question]);
 
   const handleSelect = (choice: string) => {
     if (isAnswered) return;
@@ -29,7 +37,7 @@ export default function ObjectiveQuestion({
       <Text style={styles.questionText}>{question.question.question}</Text>
 
       {/* 선택지 렌더링 */}
-      {question.choices!.map((choice, index) => {
+      {shuffledChoices.map((choice, index) => {
         const isSelected = selected === choice;
 
         let backgroundColor = "#eee";
