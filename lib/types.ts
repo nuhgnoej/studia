@@ -2,7 +2,10 @@ export type Question = {
   id: number;
   subject_id?: string;
   type: "objective" | "subjective";
-  question: string;
+  question: {
+    question: string;
+    explanation: string[];
+  };
   choices: string[];
   answer: string;
   explanation: string;

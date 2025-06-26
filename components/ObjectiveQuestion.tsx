@@ -26,7 +26,7 @@ export default function ObjectiveQuestion({
   return (
     <View>
       {/* 문제 텍스트 */}
-      <Text style={styles.questionText}>{question.question}</Text>
+      <Text style={styles.questionText}>{question.question.question}</Text>
 
       {/* 선택지 렌더링 */}
       {question.choices.map((choice, index) => {
@@ -59,7 +59,10 @@ export default function ObjectiveQuestion({
           >
             {isCorrect ? "정답입니다!" : "오답입니다!"}
           </Text>
-          <Text style={styles.explanationText}>{question.explanation}</Text>
+          {/* 설명이 여러 줄일 수 있으므로 map으로 렌더링 */}
+          {question.question.explanation.map((exp, idx) => (
+            <Text key={idx} style={styles.explanationText}>{exp}</Text>
+          ))}
         </View>
       )}
     </View>
