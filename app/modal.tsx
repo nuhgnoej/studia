@@ -15,7 +15,7 @@ export default function ModalScreen() {
         }}
       />
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>📘 Studia</Text>
+        <Text style={styles.title}>📘 Studia(Beta)</Text>
         <Text style={styles.subtitle}>직무 시험 대비 문제 풀이 앱</Text>
 
         <View style={styles.section}>

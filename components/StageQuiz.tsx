@@ -12,11 +12,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "expo-router";
 import { checkAnswer } from "@/lib/util";
 import TagsEditor from "./TagsEditor";
 import { updateTagsEverywhere } from "@/lib/tagUtil";
+import {
+  defaultBackground,
+  tagToBackgroundImage,
+} from "@/lib/tagToBackgroundImage";
 
 type Props = {
   questions: Question[];
@@ -147,81 +152,91 @@ export default function StageQuiz({
     setIsStageSummary(false);
   };
 
+  const displayTag = currentQuestion.tags?.[0] ?? "default";
+  const backgroundSource =
+    tagToBackgroundImage[displayTag] ?? defaultBackground;
+
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={80} // 헤더 높이에 따라 조정
+    <ImageBackground
+      source={backgroundSource}
+      style={styles.background}
+      imageStyle={{ opacity: 0.2 }}
     >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={80} // 헤더 높이에 따라 조정
       >
-        <View style={{ flexDirection: "row", gap: 8 }}>
-          <Button title="이전 단계로" onPress={handlePreviousStage} />
-          <Button title="다음 단계로" onPress={handleSkipStage} />
-        </View>
-        <View style={styles.container}>
-          <Text style={styles.stageText}>
-            📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
-            {Math.min(stageSize, stageEnd - stageStart)}
-          </Text>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Button title="이전 단계로" onPress={handlePreviousStage} />
+            <Button title="다음 단계로" onPress={handleSkipStage} />
+          </View>
+          <View style={styles.container}>
+            <Text style={styles.stageText}>
+              📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
+              {Math.min(stageSize, stageEnd - stageStart)}
+            </Text>
 
-          {isStageSummary ? (
-            <StageSummary
-              subjectId={subjectId}
-              stageNumber={currentStage}
-              questionIds={questions
-                .slice(stageStart, stageEnd)
-                .map((q) => q.id)}
-              onContinue={handleContinueToNextStage}
-              onRetry={handleRetryStage}
-            />
-          ) : (
-            <>
-              {currentQuestion.type === "objective" ? (
-                <ObjectiveQuestion
-                  question={currentQuestion}
-                  onSubmit={handleSubmitAnswer}
-                  isAnswered={isAnswered}
-                  isCorrect={isCorrect}
-                />
-              ) : (
-                <SubjectiveQuestion
-                  question={currentQuestion}
-                  onSubmit={handleSubmitAnswer}
-                  isAnswered={isAnswered}
-                />
-              )}
-
-              <TagsEditor
-                tags={tags}
-                onChange={async (newTags) => {
-                  setTags(newTags);
-                  currentQuestion.tags = newTags;
-                  await updateTagsEverywhere({
-                    subjectId,
-                    questionId: currentQuestion.id,
-                    tags: newTags,
-                  });
-                }}
+            {isStageSummary ? (
+              <StageSummary
+                subjectId={subjectId}
+                stageNumber={currentStage}
+                questionIds={questions
+                  .slice(stageStart, stageEnd)
+                  .map((q) => q.id)}
+                onContinue={handleContinueToNextStage}
+                onRetry={handleRetryStage}
               />
+            ) : (
+              <>
+                {currentQuestion.type === "objective" ? (
+                  <ObjectiveQuestion
+                    question={currentQuestion}
+                    onSubmit={handleSubmitAnswer}
+                    isAnswered={isAnswered}
+                    isCorrect={isCorrect}
+                  />
+                ) : (
+                  <SubjectiveQuestion
+                    question={currentQuestion}
+                    onSubmit={handleSubmitAnswer}
+                    isAnswered={isAnswered}
+                  />
+                )}
 
-              {isAnswered && (
-                <Button
-                  title={
-                    currentIndex === questions.length - 1
-                      ? "퀴즈 완료"
-                      : "다음 문제"
-                  }
-                  onPress={handleNext}
+                <TagsEditor
+                  tags={tags}
+                  onChange={async (newTags) => {
+                    setTags(newTags);
+                    currentQuestion.tags = newTags;
+                    await updateTagsEverywhere({
+                      subjectId,
+                      questionId: currentQuestion.id,
+                      tags: newTags,
+                    });
+                  }}
                 />
-              )}
-            </>
-          )}
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+                {isAnswered && (
+                  <Button
+                    title={
+                      currentIndex === questions.length - 1
+                        ? "퀴즈 완료"
+                        : "다음 문제"
+                    }
+                    onPress={handleNext}
+                  />
+                )}
+              </>
+            )}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
@@ -235,5 +250,9 @@ const styles = StyleSheet.create({
     color: "#4b5563",
     fontWeight: "500",
     marginBottom: 12,
+  },
+  background: {
+    flex: 1,
+    resizeMode: "cover",
   },
 });

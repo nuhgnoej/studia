@@ -10,6 +10,7 @@
     "test": "jest --watchAll",
     "generate": "tsx scripts/generateQuestionFileMap.ts",
     "tag": "tsx scripts/tagExtractor.ts",
+    "image": "tsx scripts/generateTagToBackgroundImage.ts",
     "dev": "expo start --tunnel -c"
   },
   "jest": {
