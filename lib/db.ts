@@ -79,9 +79,7 @@ export const insertSubject = async (id: string, name: string) => {
   );
 };
 
-export const getQuestionById = async (
-  id: number
-): Promise<Question | null> => {
+export const getQuestionById = async (id: number): Promise<Question | null> => {
   const db = await getDatabase();
   const row = await db.getFirstAsync<any>(
     "SELECT * FROM questions WHERE id = ?",
@@ -357,4 +355,20 @@ export async function removeAllDatabases() {
   await removeAnswerDatabase();
   await removeQuestionDatabase();
   await removeSubjectDatabase();
+}
+
+export async function updateTags({
+  questionId,
+  subjectId,
+  tags,
+}: {
+  questionId: number;
+  subjectId: string;
+  tags: string[];
+}) {
+  const db = await getDatabase();
+  await db.runAsync(
+    `UPDATE questions SET tags = ? WHERE id = ? AND subject_id = ?`,
+    [JSON.stringify(tags), questionId, subjectId]
+  );
 }

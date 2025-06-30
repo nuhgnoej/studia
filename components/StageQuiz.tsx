@@ -1,14 +1,14 @@
-// components/StageQuiz.tsx
-
 import ObjectiveQuestion from "@/components/ObjectiveQuestion";
 import SubjectiveQuestion from "@/components/SubjectiveQuestion";
 import StageSummary from "@/components/StageSummary";
 import { Question } from "@/lib/types";
 import { insertAnswer } from "@/lib/db";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { useNavigation } from "expo-router";
 import { checkAnswer } from "@/lib/util";
+import TagsEditor from "./TagsEditor";
+import { updateTagsEverywhere } from "@/lib/tagUtil";
 
 type Props = {
   questions: Question[];
@@ -31,23 +31,38 @@ export default function StageQuiz({
     });
   }, [navigation]);
 
+  // ✅ 상태들
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [isStageSummary, setIsStageSummary] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
 
-  const currentQuestion = questions[currentIndex];
+  const currentQuestion = questions[currentIndex] ?? null;
+
+  // ✅ 스테이지 계산
   const totalStages = Math.ceil(questions.length / stageSize);
   const currentStage = Math.floor(currentIndex / stageSize) + 1;
   const stageStart = (currentStage - 1) * stageSize;
   const stageEnd = Math.min(stageStart + stageSize, questions.length);
   const questionInStage = currentIndex - stageStart + 1;
 
+  // ✅ 태그 상태 동기화
+  useEffect(() => {
+    if (currentQuestion) {
+      setTags(currentQuestion.tags ?? []);
+    } else {
+      setTags([]);
+    }
+  }, [currentQuestion?.id]);
+
+  // ✅ 정답 제출
   const handleSubmitAnswer = async (
     userAnswer: string,
     isCorrectOverride?: boolean
   ) => {
-    
+    if (!currentQuestion) return;
+
     const isCorrect =
       typeof isCorrectOverride === "boolean"
         ? isCorrectOverride
@@ -64,6 +79,7 @@ export default function StageQuiz({
     setIsCorrect(isCorrect);
   };
 
+  // ✅ 다음 문제로 이동
   const handleNext = () => {
     const isLastQuestion = currentIndex === questions.length - 1;
     const isEndOfStage = (currentIndex + 1) % stageSize === 0;
@@ -94,6 +110,15 @@ export default function StageQuiz({
     setIsStageSummary(false);
   };
 
+  // ✅ questions가 비어있을 때 처리
+  if (!currentQuestion) {
+    return (
+      <View style={styles.container}>
+        <Text>문제가 없습니다. 문제를 추가하거나 데이터를 확인하세요.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.stageText}>
@@ -109,7 +134,7 @@ export default function StageQuiz({
           onContinue={handleContinueToNextStage}
           onRetry={handleRetryStage}
         />
-      ) : currentQuestion ? (
+      ) : (
         <>
           {currentQuestion.type === "objective" ? (
             <ObjectiveQuestion
@@ -126,6 +151,19 @@ export default function StageQuiz({
             />
           )}
 
+          <TagsEditor
+            tags={tags}
+            onChange={async (newTags) => {
+              setTags(newTags);
+              currentQuestion.tags = newTags;
+              await updateTagsEverywhere({
+                subjectId,
+                questionId: currentQuestion.id,
+                tags: newTags,
+              });
+            }}
+          />
+
           {isAnswered && (
             <Button
               title={
@@ -137,8 +175,6 @@ export default function StageQuiz({
             />
           )}
         </>
-      ) : (
-        <Text>문제를 불러오는 중입니다...</Text>
       )}
     </View>
   );

@@ -34,8 +34,6 @@ export default function ObjectiveQuestion({
 
   return (
     <View>
-      {/* <Text>{JSON.stringify(question.tags)}</Text> */}
-      {question.tags ? <QuestionTags tags={question.tags} /> : null}
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.question}</Text>
 
