@@ -8,6 +8,7 @@ import { insertAnswer } from "@/lib/db";
 import { useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { useNavigation } from "expo-router";
+import { checkAnswer } from "@/lib/util";
 
 type Props = {
   questions: Question[];
@@ -46,11 +47,11 @@ export default function StageQuiz({
     userAnswer: string,
     isCorrectOverride?: boolean
   ) => {
-    const correctAnswer = JSON.parse(currentQuestion.answer);
+    
     const isCorrect =
       typeof isCorrectOverride === "boolean"
         ? isCorrectOverride
-        : userAnswer === correctAnswer;
+        : checkAnswer(currentQuestion.answer as string, userAnswer);
 
     await insertAnswer({
       question_id: currentQuestion.id,

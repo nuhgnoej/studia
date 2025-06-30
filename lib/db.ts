@@ -7,7 +7,6 @@ import type {
   Question,
   RawQuestionRow,
 } from "./types";
-// import { questionFileMap } from "@/lib/questionFileMap";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -21,11 +20,11 @@ export async function getDatabase() {
 export async function initDatabase() {
   const db = await getDatabase();
 
-  // answers 테이블은 유지하고 questions와 subjects 테이블만 초기화
+  // 기존 테이블 제거
   await db.runAsync("DROP TABLE IF EXISTS questions");
   await db.runAsync("DROP TABLE IF EXISTS subjects");
 
-  // subjects 테이블 생성
+  // subjects 테이블
   await db.runAsync(`
     CREATE TABLE IF NOT EXISTS subjects (
       id TEXT PRIMARY KEY,
@@ -34,7 +33,7 @@ export async function initDatabase() {
     )
   `);
 
-  // questions 테이블 생성
+  // questions 테이블
   await db.runAsync(`
     CREATE TABLE IF NOT EXISTS questions (
       id INTEGER NOT NULL,
@@ -45,13 +44,14 @@ export async function initDatabase() {
       answer TEXT NOT NULL,
       explanation TEXT,
       weight REAL DEFAULT 1.0,
+      tags TEXT,
       created_at DATETIME NOT NULL,
       PRIMARY KEY (id, subject_id),
       FOREIGN KEY (subject_id) REFERENCES subjects(id)
     )
   `);
 
-  // answers 테이블이 없을 경우에만 생성
+  // answers 테이블이 없으면 생성
   const answersTableExists = await db.getFirstAsync<{ count: number }>(
     "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='answers'"
   );
@@ -79,13 +79,26 @@ export const insertSubject = async (id: string, name: string) => {
   );
 };
 
-export const getQuestionById = async (id: number): Promise<Question | null> => {
+export const getQuestionById = async (
+  id: number
+): Promise<Question | null> => {
   const db = await getDatabase();
-  const question = await db.getFirstAsync<Question>(
+  const row = await db.getFirstAsync<any>(
     "SELECT * FROM questions WHERE id = ?",
-    id
+    [id]
   );
-  return question;
+  return row
+    ? {
+        id: row.id,
+        type: row.type,
+        question: JSON.parse(row.question),
+        choices: row.choices ? JSON.parse(row.choices) : [],
+        answer: row.answer,
+        explanation: row.explanation ?? "",
+        weight: row.weight ?? 1.0,
+        tags: row.tags ? JSON.parse(row.tags) : [],
+      }
+    : null;
 };
 
 export const getToalQuestionCount = async (): Promise<number> => {
@@ -127,11 +140,8 @@ export const insertAnswer = async ({
   );
 };
 
-export async function getAllQuestions(): Promise<Question[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync(`SELECT * FROM questions`);
-
-  return rows.map((row: any) => ({
+function mapRowToQuestion(row: any): Question {
+  return {
     id: row.id,
     type: row.type,
     question: JSON.parse(row.question),
@@ -139,7 +149,14 @@ export async function getAllQuestions(): Promise<Question[]> {
     answer: row.answer,
     explanation: row.explanation ?? "",
     weight: row.weight ?? 1.0,
-  }));
+    tags: row.tags ? JSON.parse(row.tags) : [],
+  };
+}
+
+export async function getAllQuestions(): Promise<Question[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync(`SELECT * FROM questions`);
+  return rows.map(mapRowToQuestion);
 }
 
 export async function getWeightedRandomQuestion(): Promise<Question | null> {
@@ -154,93 +171,11 @@ export async function getWeightedRandomQuestion(): Promise<Question | null> {
   for (const row of rows) {
     cumulative += row.weight;
     if (cumulative >= threshold) {
-      return {
-        id: row.id,
-        type: row.type as "objective" | "subjective",
-        question: JSON.parse(row.question),
-        choices: row.choices ? JSON.parse(row.choices) : [],
-        answer: row.answer,
-        explanation: row.explanation ?? "",
-        weight: row.weight ?? 1.0,
-      };
+      return mapRowToQuestion(row);
     }
   }
 
   return null;
-}
-
-export async function resetQuestionDatabase() {
-  const db = await getDatabase();
-  await db.runAsync("DROP TABLE IF EXISTS questions");
-  await db.runAsync(`
-    CREATE TABLE questions (
-      id INTEGER NOT NULL,
-      subject_id TEXT NOT NULL,
-      type TEXT NOT NULL,
-      question TEXT NOT NULL,
-      choices TEXT,
-      answer TEXT NOT NULL,
-      explanation TEXT,
-      created_at DATETIME NOT NULL,
-      PRIMARY KEY (id, subject_id),
-      FOREIGN KEY (subject_id) REFERENCES subjects(id)
-    )
-  `);
-}
-
-export async function removeQuestionDatabase() {
-  const db = await getDatabase();
-  await db.runAsync("DROP TABLE IF EXISTS questions");
-}
-
-export async function resetSubjectDatabase() {
-  const db = await getDatabase();
-  await db.runAsync("DROP TABLE IF EXISTS subjects");
-  await db.runAsync(`
-    CREATE TABLE subjects (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      created_at DATETIME NOT NULL
-    )
-  `);
-}
-
-export async function removeSubjectDatabase() {
-  const db = await getDatabase();
-  await db.runAsync("DROP TABLE IF EXISTS subjects");
-}
-
-export async function resetAnswerDatabase() {
-  const db = await getDatabase();
-  await db.runAsync("DROP TABLE IF EXISTS answers");
-  await db.runAsync(`
-    CREATE TABLE answers (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      question_id INTEGER NOT NULL,
-      subject_id TEXT NOT NULL,
-      user_answer TEXT NOT NULL,
-      is_correct INTEGER NOT NULL,
-      created_at DATETIME NOT NULL,
-      FOREIGN KEY (question_id, subject_id) REFERENCES questions(id, subject_id)
-    )
-  `);
-}
-
-export async function removeAnswerDatabase() {
-  const db = await getDatabase();
-  await db.runAsync("DROP TABLE IF EXISTS answers");
-}
-
-export async function resetAllDatabases() {
-  await resetAnswerDatabase();
-  await resetQuestionDatabase();
-  await resetSubjectDatabase();
-}
-
-export async function removeAllDatabases() {
-  await removeAnswerDatabase();
-  await removeQuestionDatabase();
-  await removeSubjectDatabase();
 }
 
 export async function getQuestionsBySubjectId(
@@ -251,39 +186,14 @@ export async function getQuestionsBySubjectId(
     `SELECT * FROM questions WHERE subject_id = ? ORDER BY id ASC`,
     [subjectId]
   );
-
-  return rows.map((row: any) => ({
-    id: row.id,
-    type: row.type,
-    question: JSON.parse(row.question),
-    choices: row.choices ? JSON.parse(row.choices) : [],
-    answer: row.answer,
-    explanation: row.explanation ?? "",
-    weight: row.weight ?? 1.0,
-  }));
-}
-
-export async function getAnswersBySubjectId(
-  subjectId: string
-): Promise<AnswerRecord[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync(
-    `SELECT * FROM answers WHERE subject_id = ? ORDER BY id ASC`,
-    [subjectId]
-  );
-  return rows.map((row: any) => ({
-    question_id: row.question_id,
-    user_answer: row.user_answer,
-    is_correct: row.is_correct,
-    created_at: row.created_at,
-  }));
+  return rows.map(mapRowToQuestion);
 }
 
 export async function getWrongAnswersBySubjectId(
   subject_id: string
 ): Promise<Question[]> {
   const db = await getDatabase();
-  const questions = await db.getAllAsync<Question>(
+  const rows = await db.getAllAsync<any>(
     `
     SELECT q.*
     FROM questions q
@@ -301,12 +211,22 @@ export async function getWrongAnswersBySubjectId(
     [subject_id, subject_id]
   );
 
-  return questions.map((q) => ({
-    ...q,
-    choices:
-      q.type === "objective" && typeof q.choices === "string"
-        ? JSON.parse(q.choices)
-        : q.choices ?? null,
+  return rows.map(mapRowToQuestion);
+}
+
+export async function getAnswersBySubjectId(
+  subjectId: string
+): Promise<AnswerRecord[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync(
+    `SELECT * FROM answers WHERE subject_id = ? ORDER BY id ASC`,
+    [subjectId]
+  );
+  return rows.map((row: any) => ({
+    question_id: row.question_id,
+    user_answer: row.user_answer,
+    is_correct: row.is_correct,
+    created_at: row.created_at,
   }));
 }
 
@@ -369,12 +289,10 @@ export async function getCorrectAnswerByQuestionAndSubjectId(
 ): Promise<string | null> {
   const db = await getDatabase();
 
-  const result = await db.getFirstAsync<{
-    answer: string;
-  }>(`SELECT answer FROM questions WHERE subject_id = ? AND id = ?`, [
-    subject_id,
-    question_id,
-  ]);
+  const result = await db.getFirstAsync<{ answer: string }>(
+    `SELECT answer FROM questions WHERE subject_id = ? AND id = ?`,
+    [subject_id, question_id]
+  );
 
   return result?.answer ?? null;
 }
@@ -392,4 +310,51 @@ export async function getWeightsBySubjectId(subjectId: string) {
   }
 
   return weightMap;
+}
+
+// 데이터베이스 초기화 함수들
+
+export async function resetQuestionDatabase() {
+  const db = await getDatabase();
+  await db.runAsync("DROP TABLE IF EXISTS questions");
+  await initDatabase();
+}
+
+export async function resetSubjectDatabase() {
+  const db = await getDatabase();
+  await db.runAsync("DROP TABLE IF EXISTS subjects");
+  await initDatabase();
+}
+
+export async function resetAnswerDatabase() {
+  const db = await getDatabase();
+  await db.runAsync("DROP TABLE IF EXISTS answers");
+  await initDatabase();
+}
+
+export async function resetAllDatabases() {
+  await resetAnswerDatabase();
+  await resetQuestionDatabase();
+  await resetSubjectDatabase();
+}
+
+export async function removeQuestionDatabase() {
+  const db = await getDatabase();
+  await db.runAsync("DROP TABLE IF EXISTS questions");
+}
+
+export async function removeSubjectDatabase() {
+  const db = await getDatabase();
+  await db.runAsync("DROP TABLE IF EXISTS subjects");
+}
+
+export async function removeAnswerDatabase() {
+  const db = await getDatabase();
+  await db.runAsync("DROP TABLE IF EXISTS answers");
+}
+
+export async function removeAllDatabases() {
+  await removeAnswerDatabase();
+  await removeQuestionDatabase();
+  await removeSubjectDatabase();
 }

@@ -74,7 +74,7 @@ export type Question = {
     explanation: string[];
   };
   choices?: string[] | null;
-  answer: string;
+  answer: string | string[];
   explanation: string;
   tags?: string[];
   weight?: number;

@@ -1,6 +1,7 @@
 import { Question } from "@/lib/types";
 import { useState } from "react";
 import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
+import QuestionTags from "./QuestionTags";
 
 export default function SubjectiveQuestion({
   question,
@@ -25,6 +26,7 @@ export default function SubjectiveQuestion({
 
   return (
     <View>
+      {question.tags ? <QuestionTags tags={question.tags} /> : null}
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.question}</Text>
       {question.question.explanation ? (

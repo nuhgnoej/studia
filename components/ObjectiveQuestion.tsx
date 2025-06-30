@@ -1,6 +1,7 @@
 import { Question } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Text, View, Pressable, StyleSheet } from "react-native";
+import QuestionTags from "./QuestionTags";
 
 export default function ObjectiveQuestion({
   question,
@@ -33,6 +34,8 @@ export default function ObjectiveQuestion({
 
   return (
     <View>
+      {/* <Text>{JSON.stringify(question.tags)}</Text> */}
+      {question.tags ? <QuestionTags tags={question.tags} /> : null}
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.question}</Text>
 

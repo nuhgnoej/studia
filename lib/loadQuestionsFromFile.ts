@@ -29,17 +29,18 @@ export async function loadQuestionsFromFile(filename: string) {
 
       await db.runAsync(
         `INSERT OR REPLACE INTO questions (
-          id, subject_id, type, question, choices, answer, explanation, weight,created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,datetime('now'))`,
+          id, subject_id, type, question, choices, answer, explanation, weight, tags, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
         [
           question.id,
           filename,
           question.type,
           JSON.stringify(question.question),
           JSON.stringify(question.choices || []),
-          question.answer,
+          JSON.stringify(question.answer),
           question.explanation || null,
           1.0,
+          JSON.stringify(question.tags || []),
         ]
       );
     }
