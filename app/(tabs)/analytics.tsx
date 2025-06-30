@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useState } from "react";
 import {
@@ -9,6 +9,8 @@ import {
 } from "@/lib/db";
 import { questionFileMap } from "@/lib/questionFileMap";
 import { AnswerRecord } from "@/lib/types";
+
+const backgroundSource = require("../../assets/backgrounds/background-analytics.png");
 
 export default function AnalyticsScreen() {
   const [questionStats, setQuestionStats] = useState<QuestionStats[]>([]);
@@ -84,6 +86,11 @@ export default function AnalyticsScreen() {
   };
 
   return (
+    <ImageBackground
+      source={backgroundSource}
+      style={styles.background}
+      imageStyle={{ opacity: 0.2 }}
+    >
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <FontAwesome name="bar-chart" size={28} style={styles.icon} />
@@ -161,7 +168,7 @@ export default function AnalyticsScreen() {
           📛 분석데이터 초기화 (개발자용)
         </Text>
       </Pressable>
-    </ScrollView>
+    </ScrollView></ImageBackground>
   );
 }
 
@@ -238,5 +245,8 @@ const styles = StyleSheet.create({
   emptyMessageText: {
     fontSize: 16,
     color: "#888",
+  },background: {
+    flex: 1,
+    resizeMode: "cover",
   },
 });

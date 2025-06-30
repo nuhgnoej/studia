@@ -5,12 +5,20 @@ import {
   ScrollView,
   Text,
   Pressable,
+  ImageBackground,
 } from "react-native";
 import { handleExportData } from "@/lib/export";
 import { questionFileMap } from "@/lib/questionFileMap";
 
+const backgroundSource = require("../../assets/backgrounds/background-settings.png");
+
 export default function SettingsScreen() {
   return (
+    <ImageBackground
+      source={backgroundSource}
+      style={styles.background}
+      imageStyle={{ opacity: 0.2 }}
+    >
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>설정</Text>
 
@@ -33,7 +41,7 @@ export default function SettingsScreen() {
       </View>
 
       {/* 필요시 데이터 초기화 버튼도 추가 가능 */}
-    </ScrollView>
+    </ScrollView></ImageBackground>
   );
 }
 
@@ -65,5 +73,8 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     opacity: 0.9,
+  },background: {
+    flex: 1,
+    resizeMode: "cover",
   },
 });

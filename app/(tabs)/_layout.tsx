@@ -1,12 +1,19 @@
 import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
+import { Pressable, Text } from "react-native";
+import { useFonts } from "expo-font";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
 }) {
+  const [fontsLoaded] = useFonts(FontAwesome.font);
+
+  if (!fontsLoaded) {
+    return <Text>...</Text>;
+  }
+
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
