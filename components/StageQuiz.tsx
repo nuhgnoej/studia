@@ -156,6 +156,13 @@ export default function StageQuiz({
   const backgroundSource =
     tagToBackgroundImage[displayTag] ?? defaultBackground;
 
+  const handlePreviousQuestion = () => {
+    if (currentIndex === 0) return;
+    setCurrentIndex((prev) => prev - 1);
+    setIsAnswered(false);
+    setIsStageSummary(false);
+  };
+
   return (
     <ImageBackground
       source={backgroundSource}
@@ -165,7 +172,7 @@ export default function StageQuiz({
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={80} // 헤더 높이에 따라 조정
+        keyboardVerticalOffset={80}
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
@@ -178,7 +185,8 @@ export default function StageQuiz({
           <View style={styles.container}>
             <Text style={styles.stageText}>
               📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
-              {Math.min(stageSize, stageEnd - stageStart)}
+              {Math.min(stageSize, stageEnd - stageStart)} — 전체{" "}
+              {currentQuestion.id} / {questions.length}
             </Text>
 
             {isStageSummary ? (
@@ -221,7 +229,7 @@ export default function StageQuiz({
                   }}
                 />
 
-                {isAnswered && (
+                {/* {isAnswered && (
                   <Button
                     title={
                       currentIndex === questions.length - 1
@@ -230,7 +238,33 @@ export default function StageQuiz({
                     }
                     onPress={handleNext}
                   />
-                )}
+                )} */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 16,
+                    gap: 8,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Button
+                      title="⬅️ 이전 문제"
+                      onPress={handlePreviousQuestion}
+                      disabled={currentIndex === 0}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Button
+                      title={
+                        currentIndex === questions.length - 1
+                          ? "✔️ 퀴즈 완료"
+                          : "➡️ 다음 문제"
+                      }
+                      onPress={handleNext}
+                    />
+                  </View>
+                </View>
               </>
             )}
           </View>

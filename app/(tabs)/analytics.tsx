@@ -3,6 +3,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useState } from "react";
 import {
   getAnswersBySubjectId,
+  getQuestionsBySubjectId,
   getWeightsBySubjectId,
   resetAnswerDatabase,
 } from "@/lib/db";
@@ -12,6 +13,11 @@ import { AnswerRecord } from "@/lib/types";
 export default function AnalyticsScreen() {
   const [questionStats, setQuestionStats] = useState<QuestionStats[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [overallStats, setOverallStats] = useState<{
+    totalQuestions: number;
+    correctQuestions: number;
+    accuracy: number;
+  } | null>(null);
 
   type QuestionStats = {
     question_id: number;
@@ -55,7 +61,25 @@ export default function AnalyticsScreen() {
       weight: weightMap.get(q.question_id) ?? 1.0,
     }));
 
+    // 🔥 전체 문제 목록 조회
+    const questions = await getQuestionsBySubjectId(filename);
+    const totalQuestions = questions.length;
+
+    // 🔥 문제별 최신 정답 상태 계산
+    const latestCorrectQuestions = questions.filter((q) => {
+      const stat = merged.find((s) => s.question_id === q.id);
+      return stat ? stat.accuracy === 1 : false; // 최근 기준 정답이면 카운트
+    }).length;
+
+    const accuracy =
+      totalQuestions > 0 ? latestCorrectQuestions / totalQuestions : 0;
+
     setQuestionStats(merged);
+    setOverallStats({
+      totalQuestions,
+      correctQuestions: latestCorrectQuestions,
+      accuracy,
+    });
     setHasLoaded(true);
   };
 
@@ -81,6 +105,21 @@ export default function AnalyticsScreen() {
           </Pressable>
         ))}
       </View>
+
+      {hasLoaded && overallStats ? (
+        <View style={styles.section}>
+          <Text style={styles.subtitle}>과목 전체 통계</Text>
+          <View style={styles.statBox}>
+            <Text style={styles.statText}>
+              📊 맞춘 문제 수: {overallStats.correctQuestions} /{" "}
+              {overallStats.totalQuestions}
+            </Text>
+            <Text style={styles.statText}>
+              ✅ 정답률: {(overallStats.accuracy * 100).toFixed(1)}%
+            </Text>
+          </View>
+        </View>
+      ) : null}
 
       {hasLoaded ? (
         questionStats.length > 0 ? (
@@ -114,6 +153,7 @@ export default function AnalyticsScreen() {
           await resetAnswerDatabase();
           setQuestionStats([]);
           setHasLoaded(false);
+          setOverallStats(null);
           alert("통계 데이터가 초기화되었습니다.");
         }}
       >
