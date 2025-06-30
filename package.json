@@ -9,6 +9,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "generate": "tsx scripts/generateQuestionFileMap.ts",
+    "tag": "tsx scripts/tagExtractor.ts",
     "dev": "expo start --tunnel -c"
   },
   "jest": {
