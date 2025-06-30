@@ -127,6 +127,26 @@ export default function StageQuiz({
     );
   }
 
+  const handleSkipStage = () => {
+    const nextIndex = stageEnd;
+    const isOutOfBound = nextIndex >= questions.length;
+
+    if (isOutOfBound) {
+      onComplete?.();
+    } else {
+      setCurrentIndex(nextIndex);
+      setIsAnswered(false);
+      setIsStageSummary(false);
+    }
+  };
+
+  const handlePreviousStage = () => {
+    const previousIndex = Math.max(stageStart - stageSize, 0);
+    setCurrentIndex(previousIndex);
+    setIsAnswered(false);
+    setIsStageSummary(false);
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -137,6 +157,10 @@ export default function StageQuiz({
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <Button title="이전 단계로" onPress={handlePreviousStage} />
+          <Button title="다음 단계로" onPress={handleSkipStage} />
+        </View>
         <View style={styles.container}>
           <Text style={styles.stageText}>
             📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
