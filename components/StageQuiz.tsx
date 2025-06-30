@@ -178,9 +178,20 @@ export default function StageQuiz({
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            <Button title="이전 단계로" onPress={handlePreviousStage} />
-            <Button title="다음 단계로" onPress={handleSkipStage} />
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              justifyContent: "space-between",
+              marginBottom: 8,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <Button title="⬅️ 이전 단계로" onPress={handlePreviousStage} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button title="다음 단계로 ➡️" onPress={handleSkipStage} />
+            </View>
           </View>
           <View style={styles.container}>
             <Text style={styles.stageText}>
