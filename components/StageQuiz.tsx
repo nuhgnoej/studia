@@ -4,7 +4,15 @@ import StageSummary from "@/components/StageSummary";
 import { Question } from "@/lib/types";
 import { insertAnswer } from "@/lib/db";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { useNavigation } from "expo-router";
 import { checkAnswer } from "@/lib/util";
 import TagsEditor from "./TagsEditor";
@@ -120,63 +128,76 @@ export default function StageQuiz({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.stageText}>
-        📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
-        {Math.min(stageSize, stageEnd - stageStart)}
-      </Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={80} // 헤더 높이에 따라 조정
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <Text style={styles.stageText}>
+            📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
+            {Math.min(stageSize, stageEnd - stageStart)}
+          </Text>
 
-      {isStageSummary ? (
-        <StageSummary
-          subjectId={subjectId}
-          stageNumber={currentStage}
-          questionIds={questions.slice(stageStart, stageEnd).map((q) => q.id)}
-          onContinue={handleContinueToNextStage}
-          onRetry={handleRetryStage}
-        />
-      ) : (
-        <>
-          {currentQuestion.type === "objective" ? (
-            <ObjectiveQuestion
-              question={currentQuestion}
-              onSubmit={handleSubmitAnswer}
-              isAnswered={isAnswered}
-              isCorrect={isCorrect}
+          {isStageSummary ? (
+            <StageSummary
+              subjectId={subjectId}
+              stageNumber={currentStage}
+              questionIds={questions
+                .slice(stageStart, stageEnd)
+                .map((q) => q.id)}
+              onContinue={handleContinueToNextStage}
+              onRetry={handleRetryStage}
             />
           ) : (
-            <SubjectiveQuestion
-              question={currentQuestion}
-              onSubmit={handleSubmitAnswer}
-              isAnswered={isAnswered}
-            />
-          )}
+            <>
+              {currentQuestion.type === "objective" ? (
+                <ObjectiveQuestion
+                  question={currentQuestion}
+                  onSubmit={handleSubmitAnswer}
+                  isAnswered={isAnswered}
+                  isCorrect={isCorrect}
+                />
+              ) : (
+                <SubjectiveQuestion
+                  question={currentQuestion}
+                  onSubmit={handleSubmitAnswer}
+                  isAnswered={isAnswered}
+                />
+              )}
 
-          <TagsEditor
-            tags={tags}
-            onChange={async (newTags) => {
-              setTags(newTags);
-              currentQuestion.tags = newTags;
-              await updateTagsEverywhere({
-                subjectId,
-                questionId: currentQuestion.id,
-                tags: newTags,
-              });
-            }}
-          />
+              <TagsEditor
+                tags={tags}
+                onChange={async (newTags) => {
+                  setTags(newTags);
+                  currentQuestion.tags = newTags;
+                  await updateTagsEverywhere({
+                    subjectId,
+                    questionId: currentQuestion.id,
+                    tags: newTags,
+                  });
+                }}
+              />
 
-          {isAnswered && (
-            <Button
-              title={
-                currentIndex === questions.length - 1
-                  ? "퀴즈 완료"
-                  : "다음 문제"
-              }
-              onPress={handleNext}
-            />
+              {isAnswered && (
+                <Button
+                  title={
+                    currentIndex === questions.length - 1
+                      ? "퀴즈 완료"
+                      : "다음 문제"
+                  }
+                  onPress={handleNext}
+                />
+              )}
+            </>
           )}
-        </>
-      )}
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
