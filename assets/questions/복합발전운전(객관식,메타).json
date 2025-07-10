@@ -219,8 +219,8 @@
       "id": 13,
       "type": "objective",
       "question": {
-        "question": "괄호 안에 알맞은 것은? <입찰량 * 용량가격 = ( ? )>",
-        "explanation": []
+        "question": "괄호 안에 알맞은 것은?",
+        "explanation": ["입찰량 * 용량가격 = ( ? )"]
       },
       "choices": ["발전기의 비용", "용량정산금", "기준가격", "거래수수료"],
       "answer": "용량정산금",
@@ -237,11 +237,11 @@
       "choices": [
         "중유에 비해 배기가스 온도는 상승한다.",
         "연소실에 서 열교환량은 작아진다.",
-        "중유연소에 비해 화염의 위도가 크다.",
+        "중유연소에 비해 화염의 휘도가 크다.",
         "공기의 확산혼합되는 확산연소이다."
       ],
       "answer": "중유연소에 비해 화염의 위도가 크다.",
-      "explanation": "LNG는 화염 길이가 짧고 연소 속도가 빠르기 때문에 화염의 위도는 크지 않다.",
+      "explanation": "LNG는 화염 길이가 짧고 연소 속도가 빠르기 때문에 화염의 휘도는 크지 않다.",
       "tags": ["연소"]
     },
     {
@@ -438,10 +438,10 @@
       "choices": [
         "터빈 Casing Cover를 들어 올려 Outer Gland를 제거한다.",
         "HIP의 배기 압력이 X영역 압력보다 높을 경우 Outer Seal Ring으로 배출된다.",
-        "배기 영역 압력이 증가할 수록 HP-IP은 자체 일봉을 위하여 Seal STM 양은 증가한다.",
+        "배기 영역 압력이 증가할 수록 HP-IP은 자체 밀봉을 위하여 Seal STM 양은 증가한다.",
         "터빈의 물 유입을 방지하기 위한 계통이다."
       ],
-      "answer": "배기 영역 압력이 증가할 수록 HP-IP은 자체 일봉을 위하여 Seal STM 양은 증가한다.",
+      "answer": "배기 영역 압력이 증가할 수록 HP-IP은 자체 밀봉을 위하여 Seal STM 양은 증가한다.",
       "explanation": "Seal Steam은 외부 유입 차단 및 내부 증기 누설 방지를 위해 영역 압력에 따라 조정된다.",
       "tags": ["압력", "Seal"]
     },
@@ -504,13 +504,13 @@
         "explanation": []
       },
       "choices": [
-        "Condenser Hot well 이 높은지 확인한다.",
+        "Condenser Hotwell 이 높은지 확인한다.",
         "Vacuum Pump의 Separator 내 Seal Water Level이 정상인지 확인한다.",
         "운전 중인 Vacuum Pump의 출구 MOV가 열려 있는지 확인한다.",
         "Receiver Tank Level이 Low-Low 상태인지 확인한다."
       ],
-      "answer": "Condenser Hot well 이 높은지 확인한다.",
-      "explanation": "Hot well 수위는 진공 형성과 직접적인 관련은 없다.",
+      "answer": "Condenser Hotwell 이 높은지 확인한다.",
+      "explanation": "Hotwell 수위는 진공 형성과 직접적인 관련은 없다.",
       "tags": ["진공"]
     },
     {
