@@ -11,7 +11,8 @@
     "generate": "tsx scripts/generateQuestionFileMap.ts",
     "tag": "tsx scripts/tagExtractor.ts",
     "image": "tsx scripts/generateTagToBackgroundImage.ts",
-    "dev": "expo start --tunnel -c"
+    "dev": "expo start --tunnel -c",
+    "build": "eas build -p android --profile preview"
   },
   "jest": {
     "preset": "jest-expo"
