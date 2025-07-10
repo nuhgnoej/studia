@@ -83,34 +83,49 @@ export default function StageSummary({
 
       <View style={styles.divider} />
 
-      {stats.map((s) => (
-        <View key={s.question_id} style={styles.statBox}>
-          <Text style={styles.questionId}>📘 문제 {s.question_id}</Text>
-          <Text style={styles.statText}>
-            시도: {s.total_attempts}회 / 정답: {s.correct_attempts}회
-          </Text>
-          <Text style={styles.statText}>
-            최근 응답:{" "}
-            <Text
-              style={{
-                color:
-                  s.latest_answer === s.correct_answer ? "#10b981" : "#ef4444", // 정답이면 초록, 오답이면 빨강
-                fontWeight: "bold",
-              }}
-            >
-              {s.latest_answer}
-            </Text>{" "}
-            / 정답: {s.correct_answer}
-          </Text>
-          <Text style={styles.statText}>
-            정답률:{" "}
-            {s.total_attempts > 0
-              ? ((s.correct_attempts / s.total_attempts) * 100).toFixed(1)
-              : "0.0"}
-            %
-          </Text>
-        </View>
-      ))}
+      {stats.map((s) => {
+        const normalize = (text: string) => text?.trim().replace(/^"|"$/g, "");
+
+        const isCorrect =
+          normalize(s.latest_answer) === normalize(s.correct_answer);
+
+        // console.log(`[문제 ${s.question_id}]`);
+        // console.log("latest_answer:", `"${s.latest_answer}"`);
+        // console.log("correct_answer:", `"${s.correct_answer}"`);
+        // console.log("normalized latest:", normalize(s.latest_answer));
+        // console.log("normalized correct:", normalize(s.correct_answer));
+        // console.log("isCorrect:", isCorrect);
+
+        return (
+          <View key={s.question_id} style={styles.statBox}>
+            <Text style={styles.questionId}>
+              📘 문제 {s.question_id} {isCorrect ? "⭕" : "❌"}
+            </Text>
+            <Text style={styles.statText}>
+              시도: {s.total_attempts}회 / 정답: {s.correct_attempts}회
+            </Text>
+            <Text style={styles.statText}>
+              최근 응답:{" "}
+              <Text
+                style={{
+                  color: isCorrect ? "#10b981" : "#ef4444", // 정답이면 초록, 오답이면 빨강
+                  fontWeight: "bold",
+                }}
+              >
+                {s.latest_answer}
+              </Text>{" "}
+              / 정답: {s.correct_answer}
+            </Text>
+            <Text style={styles.statText}>
+              정답률:{" "}
+              {s.total_attempts > 0
+                ? ((s.correct_attempts / s.total_attempts) * 100).toFixed(1)
+                : "0.0"}
+              %
+            </Text>
+          </View>
+        );
+      })}
 
       <View style={styles.buttonContainer}>
         <Button title="다음 단계로" onPress={onContinue} />
