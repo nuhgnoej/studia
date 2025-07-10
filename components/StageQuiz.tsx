@@ -170,7 +170,7 @@ export default function StageQuiz({
       imageStyle={{ opacity: 0.2 }}
     >
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{ flex: 1, paddingBottom: 40 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={80}
       >
