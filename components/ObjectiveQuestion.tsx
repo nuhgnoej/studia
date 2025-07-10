@@ -19,8 +19,10 @@ export default function ObjectiveQuestion({
 
   useEffect(() => {
     if (question.choices) {
+      const dummy = "모르겠습니다.";
       const shuffled = [...question.choices].sort(() => Math.random() - 0.5);
-      setShuffledChoices(shuffled);
+      const withDummyLast = [...shuffled, dummy];
+      setShuffledChoices(withDummyLast);
     }
   }, [question]);
 

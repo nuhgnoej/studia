@@ -1,7 +1,13 @@
 // index.tsx
 import { questionFileMap } from "@/lib/questionFileMap";
 import { useRouter } from "expo-router";
-import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 const backgroundSource = require("../../assets/backgrounds/background-home.png");
 
@@ -16,23 +22,24 @@ export default function HomeScreen() {
     <ImageBackground
       source={backgroundSource}
       style={styles.background}
-      imageStyle={{ opacity: 0.2 }}
+      imageStyle={{ opacity: 0.1 }}
     >
-    <View style={styles.container}>
-      <Text style={styles.title}>과목 선택(JSON)</Text>
-      {Object.entries(questionFileMap).map(([filename, { name }]) => (
-        <Pressable
-          key={filename}
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={() => handlePress(filename, name)}
-        >
-          <Text style={styles.buttonText}>{name}</Text>
-        </Pressable>
-      ))}
-    </View></ImageBackground>
+      <View style={styles.container}>
+        <Text style={styles.title}>과목 선택(JSON)</Text>
+        {Object.entries(questionFileMap).map(([filename, { name }]) => (
+          <Pressable
+            key={filename}
+            style={({ pressed }) => [
+              styles.button,
+              pressed && styles.buttonPressed,
+            ]}
+            onPress={() => handlePress(filename, name)}
+          >
+            <Text style={styles.buttonText}>{name}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </ImageBackground>
   );
 }
 
