@@ -38,6 +38,15 @@ export default function ObjectiveQuestion({
     <ScrollView contentContainerStyle={styles.container}>
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.question}</Text>
+      {question.question.explanation?.length > 0 && (
+        <View style={styles.questionExplanationBox}>
+          {question.question.explanation.map((line, idx) => (
+            <Text key={idx} style={styles.questionExplanationText}>
+              {line}
+            </Text>
+          ))}
+        </View>
+      )}
 
       {/* 선택지 렌더링 */}
       {shuffledChoices.map((choice, index) => {
@@ -160,5 +169,24 @@ const styles = StyleSheet.create({
   choiceText: {
     fontSize: 16,
     color: "#222",
+  },
+
+  questionExplanationBox: {
+    backgroundColor: "#f5f5f5",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+
+  questionExplanationText: {
+    fontSize: 15,
+    color: "#333",
+    lineHeight: 22,
   },
 });
