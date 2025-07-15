@@ -1,12 +1,12 @@
 // app/home.tsx
 
+import QuestionSetCard from "@/components/QuestionSetCard";
+import { getAllQuestionSets } from "@/lib/db/query";
+import { auth } from "@/lib/firebase";
 import { useFocusEffect, useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
-import { FlatList, StyleSheet, Text, View, Button } from "react-native";
-import { auth } from "@/lib/firebase";
 import { useCallback, useState } from "react";
-import { getAllQuestionSets } from "@/lib/db/query";
-import QuestionSetCard from "@/components/QuestionSetCard";
+import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export default function Home() {
           <QuestionSetCard
             item={item}
             onDeleted={loadSets}
-            onPress={() => router.push(`/quiz/${item.id}`)}
+            onPress={() => router.push(`/subject/${item.id}`)}
           />
         )}
       />

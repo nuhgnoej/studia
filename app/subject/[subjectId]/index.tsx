@@ -1,19 +1,18 @@
+import MetadataCard from "@/components/MetadataCard";
+import { getMetadataBySubjectId } from "@/lib/db";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from "react-native";
-import MetadataCard from "@/components/MetadataCard";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { getMetadataBySubjectId } from "@/lib/db";
 import { Metadata } from "../../../lib/types";
 
 export default function SubjectStartScreen() {
-  //   const router = useRouter();
+    const router = useRouter();
   const { subjectId } = useLocalSearchParams();
   const navigation = useNavigation();
 
@@ -51,21 +50,21 @@ export default function SubjectStartScreen() {
             styles.button,
             pressed && styles.buttonPressed,
           ]}
-          onPress={() => Alert.alert("all")}
+          onPress={() => router.push(`/subject/${subjectId}/quiz`)}
         >
           <Text style={styles.buttonText}>🚀 문제 풀기 시작</Text>
         </Pressable>
 
-        {/* <Pressable
+        <Pressable
           style={({ pressed }) => [
             styles.button,
             styles.wrongOnlyButton,
             pressed && styles.buttonPressed,
           ]}
-          onPress={() => goToQuiz("wrong")}
+          onPress={() => router.push(`/subject/${subjectId}/quiz?mode=wrong`)}
         >
-          <Text style={styles.buttonText}>❌ 틀린 문제만</Text>
-        </Pressable> */}
+          <Text style={styles.buttonText}>❌ 틀린 문제만 풀기</Text>
+        </Pressable>
       </View>
 
       {meta && (

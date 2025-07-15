@@ -47,12 +47,12 @@ export default function MetadataCard({ meta }: { meta: any }) {
 
       <View style={metaStyles.row}>
         <Text style={metaStyles.label}>카테고리:</Text>
-        <Text style={metaStyles.value}>{meta.category.join(", ")}</Text>
+        <Text style={metaStyles.value}>{meta.category}</Text>
       </View>
 
       <View style={metaStyles.row}>
         <Text style={metaStyles.label}>태그:</Text>
-        <Text style={metaStyles.value}>{meta.tags.join(", ")}</Text>
+        <Text style={metaStyles.value}>{meta.tags}</Text>
       </View>
 
       <View style={metaStyles.row}>
