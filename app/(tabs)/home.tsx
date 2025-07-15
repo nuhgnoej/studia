@@ -17,19 +17,11 @@ export default function Home() {
     setSets(results);
   };
 
-  // useEffect(() => {
-  //   loadSets().catch(console.error);
-  // }, []);
-
   useFocusEffect(
     useCallback(() => {
       loadSets().catch(console.error);
     }, [])
   );
-
-  // useEffect(() => {
-  //   getAllQuestionSets().then(setSets).catch(console.error);
-  // }, []);
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -58,7 +50,11 @@ export default function Home() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ gap: 12 }}
         renderItem={({ item }) => (
-          <QuestionSetCard item={item} onDeleted={loadSets} />
+          <QuestionSetCard
+            item={item}
+            onDeleted={loadSets}
+            onPress={() => router.push(`/quiz/${item.id}`)}
+          />
         )}
       />
     </View>

@@ -1,6 +1,7 @@
 // lib/db.ts
 
 import * as SQLite from "expo-sqlite";
+import { Metadata } from "../types";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -75,4 +76,18 @@ export async function initDatabase() {
       )
     `);
   }
+}
+
+export async function getMetadataBySubjectId(
+  subjectId: string
+): Promise<Metadata> {
+  const db = await getDatabase();
+  const result = await db.getFirstAsync<Metadata>(
+    `SELECT * FROM subjects WHERE id = ?`,
+    [subjectId]
+  );
+  if (!result) {
+    throw new Error(`Subject not found: ${subjectId}`);
+  }
+  return result;
 }
