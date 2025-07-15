@@ -1,5 +1,6 @@
 import { auth } from "@/lib/firebase";
 import * as Google from "expo-auth-session/providers/google";
+import * as AuthSession from "expo-auth-session";
 import { useRouter } from "expo-router";
 import {
   GoogleAuthProvider,
@@ -8,17 +9,18 @@ import {
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Alert, Button, TextInput, View } from "react-native";
-import { androidClientId, iosClientId, webClientId } from "@/constants";
+import { webClientId } from "@/constants";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: webClientId,
-    iosClientId: iosClientId,
-    androidClientId: androidClientId,
+    clientId: webClientId,
+    redirectUri: AuthSession.makeRedirectUri(),
   });
+
+  console.log(AuthSession.makeRedirectUri());
 
   const handleLogin = async () => {
     try {
