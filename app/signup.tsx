@@ -9,6 +9,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Alert, Button, TextInput, View } from "react-native";
 import { auth, db } from "@/lib/firebase";
+import { androidClientId, iosClientId, webClientId } from "@/constants";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -16,10 +17,9 @@ export default function Signup() {
   const router = useRouter();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId:
-      "258669826284-p2osv39bjllnkrko1gd09gil3i9kk4ao.apps.googleusercontent.com",
-    iosClientId: "GOOGLE_IOS_CLIENT_ID",
-    androidClientId: "GOOGLE_ANDROID_CLIENT_ID",
+    webClientId: webClientId,
+    iosClientId: iosClientId,
+    androidClientId: androidClientId,
   });
 
   const handleSignup = async () => {
@@ -80,11 +80,6 @@ export default function Signup() {
         secureTextEntry
       />
       <Button title="Sign Up" onPress={handleSignup} />
-      <Button
-        title="Sign up with Google"
-        onPress={() => promptAsync()}
-        disabled={!request}
-      />
       <Button title="Go to Login" onPress={() => router.push("/login")} />
     </View>
   );

@@ -1,4 +1,3 @@
-import { webClientId } from "@/constants";
 import { auth } from "@/lib/firebase";
 import * as Google from "expo-auth-session/providers/google";
 import { useRouter } from "expo-router";
@@ -9,18 +8,16 @@ import {
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Alert, Button, TextInput, View } from "react-native";
+import { androidClientId, iosClientId, webClientId } from "@/constants";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [request, response, promptAsync] = Google.useAuthRequest({
-    // webClientId:
-    //   webClientId ||
-    //   "258669826284-p2osv39bjllnkrko1gd09gil3i9kk4ao.apps.googleusercontent.com",
     webClientId: webClientId,
-    iosClientId: "GOOGLE_IOS_CLIENT_ID",
-    androidClientId: "GOOGLE_ANDROID_CLIENT_ID",
+    iosClientId: iosClientId,
+    androidClientId: androidClientId,
   });
 
   const handleLogin = async () => {
