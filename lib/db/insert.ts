@@ -1,6 +1,7 @@
 // lib/db/insert.ts
 
 import { getDatabase } from ".";
+import { AnswerRecord } from "../types";
 
 export async function insertQuestions(subjectId: string, questions: any[]) {
   const db = await getDatabase();
@@ -113,3 +114,32 @@ export async function insertMetadata(metadata: any) {
     throw err;
   }
 }
+
+export const insertAnswer = async ({
+  question_id,
+  subject_id,
+  user_answer,
+  is_correct,
+}: Omit<AnswerRecord, "id" | "answered_at">): Promise<void> => {
+  try {
+    const db = await getDatabase();
+    console.log("🟢 insertAnswer DB 연결 성공");
+
+    await db.runAsync(
+      `INSERT INTO answers (
+        question_id,
+        subject_id,
+        user_answer,
+        is_correct,
+        answered_at
+      ) VALUES (?, ?, ?, ?, datetime('now'))`,
+      [question_id, subject_id, user_answer, is_correct ? 1 : 0]
+    );
+
+    console.log("✅ insertAnswer 성공:", { question_id, user_answer, is_correct });
+  } catch (error) {
+    
+    console.error("❌ insertAnswer 실패:", error);
+    throw error;
+  }
+};

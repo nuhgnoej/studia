@@ -27,9 +27,12 @@ export default function SubjectiveQuestion({
     <View>
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.questionText}</Text>
-      {question.question.questionExplanation?.length > 0 && (
+      {question.question.questionExplanation && (
         <View style={styles.questionExplanationBox}>
-          {question.question.questionExplanation.map((line, idx) => (
+          {(Array.isArray(question.question.questionExplanation)
+            ? question.question.questionExplanation
+            : [question.question.questionExplanation]
+          ).map((line, idx) => (
             <Text key={idx} style={styles.questionExplanationText}>
               {line}
             </Text>

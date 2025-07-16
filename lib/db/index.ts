@@ -18,6 +18,7 @@ export async function initDatabase() {
   // 기존 테이블 제거
   await db.runAsync("DROP TABLE IF EXISTS questions");
   await db.runAsync("DROP TABLE IF EXISTS subjects");
+  await db.runAsync("DROP TABLE IF EXISTS answers");
 
   // subjects 테이블
   await db.runAsync(`
@@ -58,24 +59,18 @@ export async function initDatabase() {
     )
   `);
 
-  // answers 테이블이 없으면 생성
-  const answersTableExists = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='answers'"
-  );
-
-  if (!answersTableExists || answersTableExists.count === 0) {
-    await db.runAsync(`
-      CREATE TABLE IF NOT EXISTS answers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        question_id INTEGER NOT NULL,
-        subject_id TEXT NOT NULL,
-        user_answer TEXT NOT NULL,
-        is_correct INTEGER NOT NULL,
-        created_at DATETIME NOT NULL,
-        FOREIGN KEY (question_id, subject_id) REFERENCES questions(id, subject_id)
-      )
-    `);
-  }
+  // answers 테이블
+  await db.runAsync(`
+    CREATE TABLE IF NOT EXISTS answers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      question_id INTEGER NOT NULL,
+      subject_id TEXT NOT NULL,
+      user_answer TEXT NOT NULL,
+      is_correct INTEGER NOT NULL,
+      answered_at DATETIME NOT NULL,
+      FOREIGN KEY (question_id, subject_id) REFERENCES questions(id, subject_id)
+    )
+  `);
 }
 
 export async function getMetadataBySubjectId(

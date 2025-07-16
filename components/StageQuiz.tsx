@@ -1,29 +1,29 @@
 import ObjectiveQuestion from "@/components/ObjectiveQuestion";
-import SubjectiveQuestion from "@/components/SubjectiveQuestion";
 import StageSummary from "@/components/StageSummary";
-import { Question } from "../lib/types";
+import SubjectiveQuestion from "@/components/SubjectiveQuestion";
+import { useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   Button,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useNavigation } from "expo-router";
+import { Question } from "../lib/types";
 
 import TagsEditor from "./TagsEditor";
 // import { updateTagsEverywhere } from "@/lib/tagUtil";
+import { insertAnswer } from "@/lib/db/insert";
+import { updateTags } from "@/lib/db/tagUtil";
+import { checkAnswer } from "@/lib/db/util";
 import {
   defaultBackground,
   tagToBackgroundImage,
 } from "@/lib/tagToBackgroundImage";
-import { insertAnswer } from "@/lib/db/query";
-import { checkAnswer } from "@/lib/db/util";
-import { updateTags } from "@/lib/db/tagUtil";
 
 type Props = {
   questions: Question[];
@@ -76,20 +76,36 @@ export default function StageQuiz({
     userAnswer: string,
     isCorrectOverride?: boolean
   ) => {
-    if (!currentQuestion) return;
+    console.log("[1/5] 🟢 handleSubmitAnswer: 시작", { userAnswer });
+
+    if (!currentQuestion) {
+      console.error("[FAIL] 🔴 handleSubmitAnswer: currentQuestion이 없습니다.");
+      return;
+    }
+    console.log("[2/5] 🟢 handleSubmitAnswer: currentQuestion 확인", {
+      id: currentQuestion.id,
+    });
 
     const isCorrect =
       typeof isCorrectOverride === "boolean"
         ? isCorrectOverride
         : checkAnswer(currentQuestion.answer.answerText, userAnswer);
+    console.log("[3/5] 🟢 handleSubmitAnswer: 정답 확인", { isCorrect });
 
-    await insertAnswer({
-      question_id: currentQuestion.id,
-      subject_id: subjectId,
-      user_answer: userAnswer,
-      is_correct: isCorrect,
-    });
+    try {
+      await insertAnswer({
+        question_id: currentQuestion.id,
+        subject_id: subjectId,
+        user_answer: userAnswer,
+        is_correct: isCorrect,
+      });
+      console.log("[4/5] 🟢 handleSubmitAnswer: insertAnswer 성공");
+    } catch (err) {
+      console.error("[FAIL] 🔴 handleSubmitAnswer: insertAnswer 오류", err);
+      return; // 오류 발생 시 여기서 중단
+    }
 
+    console.log("[5/5] 🟢 handleSubmitAnswer: 상태 업데이트 예정");
     setIsAnswered(true);
     setIsCorrect(isCorrect);
   };
@@ -241,17 +257,7 @@ export default function StageQuiz({
                     });
                   }}
                 />
-
-                {/* {isAnswered && (
-                  <Button
-                    title={
-                      currentIndex === questions.length - 1
-                        ? "퀴즈 완료"
-                        : "다음 문제"
-                    }
-                    onPress={handleNext}
-                  />
-                )} */}
+                
                 <View
                   style={{
                     flexDirection: "row",

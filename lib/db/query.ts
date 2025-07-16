@@ -2,7 +2,7 @@
 
 import { getDatabase } from ".";
 
-import { AnswerRecord, Question } from "../types";
+import { Question } from "../types";
 
 export async function getAllQuestionSets() {
   const db = await getDatabase();
@@ -38,31 +38,6 @@ export async function getQuestionsBySubjectId(subjectId: string): Promise<Questi
   return result.map(mapRowToQuestion);
 }
 
-
-export const insertAnswer = async ({
-  question_id,
-  subject_id,
-  user_answer,
-  is_correct,
-}: Omit<AnswerRecord, "id" | "answered_at">): Promise<void> => {
-  try {
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT INTO answers (
-        question_id,
-        subject_id,
-        user_answer,
-        is_correct,
-        answered_at
-      ) VALUES (?, ?, ?, ?, datetime('now'))`,
-      [question_id, subject_id, user_answer, is_correct ? 1 : 0]
-    );
-  } catch (error) {
-    console.error("❌ insertAnswer 실패:", error);
-    throw error;
-  }
-};
-
 function mapRowToQuestion(row: any): Question {
   return {
     id: row.id,
@@ -71,8 +46,10 @@ function mapRowToQuestion(row: any): Question {
     question: {
       questionText: row.questionText,
       questionExplanation: row.questionExplanation
-        ? JSON.parse(row.questionExplanation)
-        : [],
+        ? row.questionExplanation        : ""
+       // questionExplanation: row.questionExplanation
+      //   ? JSON.parse(row.questionExplanation)
+      //   : [],
     },
     choices: row.choices ? JSON.parse(row.choices) : [],
     answer: {
@@ -96,14 +73,14 @@ export default async function getWrongAnsweredQuestionsBySubjectId(
     SELECT q.*
     FROM questions q
     JOIN (
-      SELECT question_id, MAX(created_at) AS latest
+      SELECT question_id, MAX(answered_at) AS latest
       FROM answers
       WHERE subject_id = ?
       GROUP BY question_id
     ) latest_answers
     ON q.id = latest_answers.question_id
     JOIN answers a
-    ON a.question_id = latest_answers.question_id AND a.created_at = latest_answers.latest
+    ON a.question_id = latest_answers.question_id AND a.answered_at = latest_answers.latest
     WHERE a.is_correct = 0 AND q.subject_id = ?
     `,
     [subjectId, subjectId]

@@ -1,7 +1,6 @@
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Question } from "../lib/types";
-import { useEffect, useState } from "react";
-
 
 export default function ObjectiveQuestion({
   question,
@@ -18,16 +17,26 @@ export default function ObjectiveQuestion({
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
 
   useEffect(() => {
+    setSelected(null);
+  }, [question]);
+
+  useEffect(() => {
     if (question.choices) {
-      const dummy = "모르겠습니다.";
-      const shuffled = [...question.choices].sort(() => Math.random() - 0.5);
+      const dummy = "모르겠습니다.";      
+      const choicesWithAnswer = [...question.choices, question.answer.answerText];
+      const uniqueChoices = Array.from(new Set(choicesWithAnswer));
+      const shuffled = uniqueChoices.sort(() => Math.random() - 0.5);
       const withDummyLast = [...shuffled, dummy];
       setShuffledChoices(withDummyLast);
     }
   }, [question]);
 
+  useEffect(() => {
+    console.log("🟢 isAnswered updated to:", isAnswered);
+  }, [isAnswered]);
+
   const handleSelect = (choice: string) => {
-    if (isAnswered) return;
+    if (isAnswered) return;    
     setSelected(choice);
     onSubmit(choice);
   };
@@ -38,9 +47,12 @@ export default function ObjectiveQuestion({
     <ScrollView contentContainerStyle={styles.container}>
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.questionText}</Text>
-      {question.question.questionExplanation?.length > 0 && (
+      {question.question.questionExplanation && (
         <View style={styles.questionExplanationBox}>
-          {question.question.questionExplanation.map((line, idx) => (
+          {(Array.isArray(question.question.questionExplanation)
+            ? question.question.questionExplanation
+            : [question.question.questionExplanation]
+          ).map((line, idx) => (
             <Text key={idx} style={styles.questionExplanationText}>
               {line}
             </Text>
