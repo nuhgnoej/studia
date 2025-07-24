@@ -9,11 +9,11 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+import type { AnswerStats } from "@/lib/types";
 import {
   getAnswerStatsForQuestions,
   getCorrectAnswerByQuestionAndSubjectId,
-} from "@/lib/db";
-import type { AnswerStats } from "@/lib/types";
+} from "@/lib/db/util";
 
 type Props = {
   stageNumber: number;
@@ -36,26 +36,41 @@ export default function StageSummary({
 
   useEffect(() => {
     const fetchStats = async () => {
-      const baseStats = await getAnswerStatsForQuestions(
-        subjectId,
-        questionIds
-      );
+      try {
+        console.log("📥 Loading stats...");
+        console.log("📥 subjectId:", subjectId);
+        console.log("📥 questionIds:", questionIds);
 
-      const enrichedStats: (AnswerStats & { correct_answer: string })[] =
-        await Promise.all(
+        const baseStats = await getAnswerStatsForQuestions(
+          subjectId,
+          questionIds
+        );
+        console.log("📊 baseStats:", baseStats);
+
+        const enrichedStats = await Promise.all(
           baseStats.map(async (s) => {
-            const correctAnswer = await getCorrectAnswerByQuestionAndSubjectId(
-              subjectId,
-              s.question_id
-            );
-            return {
-              ...s,
-              correct_answer: correctAnswer ?? "정답 없음",
-            };
+            try {
+              const correctAnswer =
+                await getCorrectAnswerByQuestionAndSubjectId(
+                  subjectId,
+                  s.question_id
+                );
+              return {
+                ...s,
+                correct_answer: correctAnswer ?? "정답 없음",
+              };
+            } catch (err) {
+              console.error("❌ 정답 로딩 실패:", err);
+              return { ...s, correct_answer: "에러" };
+            }
           })
         );
 
-      setStats(enrichedStats);
+        console.log("✅ enrichedStats:", enrichedStats);
+        setStats(enrichedStats);
+      } catch (e) {
+        console.error("🔥 fetchStats 실패:", e);
+      }
     };
 
     fetchStats();
