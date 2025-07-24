@@ -1,16 +1,27 @@
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { initDatabase } from "@/lib/db";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 
 export default function SettingsScreen() {
   const router = useRouter();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogout = async () => {
     await signOut(auth);
     router.replace("/login");
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+    });
+
+    return unsubscribe; // cleanup
+  }, []);
 
   const handleResetDatabase = async () => {
     Alert.alert("경고", "로컬 데이터베이스를 초기화하시겠습니까?", [
@@ -28,7 +39,9 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>설정</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>설정</Text>
+      </View>
 
       <View style={styles.item}>
         <Button
@@ -39,14 +52,30 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.item}>
-        <Button title="로그아웃" onPress={handleLogout} color="gray" />
+        {isLoggedIn ? (
+          <Button title="로그아웃" onPress={handleLogout} color="gray" />
+        ) : (
+          <Button
+            title="로그인 화면으로"
+            // onPress={() => router.replace("/login")}
+            onPress={() => router.push("/login")}
+            color="blue"
+          />
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 24 },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+  },
+  header: { marginBottom: 20 },
+  title: { fontSize: 22, fontWeight: "bold" },
   item: { marginBottom: 20 },
+  description: { fontSize: 16, color: "#333" },
 });

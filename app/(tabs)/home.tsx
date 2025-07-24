@@ -25,15 +25,18 @@ export default function Home() {
 
   const handleSignOut = async () => {
     await signOut(auth);
-    router.replace("/login");
+    router.push("/login");
   };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <Text style={styles.title}>홈</Text>
         <Text style={styles.welcomeText}>
-          Welcome, {auth.currentUser?.email}
+          {auth.currentUser
+            ? `Welcome, ${auth.currentUser?.email}`
+            : "Welcome, This is OnDevice Mode."}
         </Text>
       </View>
 
@@ -41,7 +44,15 @@ export default function Home() {
       <View style={styles.buttonRow}>
         <Button title="Upload JSON" onPress={() => router.replace("/upload")} />
         <View style={{ width: 12 }} />
-        <Button title="Sign Out" color="tomato" onPress={handleSignOut} />
+        {auth.currentUser ? (
+          <Button title="Sign Out" color="tomato" onPress={handleSignOut} />
+        ) : (
+          <Button
+            title="Log In"
+            color="tomato"
+            onPress={() => router.push("/login")}
+          />
+        )}
       </View>
 
       {/* List */}
@@ -71,6 +82,7 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 20,
   },
+  title: { fontSize: 22, fontWeight: "bold" },
   welcomeText: {
     fontSize: 16,
     fontWeight: "500",

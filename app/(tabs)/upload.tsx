@@ -1,6 +1,6 @@
 // app/upload.tsx
 
-import { View, Text, Alert, ActivityIndicator } from "react-native";
+import { View, Text, Alert, ActivityIndicator, StyleSheet } from "react-native";
 import JsonUploader from "@/components/JsonUploader";
 import { insertMetadata, insertQuestions } from "@/lib/db/insert";
 import { useRouter } from "expo-router";
@@ -20,10 +20,10 @@ export default function UploadScreen() {
       setIsUploading(true);
 
       await insertMetadata(data.metadata);
-        console.log("✅ 메타데이터 삽입 완료");
+      console.log("✅ 메타데이터 삽입 완료");
 
       await insertQuestions(data.metadata.id, data.questions);
-        console.log("✅ 질문 삽입 완료");
+      console.log("✅ 질문 삽입 완료");
 
       Alert.alert(
         "업로드 완료",
@@ -44,8 +44,16 @@ export default function UploadScreen() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text>문제 세트를 JSON으로 업로드하세요</Text>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>JSON 업로드</Text>
+        <Text style={styles.description}>
+          문제 세트를 JSON으로 업로드하세요
+        </Text>
+      </View>
+
+      {/* Actions */}
       {isUploading ? (
         <View style={{ alignItems: "center", marginTop: 40 }}>
           <ActivityIndicator size="large" color="#007aff" />
@@ -57,3 +65,17 @@ export default function UploadScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+  },
+  header: {
+    marginBottom: 20,
+  },
+  title: { fontSize: 22, fontWeight: "bold" },
+  description: { fontSize: 16, color: "#333" },
+});
