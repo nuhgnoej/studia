@@ -1,45 +1,79 @@
 // components/QuestionSetCard.tsx
 
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   item: {
     id: string;
     title: string;
     description?: string;
+    image?: string;
   };
-  onDeleted?: () => void;
   onPress?: () => void;
 };
 
-export default function QuestionSetCard({ item, onDeleted, onPress }: Props) {
+export default function QuestionSetCard({ item, onPress }: Props) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Text style={styles.cardTitle}>{item.title}</Text>
-      {item.description && (
-        <Text style={styles.cardDetail}>{item.description}</Text>
-      )}
+      <Image
+        source={
+          item.image
+            ? { uri: item.image }
+            : require("@/assets/images/default-card.png")
+        }
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <View style={styles.overlay}>
+        <Text style={styles.cardTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
+        {item.description && (
+          <Text style={styles.cardDetail} numberOfLines={2}>
+            {item.description}
+          </Text>
+        )}
+      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#f5f5f5",
-    padding: 16,
-    borderRadius: 10,
+    flex: 1,
+    aspectRatio: 1,
+    borderRadius: 12,
+    overflow: "hidden",
+    elevation: 3,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    position: "relative",
+    minWidth: 0,
+  },
+  image: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(255,255,255,0.7)", // 흐린 오버레이 (optional)
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 12,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 4,
+    color: "#333",
+    textAlign: "center",
   },
   cardDetail: {
     fontSize: 14,
     color: "#555",
+    textAlign: "center",
+    marginTop: 6,
   },
 });

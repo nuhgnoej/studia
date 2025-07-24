@@ -59,11 +59,13 @@ export default function Home() {
       <FlatList
         data={sets}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ gap: 12 }}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: "space-between", gap: 12 }}
+        contentContainerStyle={{ gap: 12, paddingBottom: 20 }}
         renderItem={({ item }) => (
           <QuestionSetCard
             item={item}
-            onDeleted={loadSets}
+            // onDeleted={loadSets}
             onPress={() => router.push(`/subject/${item.id}`)}
           />
         )}
@@ -82,7 +84,10 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 20,
   },
-  title: { fontSize: 22, fontWeight: "bold" },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
   welcomeText: {
     fontSize: 16,
     fontWeight: "500",
@@ -93,30 +98,5 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     marginBottom: 20,
   },
-  listContainer: {
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: "#f5f5f5",
-    padding: 16,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  cardDetail: {
-    fontSize: 14,
-    color: "#555",
-  },
 });
+
