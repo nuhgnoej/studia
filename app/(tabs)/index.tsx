@@ -2,26 +2,23 @@
 
 import QuestionSetCard from "@/components/QuestionSetCard";
 import { getAllQuestionSets } from "@/lib/db/query";
-import { auth } from "@/lib/firebase";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { commonStyles } from "../../styles/common";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { signOut } from "firebase/auth";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "@/hooks/useAuth";
 import { insertMetadata, insertQuestions } from "@/lib/db/insert";
 import JsonUploadFAB from "@/components/JsonUploadFAB";
 import { getProgressSummary } from "@/lib/db/progress";
+import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 
 type ProgressInfo = {
   lastIndex: number;
@@ -33,57 +30,14 @@ export default function Home() {
   const router = useRouter();
   const [sets, setSets] = useState<any[]>([]);
   const [fabOpen, setFabOpen] = useState(false);
-  const { isLoggedIn, profileImageUri, user } = useAuth();
+  const { user } = useAuth();
   const [progressMap, setProgressMap] = useState<Record<string, ProgressInfo>>(
     {}
   );
 
-  const actions = isLoggedIn
-    ? [
-        {
-          text: "프로필",
-          icon: require("@/assets/icons/profile.png"),
-          name: "profile",
-          color: "#444",
-        },
-        {
-          text: "로그아웃",
-          icon: require("@/assets/icons/logout.png"),
-          name: "logout",
-          color: "#444",
-        },
-      ]
-    : [
-        {
-          text: "로그인",
-          icon: require("@/assets/icons/login.png"),
-          name: "login",
-          color: "#444",
-        },
-      ];
-
   const loadSets = async () => {
     const results = await getAllQuestionSets();
     setSets(results);
-  };
-
-  const customFabIcon =
-    isLoggedIn && profileImageUri ? (
-      <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
-    ) : (
-      <FontAwesome name="user-circle" size={48} color="#ccc" />
-    );
-
-  const handleActionPress = async (name: string) => {
-    setFabOpen(false);
-    if (name === "login") {
-      router.push("/login");
-    } else if (name === "profile") {
-      router.push("/profile");
-    } else if (name === "logout") {
-      await signOut(auth);
-      router.push("/login");
-    }
   };
 
   useFocusEffect(
@@ -142,42 +96,15 @@ export default function Home() {
         if (fabOpen) setFabOpen(false);
       }}
     >
-      <View style={[commonStyles.header, styles.headerRow]}>
-        <View style={{ flex: 1 }}>
-          <Text style={commonStyles.headerTitle}>홈</Text>
-          <Text style={commonStyles.headerWelcomeText}>
-            {user
-              ? `환영합니다, ${user.displayName} 님(${user.email})`
-              : `온디바이스 모드로 사용 중입니다.`}
-          </Text>
-        </View>
-
-        <View style={styles.fabWrapper}>
-          <TouchableOpacity
-            style={styles.fabButton}
-            onPress={() => setFabOpen((prev) => !prev)}
-            activeOpacity={0.7}
-          >
-            {customFabIcon}
-          </TouchableOpacity>
-
-          {fabOpen && (
-            <View style={styles.actionList}>
-              {actions.map((action) => (
-                <TouchableOpacity
-                  key={action.name}
-                  style={[styles.actionItem, { backgroundColor: action.color }]}
-                  onPress={() => handleActionPress(action.name)}
-                  activeOpacity={0.7}
-                >
-                  <Image source={action.icon} style={styles.actionIcon} />
-                  <Text style={styles.actionText}>{action.text}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
-      </View>
+      {/* 공통 헤더 컴포넌트 */}
+      <ScreenHeaderWithFAB
+        title="홈"
+        description={
+          user
+            ? `환영합니다, ${user.displayName} 님(${user.email})`
+            : `온디바이스 모드로 사용 중입니다.`
+        }
+      />
 
       <View style={{ marginBottom: 24 }} />
 
@@ -217,12 +144,6 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  profileImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#eee",
-  },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -234,54 +155,6 @@ const styles = StyleSheet.create({
     color: "#999",
     marginTop: 12,
     marginBottom: 8,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  fabWrapper: {
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  fabButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "transparent",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  actionList: {
-    position: "absolute",
-    top: 52,
-    right: 0,
-    zIndex: 10,
-    alignItems: "flex-end",
-  },
-  actionItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    borderRadius: 24,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginTop: 6,
-    backgroundColor: "#444",
-    minWidth: 130,
-  },
-  actionIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 12,
-    tintColor: "#EDEDED",
-  },
-  actionText: {
-    color: "#fff",
-    fontSize: 14,
-    flexShrink: 1,
   },
   uploaderWrapper: {
     marginBottom: 32,

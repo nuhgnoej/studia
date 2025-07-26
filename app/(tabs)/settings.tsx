@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { commonStyles } from "../../styles/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
+import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -121,41 +122,47 @@ export default function SettingsScreen() {
 
   return (
     <View style={commonStyles.container}>
-      <View style={commonStyles.header}>
-        <Text style={commonStyles.headerTitle}>설정</Text>
-        <Text style={commonStyles.headerDescription}>
-          앱 사용 환경을 원하는 대로 설정하세요.
-        </Text>
-      </View>
+      {/* 공통 헤더 컴포넌트 */}
+      <ScreenHeaderWithFAB
+        title="설정"
+        description={"앱 사용 환경을 원하는 대로 설정하세요."}
+      />
 
       {/* 일반 설정 */}
-      <View style={styles.section}>
-        {renderButton("각 과목 별 초기화 (문제세트, 진행률)", () =>
-          router.push("/subjectSettings")
-        )}
+      <View style={styles.bodyContainer}>
+        <View style={styles.section}>
+          {renderButton("각 과목 별 초기화 (문제세트, 진행률)", () =>
+            router.push("/subjectSettings")
+          )}
 
-        {isLoggedIn
-          ? renderButton("로그아웃", handleLogout, "#8E8E93")
-          : renderButton("로그인 화면으로", () => router.push("/login"))}
-      </View>
+          {isLoggedIn
+            ? renderButton("로그아웃", handleLogout, "#8E8E93")
+            : renderButton("로그인 화면으로", () => router.push("/login"))}
+        </View>
 
-      {/* 개발자용 설정 */}
-      <View style={styles.section}>
-        <Text style={styles.devHeader}>🛠️ 개발자 전용</Text>
-        {renderButton("로컬 DB 초기화", handleResetDatabase, "#FF3B30")}
-        {renderButton("AsyncStorage 초기화", clearAsyncStorage, "#FF3B30")}
-        {renderButton("프로필 이미지 삭제", deleteProfileImage, "#FF3B30")}
-        {renderButton(
-          "모든 프로필 이미지 삭제",
-          deleteAllProfileImage,
-          "#FF3B30"
-        )}
+        {/* 개발자용 설정 */}
+        <View style={styles.section}>
+          <Text style={styles.devHeader}>🛠️ 개발자 전용</Text>
+          {renderButton("로컬 DB 초기화", handleResetDatabase, "#FF3B30")}
+          {renderButton("AsyncStorage 초기화", clearAsyncStorage, "#FF3B30")}
+          {renderButton("프로필 이미지 삭제", deleteProfileImage, "#FF3B30")}
+          {renderButton(
+            "모든 프로필 이미지 삭제",
+            deleteAllProfileImage,
+            "#FF3B30"
+          )}
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  bodyContainer: {
+    flex: 1,
+    margin: 10,
+    padding: 10,
+  },
   section: {
     marginBottom: 40,
     gap: 12,
