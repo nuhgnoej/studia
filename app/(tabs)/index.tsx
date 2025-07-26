@@ -1,75 +1,298 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// app/(tabs)/index.tsx
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import QuestionSetCard from "@/components/QuestionSetCard";
+import { getAllQuestionSets } from "@/lib/db/query";
+import { auth } from "@/lib/firebase";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Alert,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { commonStyles } from "../../styles/common";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { signOut } from "firebase/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { insertMetadata, insertQuestions } from "@/lib/db/insert";
+import JsonUploadFAB from "@/components/JsonUploadFAB";
+import { getProgressSummary } from "@/lib/db/progress";
 
-export default function HomeScreen() {
+type ProgressInfo = {
+  lastIndex: number;
+  percent: number;
+  total: number;
+};
+
+export default function Home() {
+  const router = useRouter();
+  const [sets, setSets] = useState<any[]>([]);
+  const [fabOpen, setFabOpen] = useState(false);
+  const { isLoggedIn, profileImageUri, user } = useAuth();
+  const [progressMap, setProgressMap] = useState<Record<string, ProgressInfo>>(
+    {}
+  );
+
+  const actions = isLoggedIn
+    ? [
+        {
+          text: "프로필",
+          icon: require("@/assets/icons/profile.png"),
+          name: "profile",
+          color: "#444",
+        },
+        {
+          text: "로그아웃",
+          icon: require("@/assets/icons/logout.png"),
+          name: "logout",
+          color: "#444",
+        },
+      ]
+    : [
+        {
+          text: "로그인",
+          icon: require("@/assets/icons/login.png"),
+          name: "login",
+          color: "#444",
+        },
+      ];
+
+  const loadSets = async () => {
+    const results = await getAllQuestionSets();
+    setSets(results);
+  };
+
+  const customFabIcon =
+    isLoggedIn && profileImageUri ? (
+      <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
+    ) : (
+      <FontAwesome name="user-circle" size={48} color="#ccc" />
+    );
+
+  const handleActionPress = async (name: string) => {
+    setFabOpen(false);
+    if (name === "login") {
+      router.push("/login");
+    } else if (name === "profile") {
+      router.push("/profile");
+    } else if (name === "logout") {
+      await signOut(auth);
+      router.push("/login");
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadSets().catch(console.error);
+    }, [])
+  );
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const map: Record<
+        string,
+        { percent: number; lastIndex: number; total: number }
+      > = {};
+      for (const item of sets) {
+        const info = await getProgressSummary(item.id);
+        map[item.id] = info;
+      }
+      setProgressMap(map);
+    };
+
+    if (sets && sets.length > 0) {
+      fetchProgress();
+    }
+  }, [sets]);
+
+  const handleJsonData = async (data: any) => {
+    if (!data.metadata || !Array.isArray(data.questions)) {
+      alert("올바르지 않은 형식입니다.");
+      return;
+    }
+
+    try {
+      await insertMetadata(data.metadata);
+      await insertQuestions(data.metadata.id, data.questions);
+      Alert.alert(
+        "업로드 완료",
+        `총 ${data.questions.length}문제가 등록되었습니다.`,
+        [
+          {
+            text: "확인",
+            onPress: () => loadSets(),
+          },
+        ]
+      );
+    } catch (err) {
+      console.error("❌ 업로드 실패:", err);
+      Alert.alert("오류", "업로드 중 문제가 발생했습니다.");
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <Pressable
+      style={commonStyles.container}
+      onPress={() => {
+        if (fabOpen) setFabOpen(false);
+      }}
+    >
+      <View style={[commonStyles.header, styles.headerRow]}>
+        <View style={{ flex: 1 }}>
+          <Text style={commonStyles.headerTitle}>홈</Text>
+          <Text style={commonStyles.headerWelcomeText}>
+            {user
+              ? `환영합니다, ${user.displayName} 님(${user.email})`
+              : `온디바이스 모드로 사용 중입니다.`}
+          </Text>
+        </View>
+
+        <View style={styles.fabWrapper}>
+          <TouchableOpacity
+            style={styles.fabButton}
+            onPress={() => setFabOpen((prev) => !prev)}
+            activeOpacity={0.7}
+          >
+            {customFabIcon}
+          </TouchableOpacity>
+
+          {fabOpen && (
+            <View style={styles.actionList}>
+              {actions.map((action) => (
+                <TouchableOpacity
+                  key={action.name}
+                  style={[styles.actionItem, { backgroundColor: action.color }]}
+                  onPress={() => handleActionPress(action.name)}
+                  activeOpacity={0.7}
+                >
+                  <Image source={action.icon} style={styles.actionIcon} />
+                  <Text style={styles.actionText}>{action.text}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+      </View>
+
+      <View style={{ marginBottom: 24 }} />
+
+      {sets && sets.length !== 0 ? (
+        <FlatList
+          data={sets}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={{
+            justifyContent: "center",
+            gap: 12,
+            marginBottom: 12,
+          }}
+          contentContainerStyle={{
+            paddingHorizontal: 12,
+            paddingBottom: 40,
+            paddingTop: 12,
+          }}
+          renderItem={({ item }) => (
+            <QuestionSetCard
+              item={item}
+              onPress={() => router.push(`/subject/${item.id}`)}
+              progress={progressMap[item.id]}
+            />
+          )}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      ) : (
+        <View style={styles.emptyContainer}>
+          <MaterialIcons name="cloud-upload" size={48} color="#ccc" />
+          <Text style={styles.emptyText}>아직 문제 세트가 없습니다.</Text>
+        </View>
+      )}
+
+      <JsonUploadFAB onUpload={handleJsonData} />
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  profileImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#eee",
   },
-  stepContainer: {
-    gap: 8,
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 60,
+    padding: 24,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#999",
+    marginTop: 12,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  fabWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  fabButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  actionList: {
+    position: "absolute",
+    top: 52,
+    right: 0,
+    zIndex: 10,
+    alignItems: "flex-end",
+  },
+  actionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    borderRadius: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginTop: 6,
+    backgroundColor: "#444",
+    minWidth: 130,
+  },
+  actionIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 12,
+    tintColor: "#EDEDED",
+  },
+  actionText: {
+    color: "#fff",
+    fontSize: 14,
+    flexShrink: 1,
+  },
+  uploaderWrapper: {
+    marginBottom: 32,
+    marginHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });
