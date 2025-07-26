@@ -131,163 +131,177 @@ export default function ProfileScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1, backgroundColor: "#fff" }}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    <LinearGradient
+      colors={["#C9D6FF", "#E2E2E2"]}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+      style={{ flex: 1 }}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          style={{ flex: 1, backgroundColor: "#fff" }}
-          contentContainerStyle={commonStyles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* 공통 헤더 컴포넌트 */}
-          <ScreenHeaderWithFAB
-            title="프로필"
-            description={"계정 정보와 프로필 사진을 변경할 수 있어요."}
-          />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={commonStyles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* 공통 헤더 컴포넌트 */}
+            <ScreenHeaderWithFAB
+              title="프로필"
+              description={"계정 정보와 프로필 사진을 변경할 수 있어요."}
+            />
 
-          <View style={styles.bodyContainer}>
-            <View style={styles.profileHeader}>
-              <TouchableOpacity
-                style={styles.profileImageWrapper}
-                onPress={handlePickImage}
-              >
-                {profileImageUri ? (
-                  <Image
-                    source={{ uri: profileImageUri }}
-                    style={styles.profileImage}
+            <View style={styles.bodyContainer}>
+              {/* 프로필 헤더 */}
+              <View style={styles.profileHeader}>
+                <TouchableOpacity
+                  style={styles.profileImageWrapper}
+                  onPress={handlePickImage}
+                >
+                  <View style={styles.profileImageOuter}>
+                    {profileImageUri ? (
+                      <Image
+                        source={{ uri: profileImageUri }}
+                        style={styles.profileImage}
+                      />
+                    ) : (
+                      <FontAwesome name="user" size={60} color="#aaa" />
+                    )}
+                    <View style={styles.cameraIconOverlay}>
+                      <FontAwesome name="camera" size={18} color="#fff" />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+
+                <View style={styles.profileInfoBox}>
+                  {editMode ? (
+                    <TextInput
+                      value={displayNameInput}
+                      onChangeText={setDisplayNameInput}
+                      style={styles.input}
+                    />
+                  ) : (
+                    <Text style={styles.profileTitle}>
+                      {user?.displayName || "No Name"}
+                    </Text>
+                  )}
+                  <Text style={styles.profileDescription}>{user?.email}</Text>
+                </View>
+              </View>
+
+              <View style={styles.profileDetailBox}>
+                <Text style={styles.profileDetailLabel}>UID:</Text>
+                <Text style={styles.profileDetailValue}>{user?.uid}</Text>
+
+                <Text style={styles.profileDetailLabel}>가입일:</Text>
+                <Text style={styles.profileDetailValue}>
+                  {formatDate(user?.metadata?.creationTime)}
+                </Text>
+
+                <Text style={styles.profileDetailLabel}>최근 로그인:</Text>
+                <Text style={styles.profileDetailValue}>
+                  {formatDate(user?.metadata?.lastSignInTime)}
+                </Text>
+
+                <Text style={styles.profileDetailLabel}>자기소개:</Text>
+
+                {editMode ? (
+                  <TextInput
+                    multiline
+                    value={bioInput}
+                    onChangeText={setBioInput}
+                    style={[styles.input, { height: 80 }]}
                   />
                 ) : (
-                  <FontAwesome name="user-circle" size={100} color="#bbb" />
+                  <Text style={styles.profileDetailValue}>
+                    {bio || "자기소개가 없습니다."}
+                  </Text>
                 )}
-              </TouchableOpacity>
+              </View>
 
-              {editMode ? (
-                <TextInput
-                  value={displayNameInput}
-                  onChangeText={setDisplayNameInput}
-                  style={styles.input}
-                />
-              ) : (
-                <Text style={styles.profileTitle}>
-                  {user?.displayName || "No Name"}
-                </Text>
-              )}
-
-              <Text style={styles.profileDescription}>{user?.email}</Text>
-            </View>
-
-            <View style={styles.profileDetailBox}>
-              <Text style={styles.profileDetailLabel}>UID:</Text>
-              <Text style={styles.profileDetailValue}>{user?.uid}</Text>
-
-              <Text style={styles.profileDetailLabel}>가입일:</Text>
-              <Text style={styles.profileDetailValue}>
-                {formatDate(user?.metadata?.creationTime)}
-              </Text>
-
-              <Text style={styles.profileDetailLabel}>최근 로그인:</Text>
-              <Text style={styles.profileDetailValue}>
-                {formatDate(user?.metadata?.lastSignInTime)}
-              </Text>
-
-              <Text style={styles.profileDetailLabel}>자기소개:</Text>
-
-              {editMode ? (
-                <TextInput
-                  multiline
-                  value={bioInput}
-                  onChangeText={setBioInput}
-                  style={[styles.input, { height: 80 }]}
-                />
-              ) : (
-                <Text style={styles.profileDetailValue}>
-                  {bio || "자기소개가 없습니다."}
-                </Text>
-              )}
-            </View>
-
-            {/* 버튼 영역 */}
-            <View style={styles.buttonContainer}>
-              {/* 수정버튼 */}
-              {!editMode ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    setDisplayNameInput(user?.displayName ?? "");
-                    setBioInput(bio ?? "");
-                    setEditMode(true);
-                  }}
-                  style={{ width: "100%" }}
-                >
-                  <LinearGradient
-                    colors={["#3494e6", "#ec6ead"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.fullWidthButton}
-                  >
-                    <Text style={[styles.buttonText, { color: "#fff" }]}>
-                      수정
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              ) : (
-                <View style={styles.rowButtonGroup}>
-                  {/* 저장 버튼 */}
-                  <TouchableOpacity
-                    onPress={handleSaveProfile}
-                    disabled={saving}
-                    style={{ flex: 1 }}
-                  >
-                    <LinearGradient
-                      colors={["#2193b0", "#6dd5ed"]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={[
-                        styles.halfButton,
-                        {
-                          opacity: saving ? 0.6 : 1,
-                        },
-                      ]}
-                    >
-                      {saving ? (
-                        <ActivityIndicator color="#fff" />
-                      ) : (
-                        <Text style={[styles.buttonText, { color: "#fff" }]}>
-                          저장
-                        </Text>
-                      )}
-                    </LinearGradient>
-                  </TouchableOpacity>
-
-                  {/* 취소 버튼 */}
+              {/* 버튼 영역 */}
+              <View style={styles.buttonContainer}>
+                {/* 수정버튼 */}
+                {!editMode ? (
                   <TouchableOpacity
                     onPress={() => {
-                      setEditMode(false);
                       setDisplayNameInput(user?.displayName ?? "");
                       setBioInput(bio ?? "");
+                      setEditMode(true);
                     }}
-                    style={{ flex: 1 }}
+                    style={{ width: "100%" }}
                   >
                     <LinearGradient
-                      colors={["#0f0c29", "#302b63"]}
+                      colors={["#3494e6", "#ec6ead"]}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
-                      style={styles.halfButton}
+                      style={styles.fullWidthButton}
                     >
                       <Text style={[styles.buttonText, { color: "#fff" }]}>
-                        취소
+                        수정
                       </Text>
                     </LinearGradient>
                   </TouchableOpacity>
-                </View>
-              )}
+                ) : (
+                  <View style={styles.rowButtonGroup}>
+                    {/* 저장 버튼 */}
+                    <TouchableOpacity
+                      onPress={handleSaveProfile}
+                      disabled={saving}
+                      style={{ flex: 1 }}
+                    >
+                      <LinearGradient
+                        colors={["#2193b0", "#6dd5ed"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={[
+                          styles.halfButton,
+                          {
+                            opacity: saving ? 0.6 : 1,
+                          },
+                        ]}
+                      >
+                        {saving ? (
+                          <ActivityIndicator color="#fff" />
+                        ) : (
+                          <Text style={[styles.buttonText, { color: "#fff" }]}>
+                            저장
+                          </Text>
+                        )}
+                      </LinearGradient>
+                    </TouchableOpacity>
+
+                    {/* 취소 버튼 */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setEditMode(false);
+                        setDisplayNameInput(user?.displayName ?? "");
+                        setBioInput(bio ?? "");
+                      }}
+                      style={{ flex: 1 }}
+                    >
+                      <LinearGradient
+                        colors={["#0f0c29", "#302b63"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.halfButton}
+                      >
+                        <Text style={[styles.buttonText, { color: "#fff" }]}>
+                          취소
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
@@ -296,10 +310,6 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 10,
     padding: 10,
-  },
-  profileHeader: {
-    alignItems: "center",
-    marginBottom: 20,
   },
   profileTitle: {
     fontSize: 22,
@@ -337,10 +347,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#222",
   },
-  profileImageWrapper: {
-    alignItems: "center",
-    marginBottom: 16,
-  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -364,7 +370,7 @@ const styles = StyleSheet.create({
   rowButtonGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 12, // RN 0.71+ 또는 Expo SDK 49+ 이상이면 사용 가능
+    gap: 12,
   },
   halfButton: {
     flex: 1,
@@ -394,5 +400,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#007AFF",
     fontWeight: "500",
+  },
+  profileImageOuter: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3, // 기존보다 더 두껍게
+    borderColor: "#3494e6", // 강조되는 브랜드 컬러 등
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#eee",
+    position: "relative",
+    // 그림자 효과
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  cameraIconOverlay: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#666",
+    borderRadius: 12,
+    padding: 4,
+  },
+  profileHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  profileImageWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileInfoBox: {
+    flex: 1,
+    justifyContent: "center",
   },
 });

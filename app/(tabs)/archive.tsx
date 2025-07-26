@@ -9,6 +9,7 @@ import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 
+
 const Tab = createMaterialTopTabNavigator();
 
 export default function ArchiveScreen() {
@@ -32,24 +33,30 @@ export default function ArchiveScreen() {
       </View>
     );
   return (
-    <View style={commonStyles.container}>
-      {/* 공통 헤더 컴포넌트 */}
-      <ScreenHeaderWithFAB
-        title="문제 아카이브"
-        description={"원하는 문제를 다운받으세요."}
-      />
+  
+      <View style={commonStyles.container}>
+        {/* 공통 헤더 컴포넌트 */}
+        <ScreenHeaderWithFAB
+          title="문제 아카이브"
+          description={"원하는 문제를 다운받으세요."}
+        />
 
-      {/* 내부 탭 */}
-      <Tab.Navigator
-        screenOptions={{
-          tabBarLabelStyle: { fontWeight: "bold" },
-          tabBarIndicatorStyle: { backgroundColor: "#333" },
-        }}
-      >
-        <Tab.Screen name="공식 아카이브" component={OfficialArchive} />
-        <Tab.Screen name="커뮤니티 아카이브" component={CommunityArchive} />
-      </Tab.Navigator>
-    </View>
+        {/* 내부 탭 */}
+        <Tab.Navigator
+          screenOptions={{
+            tabBarLabelStyle: { fontWeight: "bold" },
+            tabBarIndicatorStyle: { backgroundColor: "#333" },
+            tabBarStyle: {
+              shadowOpacity: 0,
+              elevation: 0,
+            },
+          }}
+        >
+          <Tab.Screen name="공식 아카이브" component={OfficialArchive} />
+          <Tab.Screen name="커뮤니티 아카이브" component={CommunityArchive} />
+        </Tab.Navigator>
+      </View>
+  
   );
 }
 

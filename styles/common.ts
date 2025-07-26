@@ -4,10 +4,10 @@ import { StyleSheet } from "react-native";
 export const commonStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   scrollContainer: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     paddingBottom: 100,
   },
   header: {
@@ -59,6 +59,14 @@ export const commonStyles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
+    // ✅ iOS shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+
+    // ✅ Android elevation
+    elevation: 4,
   },
   actionList: {
     position: "absolute",
