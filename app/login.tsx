@@ -23,6 +23,7 @@ import {
   Keyboard,
 } from "react-native";
 import { webClientId } from "@/constants";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Login() {
   const router = useRouter();
@@ -79,34 +80,42 @@ export default function Login() {
               autoCapitalize="none"
               keyboardType="email-address"
               style={styles.input}
+              editable={!isLoading}
             />
             <TextInput
               placeholder="Password"
               onChangeText={setPassword}
               secureTextEntry
               style={styles.input}
+              editable={!isLoading}
             />
 
-            {isLoading ? (
-              <ActivityIndicator
-                size="large"
-                color="#000"
-                style={{ margin: 20 }}
-              />
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={styles.loginButton}
-                  onPress={handleLogin}
-                >
-                  <Text style={styles.loginButtonText}>Log In</Text>
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <LinearGradient
+                colors={["#3494e6", "#ec6ead"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.fullWidthButton}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={[styles.loginButtonText, { color: "#fff" }]}>
+                    Login
+                  </Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.googleButton}
-                  onPress={() => promptAsync()}
-                  disabled={!request}
-                >
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={() => promptAsync()}
+              disabled={!request}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#444" />
+              ) : (
+                <>
                   <Image
                     source={require("@/assets/logos/google.png")}
                     style={styles.googleIcon}
@@ -114,19 +123,19 @@ export default function Login() {
                   <Text style={styles.googleButtonText}>
                     Sign in with Google
                   </Text>
-                </TouchableOpacity>
+                </>
+              )}
+            </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.signupLink}
-                  onPress={() => router.replace("/signup")}
-                >
-                  <Text style={styles.signupText}>
-                    Don&apos;t have an account?{" "}
-                    <Text style={styles.signupLink}>Sign up</Text>
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
+            <TouchableOpacity
+              style={styles.signupLink}
+              onPress={() => router.replace("/signup")}
+            >
+              <Text style={styles.signupText}>
+                Don&apos;t have an account?{" "}
+                <Text style={styles.signupLink}>Sign up</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -168,8 +177,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
   },
   loginButton: {
-    backgroundColor: "#4a90e2",
-    paddingVertical: 12,
     borderRadius: 8,
     marginBottom: 12,
   },
@@ -208,5 +215,16 @@ const styles = StyleSheet.create({
   signupText: {
     fontSize: 14,
     color: "#666",
+  },
+  fullWidthButton: {
+    width: "100%",
+    backgroundColor: "#aaa",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
   },
 });

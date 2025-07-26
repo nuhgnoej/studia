@@ -24,11 +24,13 @@ import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [bio, setBio] = useState("");
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,7 +53,7 @@ export default function Signup() {
   const handleSignup = async () => {
     setIsLoading(true);
 
-    if (!email || !password || !displayName) {
+    if (!email || !password || !displayName.trim()) {
       Alert.alert("입력 오류", "이메일, 비밀번호, 이름을 모두 입력해주세요.");
       setIsLoading(false);
       return;
@@ -84,6 +86,7 @@ export default function Signup() {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         displayName,
+        bio,
         photoURL: null,
         createdAt: serverTimestamp(),
       });
@@ -101,10 +104,11 @@ export default function Signup() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 10}
       style={{ flex: 1 }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container, { flexGrow: 1 }]}>
           <View style={styles.card}>
             <Text style={styles.title}>Sign Up</Text>
 
@@ -128,12 +132,14 @@ export default function Signup() {
               autoCapitalize="none"
               keyboardType="email-address"
               style={styles.input}
+              editable={!isLoading}
             />
             <TextInput
               placeholder="Password"
               onChangeText={setPassword}
               secureTextEntry
               style={styles.input}
+              editable={!isLoading}
             />
 
             <TextInput
@@ -141,18 +147,36 @@ export default function Signup() {
               onChangeText={setDisplayName}
               autoCapitalize="none"
               style={styles.input}
+              editable={!isLoading}
+            />
+
+            <TextInput
+              placeholder="Bio"
+              onChangeText={setBio}
+              autoCapitalize="none"
+              multiline
+              numberOfLines={3}
+              style={[styles.input, { height: 80, textAlignVertical: "top" }]}
+              editable={!isLoading}
             />
 
             <TouchableOpacity
               style={styles.signupButton}
               onPress={handleSignup}
-              disabled={isLoading} // 중복 제출 방지
+              disabled={isLoading}
             >
-              {isLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.signupButtonText}>Create Account</Text>
-              )}
+              <LinearGradient
+                colors={["#3494e6", "#ec6ead"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.fullWidthButton}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.signupButtonText}>Create Account</Text>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -173,10 +197,12 @@ export default function Signup() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
     backgroundColor: "#f4f4f4",
+    paddingTop: 60,
+    paddingBottom: 120,
   },
   card: {
     backgroundColor: "#fff",
@@ -186,7 +212,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    marginTop: -150,
+    marginBottom: 10,
     width: "100%",
   },
   title: {
@@ -205,8 +231,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
   },
   signupButton: {
-    backgroundColor: "#4a90e2",
-    paddingVertical: 12,
     borderRadius: 8,
     marginBottom: 16,
   },
@@ -234,5 +258,16 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     backgroundColor: "#eee",
+  },
+  fullWidthButton: {
+    width: "100%",
+    backgroundColor: "#aaa",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
   },
 });
