@@ -1,8 +1,8 @@
 // app/quiz/[id].tsx
 
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { Alert, Text } from "react-native";
 
 import ErrorMessage from "@/components/ErrorMessage";
 import Loading from "@/components/Loading";
@@ -20,6 +20,7 @@ function getStringParam(param: unknown): string | undefined {
 
 export default function QuizScreen() {
   const { subjectId: rawSubjectId, mode: rawMode } = useLocalSearchParams();
+  const router = useRouter();
   const subjectId = getStringParam(rawSubjectId);
   const mode = getStringParam(rawMode);
 
@@ -51,16 +52,30 @@ export default function QuizScreen() {
 
   if (loading) return <Loading />;
   if (error) return <ErrorMessage message={error} />;
-  if (questions.length === 0)
-    return <Text>해당 세트에 문제가 없습니다.</Text>;
+  if (questions.length === 0) return <Text>해당 세트에 문제가 없습니다.</Text>;
   if (!subjectId) return <ErrorMessage message="잘못된 접근입니다." />;
+
+  const handleQuizComplete = () => {
+    Alert.alert("🎉 퀴즈 완료!", "수고하셨습니다. 홈으로 이동할까요?", [
+      {
+        text: "취소",
+        style: "cancel",
+      },
+      {
+        text: "확인",
+        onPress: () => {
+          router.replace("/");
+        },
+      },
+    ]);
+  };
 
   return (
     <StageQuiz
       questions={questions}
       subjectId={subjectId}
       stageSize={10}
-      onComplete={() => alert("🎉 퀴즈 완료!")}
+      onComplete={handleQuizComplete}
     />
   );
 }

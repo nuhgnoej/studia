@@ -8,12 +8,14 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import type { AnswerStats } from "@/lib/types";
 import {
   getAnswerStatsForQuestions,
   getCorrectAnswerByQuestionAndSubjectId,
 } from "@/lib/db/util";
+import { useRouter } from "expo-router";
 
 type Props = {
   stageNumber: number;
@@ -32,6 +34,7 @@ export default function StageSummary({
   onContinue,
   onRetry,
 }: Props) {
+  const router = useRouter();
   const [stats, setStats] = useState<EnrichedAnswerStats[] | null>(null);
 
   useEffect(() => {
@@ -88,6 +91,21 @@ export default function StageSummary({
   const totalAttempts = stats.reduce((sum, s) => sum + s.total_attempts, 0);
   const correct = stats.reduce((sum, s) => sum + s.correct_attempts, 0);
   const accuracy = totalAttempts > 0 ? (correct / totalAttempts) * 100 : 0;
+
+  const handleQuizComplete = () => {
+    Alert.alert("중단하기", "수고하셨습니다. 홈으로 이동할까요?", [
+      {
+        text: "취소",
+        style: "cancel",
+      },
+      {
+        text: "확인",
+        onPress: () => {
+          router.replace("/");
+        },
+      },
+    ]);
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -148,6 +166,12 @@ export default function StageSummary({
         <Button
           title="이번 단계 다시 도전하기"
           onPress={onRetry}
+          color="#f59e0b"
+        />
+        <View style={{ height: 12 }} />
+        <Button
+          title="문제 풀기 종료하기"
+          onPress={handleQuizComplete}
           color="#f59e0b"
         />
       </View>
