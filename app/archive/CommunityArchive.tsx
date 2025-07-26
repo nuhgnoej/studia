@@ -4,6 +4,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -41,7 +42,12 @@ export default function CommunityArchive() {
                 📦 {item.questionsCount}문제 · 업로더: {item.uploader}
               </Text>
             </View>
-            <TouchableOpacity style={styles.downloadBtn}>
+            <TouchableOpacity
+              style={styles.downloadBtn}
+              onPress={() => {
+                Alert.alert("아카이브 다운로드 서비스는 구현 중입니다.");
+              }}
+            >
               <MaterialIcons name="file-download" size={20} color="white" />
               <Text style={{ color: "white", marginLeft: 6 }}>다운로드</Text>
             </TouchableOpacity>

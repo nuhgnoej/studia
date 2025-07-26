@@ -12,7 +12,7 @@ export const commonStyles = StyleSheet.create({
   },
   header: {
     paddingTop: 50,
-    marginBottom: 20,
+    marginBottom: 10,
     paddingHorizontal: 20,
   },
   headerTitle: {

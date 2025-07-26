@@ -119,9 +119,6 @@ export default function ProfileScreen() {
           title="프로필"
           description={"로그인 후 프로필을 확인할 수 있습니다."}
         />
-        {/* <View style={commonStyles.header}>
-          <Text style={commonStyles.headerTitle}>프로필</Text>          
-        </View> */}
         <TouchableOpacity
           onPress={() => router.push("/login")}
           activeOpacity={0.7}
