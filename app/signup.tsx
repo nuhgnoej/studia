@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     alignItems: "center",
-    color: "#007AFF", // 파란색 (iOS 스타일)
+    color: "#007AFF",
     fontWeight: "600",
   },
   loginText: {

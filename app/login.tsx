@@ -1,13 +1,9 @@
 import { auth } from "@/lib/firebase";
-import * as Google from "expo-auth-session/providers/google";
-import * as AuthSession from "expo-auth-session";
+// import * as Google from "expo-auth-session/providers/google";
+// import * as AuthSession from "expo-auth-session";
 import { useRouter } from "expo-router";
-import {
-  GoogleAuthProvider,
-  signInWithCredential,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { useEffect, useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -22,7 +18,7 @@ import {
   Platform,
   Keyboard,
 } from "react-native";
-import { webClientId } from "@/constants";
+// import { webClientId } from "@/constants";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function Login() {
@@ -32,10 +28,10 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: webClientId,
-    redirectUri: AuthSession.makeRedirectUri(),
-  });
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   clientId: webClientId,
+  //   redirectUri: AuthSession.makeRedirectUri(),
+  // });
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -49,20 +45,24 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      setIsLoading(true);
-      const { idToken } = response.authentication!;
-      const credential = GoogleAuthProvider.credential(idToken);
-      signInWithCredential(auth, credential)
-        .then(() => router.replace("/"))
-        .catch((e) => {
-          console.error("Firebase sign-in error", e);
-          Alert.alert("Google 로그인 실패", e.message);
-        })
-        .finally(() => setIsLoading(false));
-    }
-  }, [response, router]);
+  const handleGoogleLoginButton = () => {
+    Alert.alert("개발자 메세지", "구글 로그인 버튼은 구현중 입니다.");
+  };
+
+  // useEffect(() => {
+  //   if (response?.type === "success") {
+  //     setIsLoading(true);
+  //     const { idToken } = response.authentication!;
+  //     const credential = GoogleAuthProvider.credential(idToken);
+  //     signInWithCredential(auth, credential)
+  //       .then(() => router.replace("/"))
+  //       .catch((e) => {
+  //         console.error("Firebase sign-in error", e);
+  //         Alert.alert("Google 로그인 실패", e.message);
+  //       })
+  //       .finally(() => setIsLoading(false));
+  //   }
+  // }, [response, router]);
 
   return (
     <KeyboardAvoidingView
@@ -109,8 +109,9 @@ export default function Login() {
 
             <TouchableOpacity
               style={styles.googleButton}
-              onPress={() => promptAsync()}
-              disabled={!request}
+              // onPress={() => promptAsync()}
+              disabled={isLoading}
+              onPress={handleGoogleLoginButton}
             >
               {isLoading ? (
                 <ActivityIndicator color="#444" />

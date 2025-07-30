@@ -5,9 +5,11 @@ import {
   TouchableOpacity,
   Alert,
   TextInput,
+  RefreshControl,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { commonArchiveStyles } from "../../styles/archiveStyle";
+import { useCallback, useState } from "react";
 
 const mockData = [
   {
@@ -90,6 +92,14 @@ const mockData = [
 ];
 
 export default function CommunityArchive() {
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      // 여기에 서버에서 새 데이터 불러오는 로직 삽입 예정
+      setRefreshing(false);
+    }, 1500);
+  }, []);
   return (
     <View style={commonArchiveStyles.container}>
       {/* 문제 카드 목록 렌더링 */}
@@ -122,6 +132,9 @@ export default function CommunityArchive() {
         data={mockData}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         ListHeaderComponent={
           <View style={commonArchiveStyles.searchContainer}>
             <View style={commonArchiveStyles.searchInputWrapper}>
