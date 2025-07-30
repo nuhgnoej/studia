@@ -1,15 +1,16 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-  TextInput,
-  RefreshControl,
-} from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { commonArchiveStyles } from "../../styles/archiveStyle";
-import { useCallback, useState } from "react";
+// import {
+//   View,
+//   Text,
+//   FlatList,
+//   TouchableOpacity,
+//   Alert,
+//   TextInput,
+//   RefreshControl,
+// } from "react-native";
+// import { MaterialIcons } from "@expo/vector-icons";
+// import { commonArchiveStyles } from "../../styles/archiveStyle";
+// import { useCallback, useState } from "react";
+import ArchiveList from "@/components/archive/ArchiveList";
 
 const mockData = [
   {
@@ -99,64 +100,68 @@ const mockData = [
   },
 ];
 
-export default function OfficialArchive() {
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      // 여기에 서버에서 새 데이터 불러오는 로직 삽입 예정
-      setRefreshing(false);
-    }, 1500);
-  }, []);
+// export default function OfficialArchive() {
+//   const [refreshing, setRefreshing] = useState(false);
+//   const onRefresh = useCallback(() => {
+//     setRefreshing(true);
+//     setTimeout(() => {
+//       // 여기에 서버에서 새 데이터 불러오는 로직 삽입 예정
+//       setRefreshing(false);
+//     }, 1500);
+//   }, []);
 
-  return (
-    <View style={commonArchiveStyles.container}>
-      {/* 문제 카드 목록 렌더링 */}
-      <FlatList
-        data={mockData}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListHeaderComponent={
-          <View style={commonArchiveStyles.searchContainer}>
-            <View style={commonArchiveStyles.searchInputWrapper}>
-              <MaterialIcons
-                name="search"
-                size={20}
-                color="#999"
-                style={{ marginRight: 8 }}
-              />
-              <TextInput
-                placeholder="문제 제목 또는 업로더 검색"
-                placeholderTextColor="#999"
-                style={commonArchiveStyles.searchInput}
-              />
-            </View>
-          </View>
-        }
-        renderItem={({ item }) => (
-          <View style={commonArchiveStyles.card}>
-            <View style={{ flex: 1 }}>
-              <Text style={commonArchiveStyles.title}>{item.title}</Text>
-              <Text style={commonArchiveStyles.desc}>{item.description}</Text>
-              <Text style={commonArchiveStyles.meta}>
-                📦 {item.questionsCount}문제 · 업로더: {item.uploader}
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={commonArchiveStyles.downloadBtn}
-              onPress={() => {
-                Alert.alert("아카이브 다운로드 서비스는 구현 중입니다.");
-              }}
-            >
-              <MaterialIcons name="file-download" size={20} color="white" />
-              <Text style={{ color: "white", marginLeft: 6 }}>다운로드</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
-  );
+//   return (
+//     <View style={commonArchiveStyles.container}>
+//       {/* 문제 카드 목록 렌더링 */}
+//       <FlatList
+//         data={mockData}
+//         keyExtractor={(item) => item.id}
+//         contentContainerStyle={{ paddingBottom: 24 }}
+//         refreshControl={
+//           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+//         }
+//         ListHeaderComponent={
+//           <View style={commonArchiveStyles.searchContainer}>
+//             <View style={commonArchiveStyles.searchInputWrapper}>
+//               <MaterialIcons
+//                 name="search"
+//                 size={20}
+//                 color="#999"
+//                 style={{ marginRight: 8 }}
+//               />
+//               <TextInput
+//                 placeholder="문제 제목 또는 업로더 검색"
+//                 placeholderTextColor="#999"
+//                 style={commonArchiveStyles.searchInput}
+//               />
+//             </View>
+//           </View>
+//         }
+//         renderItem={({ item }) => (
+//           <View style={commonArchiveStyles.card}>
+//             <View style={{ flex: 1 }}>
+//               <Text style={commonArchiveStyles.title}>{item.title}</Text>
+//               <Text style={commonArchiveStyles.desc}>{item.description}</Text>
+//               <Text style={commonArchiveStyles.meta}>
+//                 📦 {item.questionsCount}문제 · 업로더: {item.uploader}
+//               </Text>
+//             </View>
+//             <TouchableOpacity
+//               style={commonArchiveStyles.downloadBtn}
+//               onPress={() => {
+//                 Alert.alert("아카이브 다운로드 서비스는 구현 중입니다.");
+//               }}
+//             >
+//               <MaterialIcons name="file-download" size={20} color="white" />
+//               <Text style={{ color: "white", marginLeft: 6 }}>다운로드</Text>
+//             </TouchableOpacity>
+//           </View>
+//         )}
+//       />
+//     </View>
+//   );
+// }
+
+export default function CommunityArchive() {
+  return <ArchiveList data={mockData} />;
 }
