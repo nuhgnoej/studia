@@ -30,6 +30,7 @@ type Props = {
   subjectId: string;
   stageSize?: number;
   onComplete?: () => void;
+  mode?: "normal" | "wrong";
 };
 
 export default function StageQuiz({
@@ -37,14 +38,8 @@ export default function StageQuiz({
   subjectId,
   stageSize = 10,
   onComplete,
+  mode,
 }: Props) {
-  const navigation = useNavigation();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: "문제풀이",
-    });
-  }, [navigation]);
 
   // ✅ 상태들
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
@@ -88,16 +83,6 @@ export default function StageQuiz({
     }
   }, [currentIndex, hasShownIntroMessage]);
 
-  // 메시지를 3초 후 숨기기
-  // useEffect(() => {
-  //   if (showIntroMessage) {
-  //     const timeout = setTimeout(() => {
-  //       setShowIntroMessage(false);
-  //     }, 3000);
-  //     return () => clearTimeout(timeout);
-  //   }
-  // }, [showIntroMessage]);
-
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -117,14 +102,20 @@ export default function StageQuiz({
     }
   }, [showIntroMessage, fadeAnim]);
 
-  // 마지막 푼 문제부터 시작하기
   useEffect(() => {
     const init = async () => {
+      if (mode === "wrong") {
+        setCurrentIndex(0);
+        return;
+      }
+
       const savedIndex = await loadLastProgress(subjectId);
-      setCurrentIndex(savedIndex);
+      const validIndex =
+        savedIndex !== null && savedIndex < questions.length ? savedIndex : 0;
+      setCurrentIndex(validIndex);
     };
     init();
-  }, [subjectId]);
+  }, [subjectId, mode, questions.length]);
 
   if (currentIndex === null) {
     return (
@@ -174,15 +165,19 @@ export default function StageQuiz({
     setIsAnswered(true);
     setIsCorrect(isCorrect);
 
-    try {
-      await saveProgress({
-        subjectId,
-        currentIndex,
-        totalQuestions: questions.length,
-      });
-      console.log("[6/6] 🟢 saveProgress: 진행도 업데이트 완료");
-    } catch (err: any) {
-      console.error("[FAIL] 🔴 handleSubmitAnswer: saveProgress 오류", err);
+    if (mode !== "wrong") {
+      try {
+        await saveProgress({
+          subjectId,
+          currentIndex,
+          totalQuestions: questions.length,
+        });
+        console.log("[6/6] 🟢 saveProgress: 진행도 업데이트 완료");
+      } catch (err: any) {
+        console.error("[FAIL] 🔴 handleSubmitAnswer: saveProgress 오류", err);
+      }
+    } else {
+      console.log("[6/6] ⚪️ saveProgress: wrong mode에서는 저장 생략");
     }
   };
 

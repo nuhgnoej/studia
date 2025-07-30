@@ -12,7 +12,9 @@ export async function getAllQuestionSets() {
   return result;
 }
 
-export async function getQuestionsBySubjectId(subjectId: string): Promise<Question[]> {
+export async function getQuestionsBySubjectId(
+  subjectId: string
+): Promise<Question[]> {
   const db = await getDatabase();
   const result = await db.getAllAsync<any>(
     `SELECT * FROM questions WHERE subject_id = ? ORDER BY id ASC`,
@@ -29,8 +31,9 @@ function mapRowToQuestion(row: any): Question {
     question: {
       questionText: row.questionText,
       questionExplanation: row.questionExplanation
-        ? row.questionExplanation        : ""
-       // questionExplanation: row.questionExplanation
+        ? row.questionExplanation
+        : "",
+      // questionExplanation: row.questionExplanation
       //   ? JSON.parse(row.questionExplanation)
       //   : [],
     },
@@ -50,6 +53,8 @@ export default async function getWrongAnsweredQuestionsBySubjectId(
 ): Promise<Question[]> {
   const db = await getDatabase();
 
+  console.log("🛠️ 쿼리 시작: getWrongAnsweredQuestionsBySubjectId", subjectId);
+
   const rows = await db.getAllAsync<any>(
     `
     SELECT q.*
@@ -67,6 +72,8 @@ export default async function getWrongAnsweredQuestionsBySubjectId(
     `,
     [subjectId, subjectId]
   );
+
+  console.log("🧾 오답 쿼리 결과:", rows.length);
 
   return rows.map(mapRowToQuestion);
 }

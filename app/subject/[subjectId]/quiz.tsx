@@ -1,7 +1,7 @@
 // app/quiz/[id].tsx
 
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Text } from "react-native";
 
 import ErrorMessage from "@/components/ErrorMessage";
@@ -19,10 +19,20 @@ function getStringParam(param: unknown): string | undefined {
 }
 
 export default function QuizScreen() {
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "문제풀이",
+    });
+  }, [navigation]);
+
   const { subjectId: rawSubjectId, mode: rawMode } = useLocalSearchParams();
   const router = useRouter();
   const subjectId = getStringParam(rawSubjectId);
   const mode = getStringParam(rawMode);
+
+  console.log("🧩 Params:", { subjectId, mode });
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,15 +42,17 @@ export default function QuizScreen() {
     if (!subjectId) return;
 
     const load = async () => {
+      console.log("🚀 Load started");
       setLoading(true);
       try {
         const data =
           mode === "wrong"
             ? await getWrongAnsweredQuestionsBySubjectId(subjectId)
             : await getQuestionsBySubjectId(subjectId);
+        console.log("✅ Loaded questions:", data.length);
         setQuestions(data);
       } catch (err) {
-        console.error(err);
+        console.error("❌ Load failed:", err);
         setError("문제를 불러오지 못했습니다.");
       } finally {
         setLoading(false);
@@ -76,6 +88,7 @@ export default function QuizScreen() {
       subjectId={subjectId}
       stageSize={10}
       onComplete={handleQuizComplete}
+      mode={mode === "wrong" ? "wrong" : "normal"}
     />
   );
 }
