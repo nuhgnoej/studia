@@ -1,4 +1,4 @@
-import { webClientId } from "@/constants";
+import { androidClientId, webClientId } from "@/constants";
 import { auth } from "@/lib/firebase";
 import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
@@ -36,7 +36,7 @@ export default function Login() {
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: webClientId,
-    androidClientId: "258669826284-mk6ih1v341sff1927fuben89gv5aiohm.apps.googleusercontent.com",
+    androidClientId: androidClientId,
     redirectUri
   });
 
