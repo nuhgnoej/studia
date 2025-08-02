@@ -1,145 +1,121 @@
 import ArchiveList from "@/components/archive/ArchiveList";
+import FAB from "@/components/FAB";
+import { saveArchiveMetadata } from "@/lib/firebase/archive";
+import { auth, db, storage } from "@/lib/firebase/firebase";
+import * as DocumentPicker from "expo-document-picker";
+import { collection, getDocs } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 
-const communityData = [
-  {
-    id: "1",
-    title: "복합발전운전원 기출 세트 2024",
-    uploader: "odineyes",
-    description: "2024년 기출을 기반으로 구성된 복합 발전 문제 세트입니다.",
-    questionsCount: 120,
-  },
-  {
-    id: "2",
-    title: "전기이론 기본 세트",
-    uploader: "user123",
-    description: "전기이론 개념 및 계산 문제 위주로 구성된 세트입니다.",
-    questionsCount: 80,
-  },
-  {
-    id: "3",
-    title: "전기기기 핵심 문제 세트",
-    uploader: "elecMaster",
-    description: "변압기, 유도기, 동기기 등 전기기기 문제 수록.",
-    questionsCount: 95,
-  },
-  {
-    id: "4",
-    title: "제어공학 연습 문제 세트",
-    uploader: "ctl_engineer",
-    description: "제어 시스템 해석 및 제어기 설계 관련 문제 모음.",
-    questionsCount: 100,
-  },
-  {
-    id: "5",
-    title: "전력공학 기출 세트",
-    uploader: "powertest",
-    description: "송배전, 발전 방식, 안정도 관련 기출 위주 세트.",
-    questionsCount: 110,
-  },
-  {
-    id: "6",
-    title: "전기설비 기준 세트",
-    uploader: "user456",
-    description: "전기설비 기술기준과 판단기준 중심 문제집.",
-    questionsCount: 70,
-  },
-  {
-    id: "7",
-    title: "기출 + 예상 문제 종합 세트",
-    uploader: "smartquiz",
-    description: "최근 출제경향 기반 예상 문제 포함한 종합 세트.",
-    questionsCount: 150,
-  },
-  {
-    id: "8",
-    title: "전기응용 및 전기전자기초 세트",
-    uploader: "elecEdu",
-    description: "기초 회로, 전자 기초 문제 포함.",
-    questionsCount: 85,
-  },
-  {
-    id: "9",
-    title: "기사 대비 실전 모의고사 세트",
-    uploader: "examplus",
-    description: "전기기사 실전 대비용 모의고사 구성.",
-    questionsCount: 200,
-  },
-  {
-    id: "10",
-    title: "전기직 공무원 대비 세트",
-    uploader: "govprep",
-    description: "공무원 시험 대비를 위한 전기 문제 정리.",
-    questionsCount: 140,
-  },
-  {
-    id: "11",
-    title: "기초 이론 완성 세트",
-    uploader: "beginner123",
-    description: "처음 공부하는 사람을 위한 쉬운 설명 중심 세트.",
-    questionsCount: 60,
-  },
-];
-
-// export default function CommunityArchive() {
-//   const [refreshing, setRefreshing] = useState(false);
-//   const onRefresh = useCallback(() => {
-//     setRefreshing(true);
-//     setTimeout(() => {
-//       // 여기에 서버에서 새 데이터 불러오는 로직 삽입 예정
-//       setRefreshing(false);
-//     }, 1500);
-//   }, []);
-//   return (
-//     <View style={commonArchiveStyles.container}>
-//       <FlatList
-//         data={mockData}
-//         keyExtractor={(item) => item.id}
-//         contentContainerStyle={{ paddingBottom: 24 }}
-//         refreshControl={
-//           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-//         }
-//         ListHeaderComponent={
-//           <View style={commonArchiveStyles.searchContainer}>
-//             <View style={commonArchiveStyles.searchInputWrapper}>
-//               <MaterialIcons
-//                 name="search"
-//                 size={20}
-//                 color="#999"
-//                 style={{ marginRight: 8 }}
-//               />
-//               <TextInput
-//                 placeholder="문제 제목 또는 업로더 검색"
-//                 placeholderTextColor="#999"
-//                 style={commonArchiveStyles.searchInput}
-//               />
-//             </View>
-//           </View>
-//         }
-//         renderItem={({ item }) => (
-//           <View style={commonArchiveStyles.card}>
-//             <View style={{ flex: 1 }}>
-//               <Text style={commonArchiveStyles.title}>{item.title}</Text>
-//               <Text style={commonArchiveStyles.desc}>{item.description}</Text>
-//               <Text style={commonArchiveStyles.meta}>
-//                 📦 {item.questionsCount}문제 · 업로더: {item.uploader}
-//               </Text>
-//             </View>
-//             <TouchableOpacity
-//               style={commonArchiveStyles.downloadBtn}
-//               onPress={() => {
-//                 Alert.alert("아카이브 다운로드 서비스는 구현 중입니다.");
-//               }}
-//             >
-//               <MaterialIcons name="file-download" size={20} color="white" />
-//               <Text style={{ color: "white", marginLeft: 6 }}>다운로드</Text>
-//             </TouchableOpacity>
-//           </View>
-//         )}
-//       />
-//     </View>
-//   );
-// }
+type ArchiveItem = {
+  id: string;
+  title: string;
+  uploader: string;
+  description: string;
+  questionsCount: number;
+  storagePath: string;
+};
 
 export default function CommunityArchive() {
-  return <ArchiveList data={communityData} />;
+  const [archives, setArchives] = useState<ArchiveItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchArchives = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "communityArchives"));
+      const list: ArchiveItem[] = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          uploader: data.uploader,
+          description: data.description,
+          questionsCount: data.questionsCount,
+          storagePath: data.storagePath,
+        };
+      });
+      setArchives(list);
+    } catch (err) {
+      console.error("Firestore 데이터 로딩 실패:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    useEffect(() => {
+    fetchArchives();
+  }, []);
+
+  const handleUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        return;
+      }
+
+      const file = result.assets[0];
+      const response = await fetch(file.uri);
+
+      // ✅ 1. JSON 파싱
+      const json = await response.json();
+
+      const metadata = json.metadata ?? {};
+      const questions = json.questions ?? [];
+
+      const questionsCount =
+        typeof metadata.num_questions === "number"
+          ? metadata.num_questions
+          : Array.isArray(questions)
+          ? questions.length
+          : 0;
+
+      const uploader = auth.currentUser?.displayName ?? "unknown";
+      // const uploader = metadata.author ?? "unknown";
+
+      // ✅ 2. blob 변환 → 업로드
+      const blob = await (await fetch(file.uri)).blob();
+
+      const fileName = file.name || `archive-${Date.now()}.json`;
+      const storagePath = `archives/${fileName}`;
+      const fileRef = ref(storage, storagePath);
+
+      await uploadBytes(fileRef, blob);
+
+      // ✅ 3. Firestore에 메타데이터 저장
+      await saveArchiveMetadata({
+        title: metadata.title ?? fileName.replace(".json", ""),
+        uploader,
+        description: metadata.description ?? "설명이 없습니다.",
+        questionsCount,
+        storagePath,
+      });
+
+      Alert.alert("업로드 성공", `"${fileName}" 이 업로드되었습니다.`);
+    } catch (error) {
+      console.error("업로드 실패:", error);
+      Alert.alert("업로드 실패", "파일을 업로드하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* <ArchiveList data={communityData} /> */}
+            {loading ? (
+        <ActivityIndicator size="large" style={{ marginTop: 32 }} />
+      ) : (
+        <ArchiveList data={archives} />
+      )}
+      <FAB icon="upload-file" label="업로드" onPress={handleUpload} />
+    </View>
+  );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

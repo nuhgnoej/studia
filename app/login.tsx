@@ -1,5 +1,5 @@
 import { androidClientId, webClientId } from "@/constants";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase/firebase";
 import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import { LinearGradient } from "expo-linear-gradient";

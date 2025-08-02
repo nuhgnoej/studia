@@ -1,23 +1,23 @@
 // app/settings.tsx
 
-import {
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { initDatabase } from "@/lib/db";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { commonStyles } from "../../styles/common";
+import { auth } from "@/lib/firebase/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
-import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { commonStyles } from "../../styles/common";
 
 export default function SettingsScreen() {
   const router = useRouter();

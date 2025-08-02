@@ -1,29 +1,29 @@
+import { auth, db } from "@/lib/firebase/firebase";
 import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
-  TextInput,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
   ScrollView,
-  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { auth, db } from "@/lib/firebase";
 // import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 // import uuid from "react-native-uuid";
 import { FontAwesome } from "@expo/vector-icons";
-import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function Signup() {

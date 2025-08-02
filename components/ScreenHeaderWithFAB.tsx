@@ -1,11 +1,11 @@
-import { commonStyles } from "../styles/common";
+import { useAuth } from "@/hooks/useAuth";
+import { auth } from "@/lib/firebase/firebase";
+import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
 import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { useAuth } from "@/hooks/useAuth";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
-import { useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
+import { commonStyles } from "../styles/common";
 
 type ScreenHeaderProps = {
   title: string;

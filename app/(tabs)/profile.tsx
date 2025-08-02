@@ -1,34 +1,34 @@
 // app/(tabs)/profile.tsx
 
-import { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ActivityIndicator,
-  TouchableOpacity,
-  Alert,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  ScrollView,
-  Keyboard,
-} from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-import { commonStyles } from "../../styles/common";
-import { formatDate } from "@/lib/format";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { useAuth } from "@/hooks/useAuth";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { updateProfile } from "firebase/auth";
+import { db } from "@/lib/firebase/firebase";
+import { formatDate } from "@/lib/format";
+import { FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
+import { updateProfile } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import { commonStyles } from "../../styles/common";
 
 export default function ProfileScreen() {
   const { user, profileImageUri, setProfileImageUri } = useAuth();

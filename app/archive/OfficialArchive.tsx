@@ -1,15 +1,3 @@
-// import {
-//   View,
-//   Text,
-//   FlatList,
-//   TouchableOpacity,
-//   Alert,
-//   TextInput,
-//   RefreshControl,
-// } from "react-native";
-// import { MaterialIcons } from "@expo/vector-icons";
-// import { commonArchiveStyles } from "../../styles/archiveStyle";
-// import { useCallback, useState } from "react";
 import ArchiveList from "@/components/archive/ArchiveList";
 
 const mockData = [

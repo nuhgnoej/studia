@@ -1,9 +1,9 @@
 // lib/contexts/AuthContext.tsx
 
-import { createContext, useEffect, useState } from "react";
-import { User, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { User, onAuthStateChanged } from "firebase/auth";
+import { createContext, useEffect, useState } from "react";
 
 type AuthContextType = {
   user: User | null;
