@@ -12,7 +12,7 @@
     "generate": "tsx scripts/generateQuestionFileMap.ts",
     "tag": "tsx scripts/tagExtractor.ts",
     "image": "tsx scripts/generateTagToBackgroundImage.ts",
-    "dev": "expo start -c",
+    "dev": "expo start --tunnel -c",
     "build": "eas build -p android --profile preview",
     "secret": "eas env:create --name EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID --value 258669826284-p2osv39bjllnkrko1gd09gil3i9kk4ao.apps.googleusercontent.com --environment preview",
     "list": "eas env:list"

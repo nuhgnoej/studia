@@ -10,10 +10,10 @@ import {
   RefreshControl,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { commonArchiveStyles } from "@/styles/archiveStyle";
 
-type ArchiveItem = {
+export type ArchiveItem = {
   id: string;
   title: string;
   uploader: string;
@@ -23,22 +23,16 @@ type ArchiveItem = {
 
 type Props = {
   data: ArchiveItem[];
+  onRefresh: () => void;
+  refreshing: boolean;
 };
 
-export default function ArchiveList({ data }: Props) {
+export default function ArchiveList({ data, onRefresh, refreshing }: Props) {
   const [query, setQuery] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
 
   const filtered = data.filter(
     (item) => item.title.includes(query) || item.uploader.includes(query)
   );
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1500);
-  }, []);
 
   return (
     <FlatList

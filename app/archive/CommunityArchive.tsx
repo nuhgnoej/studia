@@ -20,8 +20,11 @@ type ArchiveItem = {
 export default function CommunityArchive() {
   const [archives, setArchives] = useState<ArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fetchArchives = async () => {
+    setLoading(true);
     try {
       const snapshot = await getDocs(collection(db, "communityArchives"));
       const list: ArchiveItem[] = snapshot.docs.map((doc) => {
@@ -40,15 +43,45 @@ export default function CommunityArchive() {
       console.error("Firestore 데이터 로딩 실패:", err);
     } finally {
       setLoading(false);
+      setRefreshing(false); // ✅ Pull-to-refresh 끝남
     }
   };
 
-    useEffect(() => {
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchArchives(); // 최신 데이터 요청
+  };
+
+  // const fetchArchives = async () => {
+  //   try {
+  //     const snapshot = await getDocs(collection(db, "communityArchives"));
+  //     const list: ArchiveItem[] = snapshot.docs.map((doc) => {
+  //       const data = doc.data();
+  //       return {
+  //         id: doc.id,
+  //         title: data.title,
+  //         uploader: data.uploader,
+  //         description: data.description,
+  //         questionsCount: data.questionsCount,
+  //         storagePath: data.storagePath,
+  //       };
+  //     });
+  //     setArchives(list);
+  //   } catch (err) {
+  //     console.error("Firestore 데이터 로딩 실패:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
     fetchArchives();
   }, []);
 
   const handleUpload = async () => {
     try {
+      setUploading(true); // ✅ 업로드 시작
+
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
         copyToCacheDirectory: true,
@@ -75,7 +108,6 @@ export default function CommunityArchive() {
           : 0;
 
       const uploader = auth.currentUser?.displayName ?? "unknown";
-      // const uploader = metadata.author ?? "unknown";
 
       // ✅ 2. blob 변환 → 업로드
       const blob = await (await fetch(file.uri)).blob();
@@ -96,19 +128,27 @@ export default function CommunityArchive() {
       });
 
       Alert.alert("업로드 성공", `"${fileName}" 이 업로드되었습니다.`);
+
+      // ✅ 4. 업로드 후 목록 갱신
+      await fetchArchives();
     } catch (error) {
       console.error("업로드 실패:", error);
       Alert.alert("업로드 실패", "파일을 업로드하는 중 오류가 발생했습니다.");
+    } finally {
+      setUploading(false); // ✅ 업로드 끝
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* <ArchiveList data={communityData} /> */}
-            {loading ? (
+      {loading || uploading ? (
         <ActivityIndicator size="large" style={{ marginTop: 32 }} />
       ) : (
-        <ArchiveList data={archives} />
+        <ArchiveList
+          data={archives}
+          onRefresh={handleRefresh}
+          refreshing={refreshing}
+        />
       )}
       <FAB icon="upload-file" label="업로드" onPress={handleUpload} />
     </View>
