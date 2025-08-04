@@ -14,6 +14,7 @@ export async function saveArchiveMetadata(meta: ArchiveMeta) {
     const docRef = await addDoc(collection(db, "communityArchives"), {
       ...meta,
       createdAt: serverTimestamp(),
+      downloadCount: 0,
     });
     return docRef.id;
   } catch (error) {

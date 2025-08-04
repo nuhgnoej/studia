@@ -4,10 +4,17 @@ import { insertMetadata, insertQuestions } from "@/lib/db/insert";
 import { saveArchiveMetadata } from "@/lib/firebase/archive";
 import { auth, db, storage } from "@/lib/firebase/firebase";
 import * as DocumentPicker from "expo-document-picker";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+// import { useRouter } from "expo-router";
 
 type ArchiveItem = {
   id: string;
@@ -16,9 +23,12 @@ type ArchiveItem = {
   description: string;
   questionsCount: number;
   storagePath: string;
+  downloadCount: number;
 };
 
 export default function CommunityArchive() {
+  // const router = useRouter();
+
   const [archives, setArchives] = useState<ArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,6 +47,7 @@ export default function CommunityArchive() {
           description: data.description,
           questionsCount: data.questionsCount,
           storagePath: data.storagePath,
+          downloadCount: data.downloadCount ?? 0,
         };
       });
       setArchives(list);
@@ -133,7 +144,7 @@ export default function CommunityArchive() {
         [
           {
             text: "확인",
-            // onPress: () => loadSets(),
+            // onPress: () => router.push("/"),
           },
         ]
       );
@@ -153,6 +164,12 @@ export default function CommunityArchive() {
           onRefresh={handleRefresh}
           refreshing={refreshing}
           onImport={handleJsonData}
+          onDownload={async (item) => {
+            await updateDoc(doc(db, "communityArchives", item.id), {
+              downloadCount: increment(1),
+            });
+            await fetchArchives();
+          }}
         />
       )}
       <FAB icon="upload-file" label="업로드" onPress={handleUpload} />

@@ -1,7 +1,14 @@
 import ArchiveList, { ArchiveItem } from "@/components/archive/ArchiveList";
 import { insertMetadata, insertQuestions } from "@/lib/db/insert";
 import { db } from "@/lib/firebase/firebase";
-import { collection, getDocs } from "firebase/firestore";
+// import { useRouter } from "expo-router";
+import {
+  collection,
+  doc,
+  getDocs,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 
@@ -94,6 +101,8 @@ import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 // ];
 
 export default function CommunityArchive() {
+  // const router = useRouter();
+
   const [archives, setArchives] = useState<ArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -111,6 +120,7 @@ export default function CommunityArchive() {
           description: data.description,
           questionsCount: data.questionsCount,
           storagePath: data.storagePath,
+          downloadCount: data.downloadCount ?? 0,
         };
       });
       setArchives(list);
@@ -146,7 +156,7 @@ export default function CommunityArchive() {
         [
           {
             text: "확인",
-            // onPress: () => loadSets(),
+            // onPress: () => router.push("/"),
           },
         ]
       );
@@ -166,6 +176,12 @@ export default function CommunityArchive() {
           onRefresh={handleRefresh}
           refreshing={refreshing}
           onImport={handleJsonData}
+          onDownload={async (item) => {
+            await updateDoc(doc(db, "officialArchives", item.id), {
+              downloadCount: increment(1),
+            });
+            await fetchArchives();
+          }}
         />
       )}
     </View>

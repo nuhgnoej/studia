@@ -25,6 +25,7 @@ export type ArchiveItem = {
   description: string;
   questionsCount: number;
   storagePath: string;
+  downloadCount: number;
 };
 
 type Props = {
@@ -32,6 +33,7 @@ type Props = {
   onRefresh: () => void;
   refreshing: boolean;
   onImport: (json: any) => void;
+  onDownload?: (item: ArchiveItem) => Promise<void>;
 };
 
 export default function ArchiveList({
@@ -39,6 +41,7 @@ export default function ArchiveList({
   onRefresh,
   refreshing,
   onImport,
+  onDownload,
 }: Props) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -59,6 +62,10 @@ export default function ArchiveList({
       const json = JSON.parse(content);
 
       onImport(json);
+
+      if (onDownload) {
+        await onDownload(item);
+      }
     } catch (err) {
       console.error("다운로드 실패:", err);
       Alert.alert(
@@ -118,6 +125,15 @@ export default function ArchiveList({
           </View>
         </View>
       }
+      ListEmptyComponent={
+        query ? (
+          <View style={{ padding: 20, alignItems: "center" }}>
+            <Text style={{ color: "#666", fontSize: 16 }}>
+              검색 결과가 없습니다.
+            </Text>
+          </View>
+        ) : null
+      }
       renderItem={({ item }) => (
         <View style={commonArchiveStyles.card}>
           <View style={{ flex: 1 }}>
@@ -125,6 +141,9 @@ export default function ArchiveList({
             <Text style={commonArchiveStyles.desc}>{item.description}</Text>
             <Text style={commonArchiveStyles.meta}>
               📦 {item.questionsCount}문제 · 업로더: {item.uploader}
+            </Text>
+            <Text style={commonArchiveStyles.meta}>
+              ⬇️ {item.downloadCount ?? 0}회 다운로드됨
             </Text>
           </View>
 
