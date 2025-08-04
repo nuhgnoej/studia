@@ -1,8 +1,9 @@
 import ArchiveList, { ArchiveItem } from "@/components/archive/ArchiveList";
+import { insertMetadata, insertQuestions } from "@/lib/db/insert";
 import { db } from "@/lib/firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 
 // const mockData = [
 //   {
@@ -117,7 +118,7 @@ export default function CommunityArchive() {
       console.error("Firestore 데이터 로딩 실패:", err);
     } finally {
       setLoading(false);
-      setRefreshing(false); // ✅ Pull-to-refresh 끝남
+      setRefreshing(false);
     }
   };
 
@@ -130,6 +131,31 @@ export default function CommunityArchive() {
     fetchArchives();
   }, []);
 
+  const handleJsonData = async (data: any) => {
+    if (!data.metadata || !Array.isArray(data.questions)) {
+      alert("올바르지 않은 형식입니다.");
+      return;
+    }
+
+    try {
+      await insertMetadata(data.metadata);
+      await insertQuestions(data.metadata.id, data.questions);
+      Alert.alert(
+        "다운로드 완료",
+        `총 ${data.questions.length}문제가 등록되었습니다.`,
+        [
+          {
+            text: "확인",
+            // onPress: () => loadSets(),
+          },
+        ]
+      );
+    } catch (err) {
+      console.error("❌ 다운로드 실패:", err);
+      Alert.alert("오류", "다운로드 중 문제가 발생했습니다.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -139,6 +165,7 @@ export default function CommunityArchive() {
           data={archives}
           onRefresh={handleRefresh}
           refreshing={refreshing}
+          onImport={handleJsonData}
         />
       )}
     </View>

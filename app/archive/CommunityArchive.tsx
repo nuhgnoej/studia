@@ -1,5 +1,6 @@
 import ArchiveList from "@/components/archive/ArchiveList";
 import FAB from "@/components/FAB";
+import { insertMetadata, insertQuestions } from "@/lib/db/insert";
 import { saveArchiveMetadata } from "@/lib/firebase/archive";
 import { auth, db, storage } from "@/lib/firebase/firebase";
 import * as DocumentPicker from "expo-document-picker";
@@ -43,36 +44,14 @@ export default function CommunityArchive() {
       console.error("Firestore 데이터 로딩 실패:", err);
     } finally {
       setLoading(false);
-      setRefreshing(false); // ✅ Pull-to-refresh 끝남
+      setRefreshing(false);
     }
   };
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchArchives(); // 최신 데이터 요청
+    fetchArchives();
   };
-
-  // const fetchArchives = async () => {
-  //   try {
-  //     const snapshot = await getDocs(collection(db, "communityArchives"));
-  //     const list: ArchiveItem[] = snapshot.docs.map((doc) => {
-  //       const data = doc.data();
-  //       return {
-  //         id: doc.id,
-  //         title: data.title,
-  //         uploader: data.uploader,
-  //         description: data.description,
-  //         questionsCount: data.questionsCount,
-  //         storagePath: data.storagePath,
-  //       };
-  //     });
-  //     setArchives(list);
-  //   } catch (err) {
-  //     console.error("Firestore 데이터 로딩 실패:", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   useEffect(() => {
     fetchArchives();
@@ -139,6 +118,31 @@ export default function CommunityArchive() {
     }
   };
 
+  const handleJsonData = async (data: any) => {
+    if (!data.metadata || !Array.isArray(data.questions)) {
+      alert("올바르지 않은 형식입니다.");
+      return;
+    }
+
+    try {
+      await insertMetadata(data.metadata);
+      await insertQuestions(data.metadata.id, data.questions);
+      Alert.alert(
+        "다운로드 완료",
+        `총 ${data.questions.length}문제가 등록되었습니다.`,
+        [
+          {
+            text: "확인",
+            // onPress: () => loadSets(),
+          },
+        ]
+      );
+    } catch (err) {
+      console.error("❌ 다운로드 실패:", err);
+      Alert.alert("오류", "다운로드 중 문제가 발생했습니다.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       {loading || uploading ? (
@@ -148,6 +152,7 @@ export default function CommunityArchive() {
           data={archives}
           onRefresh={handleRefresh}
           refreshing={refreshing}
+          onImport={handleJsonData}
         />
       )}
       <FAB icon="upload-file" label="업로드" onPress={handleUpload} />
