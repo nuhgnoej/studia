@@ -1,10 +1,14 @@
-import { androidClientId, webClientId } from "@/constants";
+// import { androidClientId, iosClientId, webClientId } from "@/constants";
 import { auth } from "@/lib/firebase/firebase";
-import * as AuthSession from "expo-auth-session";
+// import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithCredential,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -21,54 +25,65 @@ import {
   View,
 } from "react-native";
 
-
 export default function Login() {
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>("");
 
-  const redirectUri = AuthSession.makeRedirectUri({
-    native: "https://auth.expo.io/@odineyes2/studia",
-    useProxy: true,
-  } as any);
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   androidClientId:
+  //     "258669826284-l8olrogicv0cijfoqsdenj68htn9cpv5.apps.googleusercontent.com",
+  //   responseType: "id_token",
+  // });
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: webClientId,
-    androidClientId: androidClientId,
-    redirectUri
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    androidClientId:
+      "258669826284-l8olrogicv0cijfoqsdenj68htn9cpv5.apps.googleusercontent.com",
+    scopes: ["openid", "email", "profile"],
   });
 
   const handleLogin = async () => {
     setIsLoading(true);
+    setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email.trim(), password);
       router.replace("/");
-    } catch (error: any) {
-      Alert.alert("Login failed", error.message);
+    } catch (e: any) {
+      console.error(e);
+      setError(e?.message ?? "Login failed");
+      Alert.alert("Login failed", e?.message ?? "");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    promptAsync()
+    if (!request || isLoading) return;
+
+    promptAsync();
   };
 
   useEffect(() => {
-    if (response?.type === "success") {
+    if (response?.type !== "success") return;
+    const idToken = response.authentication?.idToken;
+    if (!idToken) return;
+
+    (async () => {
       setIsLoading(true);
-      const { idToken } = response.authentication!;
-      const credential = GoogleAuthProvider.credential(idToken);
-      signInWithCredential(auth, credential)
-        .then(() => router.replace("/"))
-        .catch((e) => {
-          console.error("Firebase sign-in error", e);
-          Alert.alert("Google 로그인 실패", e.message);
-        })
-        .finally(() => setIsLoading(false));
-    }
+      try {
+        const credential = GoogleAuthProvider.credential(idToken);
+        await signInWithCredential(auth, credential);
+        router.replace("/");
+      } catch (e: any) {
+        console.error("Firebase sign-in error", e);
+        Alert.alert("Google 로그인 실패", e?.message ?? "");
+        setError(e?.message ?? "Google sign-in failed");
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, [response, router]);
 
   return (
@@ -88,6 +103,7 @@ export default function Login() {
               keyboardType="email-address"
               style={styles.input}
               editable={!isLoading}
+              value={email}
             />
             <TextInput
               placeholder="Password"
@@ -95,9 +111,24 @@ export default function Login() {
               secureTextEntry
               style={styles.input}
               editable={!isLoading}
+              value={password}
             />
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            {error ? (
+              <Text style={{ color: "#d00", marginBottom: 12 }}>{error}</Text>
+            ) : null}
+
+            <Text
+              style={{ color: "#666", marginBottom: 8, textAlign: "center" }}
+            >
+              또는 소셜 로그인
+            </Text>
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={handleLogin}
+              disabled={isLoading || !email || !password}
+            >
               <LinearGradient
                 colors={["#3494e6", "#ec6ead"]}
                 start={{ x: 0, y: 0 }}
@@ -115,8 +146,11 @@ export default function Login() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.googleButton}
-              disabled={isLoading}
+              style={[
+                styles.googleButton,
+                (!request || isLoading) && { opacity: 0.6 },
+              ]}
+              disabled={!request || isLoading}
               onPress={handleGoogleLogin}
             >
               {isLoading ? (
@@ -137,6 +171,7 @@ export default function Login() {
             <TouchableOpacity
               style={styles.signupLink}
               onPress={() => router.replace("/signup")}
+              disabled={isLoading}
             >
               <Text style={styles.signupText}>
                 Don&apos;t have an account?{" "}

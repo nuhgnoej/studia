@@ -10,6 +10,13 @@ export default {
     android: {
       package: "com.odineyes2.studia",
     },
+    intentFilters: [
+      {
+        action: "VIEW",
+        category: ["BROWSABLE", "DEFAULT"],
+        data: [{ scheme: "studia" }],
+      },
+    ],
     extra: {
       eas: {
         projectId: "e30c9634-c40d-4003-94eb-e73eeb5245c3",
