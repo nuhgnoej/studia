@@ -6,7 +6,7 @@ export default {
     slug: "studia",
     scheme: "studia",
     version: "1.0.0",
-    plugins: ["expo-router"],
+    plugins: ["expo-router", "@react-native-google-signin/google-signin"],
     android: {
       package: "com.odineyes2.studia",
     },

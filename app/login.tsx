@@ -1,7 +1,6 @@
-// import { androidClientId, iosClientId, webClientId } from "@/constants";
+import SocialLogInButtons from "@/components/SocialLogInButtons";
+import { iosClientId, webClientId } from "@/constants";
 import { auth } from "@/lib/firebase/firebase";
-// import * as AuthSession from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {
@@ -9,11 +8,10 @@ import {
   signInWithCredential,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -32,18 +30,6 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  // const [request, response, promptAsync] = Google.useAuthRequest({
-  //   androidClientId:
-  //     "258669826284-l8olrogicv0cijfoqsdenj68htn9cpv5.apps.googleusercontent.com",
-  //   responseType: "id_token",
-  // });
-
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    androidClientId:
-      "258669826284-l8olrogicv0cijfoqsdenj68htn9cpv5.apps.googleusercontent.com",
-    scopes: ["openid", "email", "profile"],
-  });
-
   const handleLogin = async () => {
     setIsLoading(true);
     setError("");
@@ -59,32 +45,12 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    if (!request || isLoading) return;
-
-    promptAsync();
-  };
-
-  useEffect(() => {
-    if (response?.type !== "success") return;
-    const idToken = response.authentication?.idToken;
-    if (!idToken) return;
-
-    (async () => {
-      setIsLoading(true);
-      try {
-        const credential = GoogleAuthProvider.credential(idToken);
-        await signInWithCredential(auth, credential);
-        router.replace("/");
-      } catch (e: any) {
-        console.error("Firebase sign-in error", e);
-        Alert.alert("Google 로그인 실패", e?.message ?? "");
-        setError(e?.message ?? "Google sign-in failed");
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [response, router]);
+  // webClientId가 없으면 소셜 로그인 버튼을 렌더링하지 않음
+  if (!webClientId) {
+    // 또는 로딩 인디케이터나 에러 메시지를 보여줄 수 있습니다.
+    console.error("Google Web Client ID가 설정되지 않았습니다.");
+    // 여기서는 간단히 null을 반환하거나, 에러 컴포넌트를 보여줄 수 있습니다.
+  }
 
   return (
     <KeyboardAvoidingView
@@ -118,12 +84,6 @@ export default function Login() {
               <Text style={{ color: "#d00", marginBottom: 12 }}>{error}</Text>
             ) : null}
 
-            <Text
-              style={{ color: "#666", marginBottom: 8, textAlign: "center" }}
-            >
-              또는 소셜 로그인
-            </Text>
-
             <TouchableOpacity
               style={styles.loginButton}
               onPress={handleLogin}
@@ -146,29 +106,6 @@ export default function Login() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.googleButton,
-                (!request || isLoading) && { opacity: 0.6 },
-              ]}
-              disabled={!request || isLoading}
-              onPress={handleGoogleLogin}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#444" />
-              ) : (
-                <>
-                  <Image
-                    source={require("@/assets/logos/google.png")}
-                    style={styles.googleIcon}
-                  />
-                  <Text style={styles.googleButtonText}>
-                    Sign in with Google
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
               style={styles.signupLink}
               onPress={() => router.replace("/signup")}
               disabled={isLoading}
@@ -178,6 +115,30 @@ export default function Login() {
                 <Text style={styles.signupLink}>Sign up</Text>
               </Text>
             </TouchableOpacity>
+
+            {/* webClientId가 있을 때만 소셜 로그인 버튼을 보여줍니다. */}
+            {webClientId && (
+              <SocialLogInButtons
+                webClientId={webClientId}
+                iosClientId={iosClientId}
+                disabled={isLoading}
+                onSuccess={async (idToken) => {
+                  setIsLoading(true);
+                  try {
+                    const cred = GoogleAuthProvider.credential(idToken);
+                    await signInWithCredential(auth, cred);
+                    router.replace("/");
+                  } catch (e: any) {
+                    console.error("Firebase sign-in error", e);
+                    Alert.alert("Google 로그인 실패", e?.message ?? "");
+                    setError(e?.message ?? "Google sign-in failed");
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                onError={(msg) => setError(msg)}
+              />
+            )}
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -200,7 +161,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    marginTop: -150,
+    marginTop: -50,
     width: "100%",
   },
   title: {
@@ -218,35 +179,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: "#fafafa",
   },
-  loginButton: {
-    borderRadius: 8,
-    marginBottom: 12,
-  },
+  loginButton: { borderRadius: 8, marginBottom: 12 },
   loginButtonText: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderColor: "#ccc",
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  googleIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 8,
-  },
-  googleButtonText: {
-    fontSize: 15,
-    color: "#444",
   },
   signupLink: {
     alignItems: "center",
@@ -254,10 +192,7 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     fontWeight: "600",
   },
-  signupText: {
-    fontSize: 14,
-    color: "#666",
-  },
+  signupText: { fontSize: 14, color: "#666" },
   fullWidthButton: {
     width: "100%",
     backgroundColor: "#aaa",

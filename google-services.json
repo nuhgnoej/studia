@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "258669826284",
+    "project_id": "studia-32dc7",
+    "storage_bucket": "studia-32dc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258669826284:android:faea96f103a0c4f5a9d5c9",
+        "android_client_info": {
+          "package_name": "com.odineyes2.studia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258669826284-p2osv39bjllnkrko1gd09gil3i9kk4ao.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSvS62ExY1yW6HcIscJGzvdHpbPCxlRL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258669826284-p2osv39bjllnkrko1gd09gil3i9kk4ao.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "258669826284-12l4u689ahnm60211rdao9q3jfsclb4m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.odineyes2.studia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
