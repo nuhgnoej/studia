@@ -49,50 +49,6 @@ export default function SettingsScreen() {
     }
   };
 
-  const deleteProfileImage = async () => {
-    const uid = auth.currentUser?.uid;
-    if (!uid) return Alert.alert("오류", "로그인 정보가 없습니다.");
-    const filePath = `${FileSystem.documentDirectory}${uid}_profile.jpg`;
-
-    try {
-      setIsLoading(true);
-      const fileInfo = await FileSystem.getInfoAsync(filePath);
-      if (fileInfo.exists) {
-        await FileSystem.deleteAsync(filePath);
-      }
-      await AsyncStorage.removeItem("profileImageUri");
-      Alert.alert("성공", "프로필 이미지가 삭제되었습니다.");
-    } catch (error: any) {
-      Alert.alert("오류", "이미지 삭제에 실패했습니다.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const deleteAllProfileImage = async () => {
-    try {
-      setIsLoading(true);
-      const dir = FileSystem.documentDirectory;
-      if (!dir) return;
-
-      const files = await FileSystem.readDirectoryAsync(dir);
-      const profileImages = files.filter((f) => f.endsWith("_profile.jpg"));
-
-      for (const fileName of profileImages) {
-        const filePath = `${dir}${fileName}`;
-        await FileSystem.deleteAsync(filePath, { idempotent: true });
-      }
-
-      Alert.alert(`✅ ${profileImages.length}개의 프로필 이미지 삭제 완료`);
-      console.log(`✅ ${profileImages.length}개의 프로필 이미지 삭제 완료`);
-    } catch (err) {
-      console.error("❌ deleteAllProfileImage 실패:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleResetDatabase = async () => {
     Alert.alert("경고", "로컬 데이터베이스를 초기화하시겠습니까?", [
       { text: "취소", style: "cancel" },
@@ -152,12 +108,6 @@ export default function SettingsScreen() {
             <Text style={styles.devHeader}>🛠️ 개발자 전용</Text>
             {renderButton("로컬 DB 초기화", handleResetDatabase, "#FF3B30")}
             {renderButton("AsyncStorage 초기화", clearAsyncStorage, "#FF3B30")}
-            {renderButton("프로필 이미지 삭제", deleteProfileImage, "#FF3B30")}
-            {renderButton(
-              "모든 프로필 이미지 삭제",
-              deleteAllProfileImage,
-              "#FF3B30"
-            )}
           </View>
         </View>
       </View>

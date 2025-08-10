@@ -1,11 +1,20 @@
 // components/JsonUploadFAB.tsx
 import { useState } from "react";
-import { TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 
-export default function JsonUploadFAB({ onUpload }: { onUpload: (data: any) => Promise<void> }) {
+export default function JsonUploadFAB({
+  onUpload,
+}: {
+  onUpload: (data: any) => Promise<void>;
+}) {
   const [uploading, setUploading] = useState(false);
 
   const handlePress = async () => {
@@ -23,7 +32,10 @@ export default function JsonUploadFAB({ onUpload }: { onUpload: (data: any) => P
 
       await onUpload(parsed);
     } catch (err) {
-      Alert.alert("업로드 실패", err instanceof Error ? err.message : "알 수 없는 오류");
+      Alert.alert(
+        "업로드 실패",
+        err instanceof Error ? err.message : "알 수 없는 오류"
+      );
     } finally {
       setUploading(false);
     }
@@ -39,7 +51,7 @@ export default function JsonUploadFAB({ onUpload }: { onUpload: (data: any) => P
       {uploading ? (
         <ActivityIndicator color="#fff" />
       ) : (
-        <MaterialIcons name="upload-file" size={28} color="#fff" />
+        <MaterialIcons name="add" size={28} color="#fff" />
       )}
     </TouchableOpacity>
   );

@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/format";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -63,20 +64,56 @@ export default function ProfileScreen() {
     }
   };
 
+  // const handlePickImage = async () => {
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ["images"],
+  //     quality: 0.7,
+  //     aspect: [1, 1],
+  //     allowsEditing: true,
+  //   });
+
+  //   if (!result.canceled && user?.uid) {
+  //     const uri = result.assets[0].uri;
+  //     const newPath = `${FileSystem.documentDirectory}${user.uid}_profile.jpg`;
+  //     await FileSystem.copyAsync({ from: uri, to: newPath });
+  //     await AsyncStorage.setItem(`profileImageUri:${user.uid}`, newPath);
+  //     setProfileImageUri(newPath);
+  //   }
+  // };
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.7,
-      aspect: [1, 1],
       allowsEditing: true,
+      aspect: [1, 1],
     });
 
     if (!result.canceled && user?.uid) {
       const uri = result.assets[0].uri;
-      const newPath = `${FileSystem.documentDirectory}${user.uid}_profile.jpg`;
-      await FileSystem.copyAsync({ from: uri, to: newPath });
-      await AsyncStorage.setItem(`profileImageUri:${user.uid}`, newPath);
-      setProfileImageUri(newPath);
+
+      // Firebase Storage 경로 설정
+      const storageRef = ref(
+        getStorage(),
+        `profileImages/${user.uid}_profile.jpg`
+      );
+
+      try {
+        // 이미지 데이터를 Blob으로 변환
+        const response = await fetch(uri);
+        const blob = await response.blob();
+
+        // Firebase Storage에 업로드
+        await uploadBytes(storageRef, blob);
+
+        // 업로드 완료 후 이미지 URL 가져오기
+        const imageURL = await getDownloadURL(storageRef);
+
+        // AsyncStorage에 프로필 이미지 URL 저장
+        await AsyncStorage.setItem(`profileImageUri:${user.uid}`, imageURL);
+        setProfileImageUri(imageURL); // 상태 업데이트
+      } catch (error) {
+        console.error("이미지 업로드 실패", error);
+      }
     }
   };
 
