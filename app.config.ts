@@ -6,9 +6,14 @@ export default {
     slug: "studia",
     scheme: "studia",
     version: "1.0.0",
+    icon: "./assets/images/icon.png",
     plugins: ["expo-router", "@react-native-google-signin/google-signin"],
     android: {
       package: "com.odineyes2.studia",
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/adaptive-icon.png",
+        backgroundColor: "#FFFFFF",
+      },
     },
     intentFilters: [
       {
@@ -23,6 +28,10 @@ export default {
       },
       EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID:
         process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID:
+        process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+      EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID:
+        process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     },
   },
 };
