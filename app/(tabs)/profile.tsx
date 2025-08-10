@@ -64,22 +64,6 @@ export default function ProfileScreen() {
     }
   };
 
-  // const handlePickImage = async () => {
-  //   const result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ["images"],
-  //     quality: 0.7,
-  //     aspect: [1, 1],
-  //     allowsEditing: true,
-  //   });
-
-  //   if (!result.canceled && user?.uid) {
-  //     const uri = result.assets[0].uri;
-  //     const newPath = `${FileSystem.documentDirectory}${user.uid}_profile.jpg`;
-  //     await FileSystem.copyAsync({ from: uri, to: newPath });
-  //     await AsyncStorage.setItem(`profileImageUri:${user.uid}`, newPath);
-  //     setProfileImageUri(newPath);
-  //   }
-  // };
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],

@@ -21,6 +21,7 @@ export default function SubjectiveQuestion({
   const handleFinalSubmit = (isCorrect: boolean) => {
     onSubmit(input.trim(), isCorrect, true);
     setShowAnswer(false);
+    setInput("");
   };
 
   return (

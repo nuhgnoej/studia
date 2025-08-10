@@ -42,7 +42,7 @@ export const commonArchiveStyles = StyleSheet.create({
     marginTop: 12,
     backgroundColor: "#444",
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     borderRadius: 6,
     flexDirection: "row",
     alignItems: "center",

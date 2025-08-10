@@ -157,9 +157,9 @@ export default function ArchiveList({
               ) : (
                 <>
                   <MaterialIcons name="file-download" size={20} color="white" />
-                  <Text style={{ color: "white", marginLeft: 6 }}>
+                  {/* <Text style={{ color: "white", marginLeft: 6 }}>
                     다운로드
-                  </Text>
+                  </Text> */}
                 </>
               )}
             </TouchableOpacity>
@@ -173,9 +173,9 @@ export default function ArchiveList({
               ) : (
                 <>
                   <MaterialIcons name="share" size={20} color="white" />
-                  <Text style={{ color: "white", marginLeft: 6 }}>
+                  {/* <Text style={{ color: "white", marginLeft: 6 }}>
                     공유하기
-                  </Text>
+                  </Text> */}
                 </>
               )}
             </TouchableOpacity>
