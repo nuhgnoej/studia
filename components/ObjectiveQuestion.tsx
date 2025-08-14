@@ -91,7 +91,8 @@ export default function ObjectiveQuestion({
               choice.choice
             }`}</Text>
 
-            {isAnswered && choice.choiceExplanation && (
+            {/* {isAnswered && choice.choiceExplanation && ( */}
+            {isAnswered && (
               <Text
                 style={[
                   styles.choiceExplanation,
