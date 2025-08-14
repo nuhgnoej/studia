@@ -7,11 +7,16 @@ export default {
     scheme: "studia",
     version: "1.0.0",
     icon: "./assets/images/icon.png",
+    splash: {
+      image: "./assets/images/splash-image.png",
+      resizeMode: "contain",
+      backgroundColor: "#FFFFFF",
+    },
     plugins: ["expo-router", "@react-native-google-signin/google-signin"],
     android: {
       package: "com.odineyes2.studia",
       adaptiveIcon: {
-        foregroundImage: "./assets/images/splash-icon.png",
+        foregroundImage: "./assets/images/splash-splash-image.png",
         backgroundColor: "#FFFFFF",
       },
     },
