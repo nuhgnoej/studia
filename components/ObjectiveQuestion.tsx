@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Question } from "../lib/types";
+import { Choice, Question } from "../lib/types";
 
 export default function ObjectiveQuestion({
   question,
@@ -13,8 +13,8 @@ export default function ObjectiveQuestion({
   isAnswered: boolean;
   isCorrect: boolean;
 }) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [selected, setSelected] = useState<Choice | null>(null);
+  const [shuffledChoices, setShuffledChoices] = useState<Choice[]>([]);
 
   useEffect(() => {
     setSelected(null);
@@ -22,12 +22,25 @@ export default function ObjectiveQuestion({
 
   useEffect(() => {
     if (question.choices) {
-      const dummy = "모르겠습니다.";      
-      const choicesWithAnswer = [...question.choices, question.answer.answerText];
-      const uniqueChoices = Array.from(new Set(choicesWithAnswer));
+      const dummyChoice: Choice = {
+        choice: "모르겠습니다.",
+        choiceExplanation: "다음에 다시 도전해보세요!",
+      };
+
+      const answerChoice: Choice = {
+        choice: question.answer.answerText,
+        choiceExplanation: question.answer.answerExplanation,
+      };
+
+      const choicesWithAnswer = [...question.choices, answerChoice];
+
+      const uniqueChoices = Array.from(
+        new Map(choicesWithAnswer.map((c) => [c.choice, c])).values()
+      );
       const shuffled = uniqueChoices.sort(() => Math.random() - 0.5);
-      const withDummyLast = [...shuffled, dummy];
-      setShuffledChoices(withDummyLast);
+
+      const finalChoices = [...shuffled, dummyChoice];
+      setShuffledChoices(finalChoices);
     }
   }, [question]);
 
@@ -35,10 +48,10 @@ export default function ObjectiveQuestion({
     console.log("🟢 isAnswered updated to:", isAnswered);
   }, [isAnswered]);
 
-  const handleSelect = (choice: string) => {
-    if (isAnswered) return;    
+  const handleSelect = (choice: Choice) => {
+    if (isAnswered) return;
     setSelected(choice);
-    onSubmit(choice);
+    onSubmit(choice.choice);
   };
 
   const showFeedback = isAnswered && selected !== null;
@@ -62,11 +75,25 @@ export default function ObjectiveQuestion({
 
       {/* 선택지 렌더링 */}
       {shuffledChoices.map((choice, index) => {
-        const isSelected = selected === choice;
+        const isSelected = selected?.choice === choice.choice;
 
         let backgroundColor = "#eee";
         if (isAnswered && isSelected) {
           backgroundColor = isCorrect ? "#bbddc3" : "#f8d7da";
+        }
+
+        // 정답 공개 시 모든 선택지에 대한 피드백
+        let choiceFeedback = null;
+        if (isAnswered) {
+          if (choice.choice === question.answer.answerText) {
+            choiceFeedback = (
+              <Text style={styles.choiceExplanationCorrect}>✔ 정답</Text>
+            );
+          } else if (isSelected && !isCorrect) {
+            choiceFeedback = (
+              <Text style={styles.choiceExplanationIncorrect}>✘ 오답</Text>
+            );
+          }
         }
 
         return (
@@ -76,6 +103,7 @@ export default function ObjectiveQuestion({
             style={[styles.choice, { backgroundColor }]}
           >
             <Text style={styles.choiceText}>{`${index + 1}. ${choice}`}</Text>
+            {choiceFeedback}
           </Pressable>
         );
       })}
@@ -185,6 +213,18 @@ const styles = StyleSheet.create({
   choiceText: {
     fontSize: 16,
     color: "#222",
+  },
+  choiceExplanationCorrect: {
+    marginTop: 4,
+    fontSize: 12,
+    color: "#1e8e3e",
+    fontWeight: "bold",
+  },
+  choiceExplanationIncorrect: {
+    marginTop: 4,
+    fontSize: 12,
+    color: "#d93025",
+    fontWeight: "bold",
   },
 
   questionExplanationBox: {

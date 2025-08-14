@@ -21,6 +21,11 @@ export type Metadata = {
   num_questions: number;
 };
 
+export type Choice = {
+  choice: string;
+  choiceExplanation: string;
+};
+
 // 단일 문제
 export type Question = {
   id: number;
@@ -30,7 +35,7 @@ export type Question = {
     questionText: string;
     questionExplanation: string[];
   };
-  choices?: string[]; // 객관식일 경우
+  choices?: Choice[]; // 객관식일 경우
   answer: {
     answerText: string;
     answerExplanation: string;
