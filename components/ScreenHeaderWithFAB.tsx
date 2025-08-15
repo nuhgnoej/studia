@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../styles/common";
+import { useAuthModal } from "@/contexts/AuthModalContext";
 
 type ScreenHeaderProps = {
   title: string;
@@ -19,6 +20,7 @@ export default function ScreenHeaderWithFAB({
   const [fabOpen, setFabOpen] = useState(false);
   const { isLoggedIn, profileImageUri } = useAuth();
   const router = useRouter();
+  const { openAuthModal } = useAuthModal();
 
   const fabActions = isLoggedIn
     ? [
@@ -38,7 +40,7 @@ export default function ScreenHeaderWithFAB({
           color: "#f9f9f9",
           onPress: async () => {
             await signOut(auth);
-            router.push("/login");
+            openAuthModal("login");
           },
         },
       ]
@@ -48,8 +50,8 @@ export default function ScreenHeaderWithFAB({
           icon: require("@/assets/icons/login.png"),
           name: "login",
           color: "#f9f9f9",
-          onPress: () => {
-            router.push("/login");
+          onPress: async () => {
+            openAuthModal("login");
           },
         },
       ];

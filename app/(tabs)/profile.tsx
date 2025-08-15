@@ -6,11 +6,10 @@ import { db } from "@/lib/firebase/firebase";
 import { formatDate } from "@/lib/format";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as FileSystem from "expo-file-system";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+// import { router } from "expo-router";
 import { updateProfile } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -30,9 +29,12 @@ import {
   View,
 } from "react-native";
 import { commonStyles } from "../../styles/common";
+import { useAuthModal } from "@/contexts/AuthModalContext";
 
 export default function ProfileScreen() {
   const { user, profileImageUri, setProfileImageUri } = useAuth();
+  const { openAuthModal } = useAuthModal();
+
   const [loading, setLoading] = useState(true);
   const [bio, setBio] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -141,7 +143,8 @@ export default function ProfileScreen() {
           description={"로그인 후 프로필을 확인할 수 있습니다."}
         />
         <TouchableOpacity
-          onPress={() => router.push("/login")}
+          // onPress={() => router.push("/login")}
+          onPress={()=>openAuthModal("login")}
           activeOpacity={0.7}
           style={styles.iosLoginButton}
         >

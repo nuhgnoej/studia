@@ -1,8 +1,9 @@
+// components/auth/SignupContent.tsx
+import React, { useState } from "react";
 import { auth, db } from "@/lib/firebase/firebase";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -24,15 +25,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function Signup() {
+interface SignupContentProps {
+  onSignupSuccess: () => void;
+  onNavigateToLogin: () => void;
+}
+
+export default function SignupContent({
+  onSignupSuccess,
+  onNavigateToLogin,
+}: SignupContentProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
 
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -89,8 +96,9 @@ export default function Signup() {
         createdAt: serverTimestamp(),
       });
 
-      Alert.alert("Success", "Account created!");
-      router.replace("/");
+      //   Alert.alert("Success", "Account created!");
+      //   router.replace("/");
+      onSignupSuccess();
     } catch (error: any) {
       Alert.alert("Signup failed", error.message);
       console.log("Signup failed", error.message);
@@ -102,7 +110,8 @@ export default function Signup() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 10}
+      //   keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 10}
+      keyboardVerticalOffset={60}
       style={{ flex: 1 }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -178,8 +187,8 @@ export default function Signup() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.loginLink}
-              onPress={() => router.replace("/login")}
+              style={styles.loginLinkWrapper} // 스타일 이름을 명확히 변경
+              onPress={onNavigateToLogin}
             >
               <Text style={styles.loginText}>
                 Already have an account?{" "}
@@ -267,5 +276,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 2,
+  },
+  loginLinkWrapper: {
+    alignItems: "center",
+    paddingVertical: 10, // 터치 영역 확보
   },
 });

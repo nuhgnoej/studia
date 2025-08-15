@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { ensureDatabaseInitialized } from "@/lib/db/bootstrap";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { AuthModalProvider } from "@/contexts/AuthModalContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -32,23 +33,13 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <AuthProvider>
-          <Stack initialRouteName="(tabs)">
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="login" />
-            <Stack.Screen name="signup" />
-            {/* <Stack.Screen
-              name="subjectSettings"
-              options={{
-                presentation: "modal",
-                headerTitle: "과목 별 설정",
-                animation: "slide_from_bottom",
-                animationDuration: 1000,
-                // headerShown: false,
-              }}
-            /> */}
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
+          <AuthModalProvider>
+            <Stack initialRouteName="(tabs)">
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </AuthModalProvider>
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

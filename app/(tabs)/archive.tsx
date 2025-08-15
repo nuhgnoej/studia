@@ -7,16 +7,18 @@ import CommunityArchive from "../archive/CommunityArchive";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
+import { useAuthModal } from "@/contexts/AuthModalContext";
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function ArchiveScreen() {
   const { user } = useAuth();
-  const router = useRouter();
+  // const router = useRouter();
+  const { openAuthModal } = useAuthModal();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,7 +56,7 @@ export default function ArchiveScreen() {
         {/* 공통 헤더 컴포넌트 */}
         <ScreenHeaderWithFAB title="문제 아카이브" description={description} />
         <TouchableOpacity
-          onPress={() => router.push("/login")}
+          onPress={() => openAuthModal("login")}
           activeOpacity={0.7}
           style={styles.iosLoginButton}
         >

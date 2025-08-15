@@ -1,14 +1,15 @@
+// components/auth/LoginContent.tsx
+
+import React, { useState } from "react";
+import { auth } from "@/lib/firebase/firebase";
 import SocialLogInButtons from "@/components/SocialLogInButtons";
 import { iosClientId, webClientId } from "@/constants";
-import { auth } from "@/lib/firebase/firebase";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import {
   GoogleAuthProvider,
   signInWithCredential,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -23,8 +24,15 @@ import {
   View,
 } from "react-native";
 
-export default function Login() {
-  const router = useRouter();
+interface LoginContentProps {
+  onLoginSuccess: () => void;
+  onNavigateToSignup: () => void;
+}
+
+export default function LoginContent({
+  onLoginSuccess,
+  onNavigateToSignup,
+}: LoginContentProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +43,7 @@ export default function Login() {
     setError("");
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      router.replace("/");
+      onLoginSuccess();
     } catch (e: any) {
       console.error(e);
       setError(e?.message ?? "Login failed");
@@ -44,10 +52,6 @@ export default function Login() {
       setIsLoading(false);
     }
   };
-
-  if (!webClientId) {
-    console.error("Google Web Client ID가 설정되지 않았습니다.");
-  }
 
   return (
     <KeyboardAvoidingView
@@ -104,7 +108,7 @@ export default function Login() {
 
             <TouchableOpacity
               style={styles.signupLink}
-              onPress={() => router.replace("/signup")}
+              onPress={onNavigateToSignup}
               disabled={isLoading}
             >
               <Text style={styles.signupText}>
@@ -124,7 +128,7 @@ export default function Login() {
                   try {
                     const cred = GoogleAuthProvider.credential(idToken);
                     await signInWithCredential(auth, cred);
-                    router.replace("/");
+                    // router.replace("/");
                   } catch (e: any) {
                     console.error("Firebase sign-in error", e);
                     Alert.alert("Google 로그인 실패", e?.message ?? "");

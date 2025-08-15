@@ -17,9 +17,8 @@ import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { initDatabase } from "@/lib/db";
 import { auth } from "@/lib/firebase/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-// import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { commonStyles } from "../../styles/common";
 import {
@@ -31,6 +30,7 @@ import { SwitchRow, ListRow } from "@/components/ui/SettingsRows";
 import { RadioSheet } from "@/components/sheets/RadioSheet";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import { InfoSheet } from "@/components/sheets/InfoSheet";
+import { useAuthModal } from "@/contexts/AuthModalContext";
 
 /* ---------------- Types & Constants ---------------- */
 
@@ -47,7 +47,8 @@ type InfoSheetState = {
 /* ---------------- Main Screen ---------------- */
 
 export default function SettingsScreen() {
-  const router = useRouter();
+  // const router = useRouter();
+  const { openAuthModal } = useAuthModal();
 
   // auth
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -107,7 +108,14 @@ export default function SettingsScreen() {
     try {
       setLoading("logout");
       await signOut(auth);
-      router.push("/login");
+      openAuthModal("login");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      setInfo({
+        title: "오류",
+        description: "로그아웃에 실패했습니다. 다시 시도해주세요.",
+        status: "error",
+      });
     } finally {
       setLoading(null);
     }
@@ -117,14 +125,12 @@ export default function SettingsScreen() {
     try {
       setLoading("async");
       await AsyncStorage.clear();
-      // Alert.alert("성공", "AsyncStorage가 초기화되었습니다.");
       setInfo({
         title: "성공",
         description: "AsyncStorage가 초기화되었습니다.",
         status: "success",
       });
     } catch (error) {
-      // Alert.alert("오류", "초기화에 실패했습니다.");
       setInfo({
         title: "오류",
         description: "초기화에 실패했습니다.",
@@ -143,7 +149,6 @@ export default function SettingsScreen() {
     try {
       setLoading("db");
       await initDatabase();
-      // Alert.alert("완료", "로컬 데이터베이스가 초기화되었습니다.");
       setInfo({
         title: "완료",
         description: "로컬 데이터베이스가 초기화되었습니다.",
@@ -166,7 +171,7 @@ export default function SettingsScreen() {
     <ActionButton
       icon="login"
       label="로그인 화면으로"
-      onPress={() => router.push("/login")}
+      onPress={() => openAuthModal("login")}
       variant="neutral"
     />
   );
@@ -215,7 +220,6 @@ export default function SettingsScreen() {
                 icon="tune"
                 label="각 과목 별 초기화 (문제세트, 진행률)"
                 onPress={handlePresentModalPress}
-                // onPress={() => router.push("/subjectSettings")}
                 variant="primary"
               />
               <ActionButton
