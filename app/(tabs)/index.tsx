@@ -3,7 +3,7 @@
 import QuestionSetCard from "@/components/QuestionSetCard";
 import { getAllQuestionSets } from "@/lib/db/query";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { commonStyles } from "../../styles/common";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -16,8 +16,10 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { deleteQuestionSetById } from "@/lib/db/delete";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import * as Haptics from "expo-haptics";
-import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import SubjectStartContent from "@/components/SubjectStartContent";
+// import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+// import SubjectStartContent from "@/components/SubjectStartContent";
+import { useQuizModal } from "@/contexts/QuizModalContext";
+
 
 type ProgressInfo = {
   lastIndex: number;
@@ -27,7 +29,8 @@ type ProgressInfo = {
 
 export default function Home() {
   const { showNotification } = useNotification();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  // const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const { showQuizStartSheet } = useQuizModal();
 
   const [sets, setSets] = useState<any[]>([]);
   const { user } = useAuth();
@@ -35,7 +38,7 @@ export default function Home() {
     {}
   );
   const [setForReset, setSetForReset] = useState<any | null>(null);
-  const [selectedSet, setSelectedSet] = useState<any | null>(null);
+  // const [selectedSet, setSelectedSet] = useState<any | null>(null);
 
   const displaySets = useMemo(() => {
     if (sets.length % 2 === 1) {
@@ -124,15 +127,15 @@ export default function Home() {
   };
 
   // --- 2. BottomSheet 제어를 위한 ref 와 snap points ---
-  const handleCardPress = useCallback((item: any) => {
-    if (item.empty) return;
-    setSelectedSet(item);
-    bottomSheetRef.current?.present();
-  }, []);
+  // const handleCardPress = useCallback((item: any) => {
+  //   if (item.empty) return;
+  //   setSelectedSet(item);
+  //   bottomSheetRef.current?.present();
+  // }, []);
 
-  const handleSheetDismiss = () => {
-    setSelectedSet(null);
-  };
+  // const handleSheetDismiss = () => {
+  //   setSelectedSet(null);
+  // };
 
   return (
     <View style={commonStyles.container}>
@@ -166,7 +169,7 @@ export default function Home() {
             return (
               <QuestionSetCard
                 item={item}
-                onPress={() => handleCardPress(item)}
+                onPress={() => (item.empty ? {} : showQuizStartSheet(item.id))}
                 onLongPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                   setSetForReset(item);
@@ -194,7 +197,7 @@ export default function Home() {
         onConfirm={handleResetConfirm}
         onCancel={() => setSetForReset(null)}
       />
-      <BottomSheetModal
+      {/* <BottomSheetModal
         ref={bottomSheetRef}
         index={0}
         snapPoints={["90%"]}
@@ -208,7 +211,7 @@ export default function Home() {
         )}
       >
         {selectedSet && <SubjectStartContent subjectId={selectedSet.id} />}
-      </BottomSheetModal>
+      </BottomSheetModal> */}
     </View>
   );
 }

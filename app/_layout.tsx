@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { QuizModalProvider } from "@/contexts/QuizModalContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -38,6 +39,7 @@ export default function RootLayout() {
           <BottomSheetModalProvider>
             <NotificationProvider>
               <AuthModalProvider>
+                <QuizModalProvider>
                 <Stack initialRouteName="(tabs)">
                   <Stack.Screen
                     name="(tabs)"
@@ -46,6 +48,7 @@ export default function RootLayout() {
                   <Stack.Screen name="+not-found" />
                 </Stack>
                 <StatusBar style="auto" />
+                </QuizModalProvider>
               </AuthModalProvider>
             </NotificationProvider>
           </BottomSheetModalProvider>
