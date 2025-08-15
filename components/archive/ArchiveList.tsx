@@ -6,7 +6,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
@@ -17,6 +16,7 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "@/lib/firebase/firebase";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
+import { useNotification } from "@/contexts/NotificationContext";
 
 export type ArchiveItem = {
   id: string;
@@ -43,6 +43,7 @@ export default function ArchiveList({
   onImport,
   onDownload,
 }: Props) {
+  const { showNotification } = useNotification();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
@@ -68,10 +69,11 @@ export default function ArchiveList({
       }
     } catch (err) {
       console.error("다운로드 실패:", err);
-      Alert.alert(
-        "다운로드 실패",
-        "파일 다운로드 또는 업로드 중 문제가 발생했습니다."
-      );
+      showNotification({
+        title: "다운로드 실패",
+        description: "파일 다운로드 또는 처리 중 문제가 발생했습니다.",
+        status: "error",
+      });
     } finally {
       setLoadingId(null);
     }
@@ -88,11 +90,19 @@ export default function ArchiveList({
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(downloadRes.uri);
       } else {
-        Alert.alert("공유 불가", "이 디바이스에서 공유를 지원하지 않습니다.");
+        showNotification({
+          title: "공유 불가",
+          description: "이 디바이스에서 공유를 지원하지 않습니다.",
+          status: "error",
+        });
       }
     } catch (err) {
       console.error("공유 실패:", err);
-      Alert.alert("공유 실패", "파일 공유 중 문제가 발생했습니다.");
+      showNotification({
+        title: "공유 실패",
+        description: "파일 공유 중 문제가 발생했습니다.",
+        status: "error",
+      });
     } finally {
       setLoadingId(null);
     }
@@ -157,9 +167,9 @@ export default function ArchiveList({
               ) : (
                 <>
                   <MaterialIcons name="file-download" size={20} color="white" />
-                  {/* <Text style={{ color: "white", marginLeft: 6 }}>
+                  <Text style={{ color: "white", marginLeft: 6 }}>
                     다운로드
-                  </Text> */}
+                  </Text>
                 </>
               )}
             </TouchableOpacity>
@@ -173,9 +183,9 @@ export default function ArchiveList({
               ) : (
                 <>
                   <MaterialIcons name="share" size={20} color="white" />
-                  {/* <Text style={{ color: "white", marginLeft: 6 }}>
+                  <Text style={{ color: "white", marginLeft: 6 }}>
                     공유하기
-                  </Text> */}
+                  </Text>
                 </>
               )}
             </TouchableOpacity>

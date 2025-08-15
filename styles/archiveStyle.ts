@@ -20,9 +20,15 @@ export const commonArchiveStyles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 16,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 12,
-    elevation: 1,
+    backgroundColor: "rgba(255,255,255,0.95)",
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(0,0,0,0.04)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
   },
   title: {
     fontSize: 16,
@@ -54,7 +60,6 @@ export const commonArchiveStyles = StyleSheet.create({
     paddingBottom: 4,
     marginBottom: 10,
   },
-
   searchInputWrapper: {
     flexDirection: "row",
     alignItems: "center",
@@ -64,14 +69,12 @@ export const commonArchiveStyles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    // 그림자
-    shadowColor: "#000", // 그림자 색상
-    shadowOffset: { width: 0, height: 2 }, // 위치 (x, y)
-    shadowOpacity: 0.2, // 투명도 (0 ~ 1)
-    shadowRadius: 4, // 퍼짐 정도 (blur)
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     elevation: 3,
   },
-
   searchInput: {
     flex: 1,
     fontSize: 14,

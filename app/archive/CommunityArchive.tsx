@@ -1,3 +1,5 @@
+// app/archive/CommunityArchive.tsx
+
 import ArchiveList from "@/components/archive/ArchiveList";
 import FAB from "@/components/FAB";
 import { insertMetadata, insertQuestions } from "@/lib/db/insert";
@@ -13,8 +15,8 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
-// import { useRouter } from "expo-router";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useNotification } from "@/contexts/NotificationContext";
 
 type ArchiveItem = {
   id: string;
@@ -27,7 +29,7 @@ type ArchiveItem = {
 };
 
 export default function CommunityArchive() {
-  // const router = useRouter();
+  const { showNotification } = useNotification();
 
   const [archives, setArchives] = useState<ArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +72,7 @@ export default function CommunityArchive() {
 
   const handleUpload = async () => {
     try {
-      setUploading(true); // ✅ 업로드 시작
+      setUploading(true);
 
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
@@ -116,16 +118,21 @@ export default function CommunityArchive() {
         questionsCount,
         storagePath,
       });
-
-      Alert.alert("업로드 성공", `"${fileName}" 이 업로드되었습니다.`);
-
-      // ✅ 4. 업로드 후 목록 갱신
+      showNotification({
+        title: "업로드 성공",
+        description: `"${fileName}" 이 업로드되었습니다.`,
+        status: "success",
+      });
       await fetchArchives();
     } catch (error) {
       console.error("업로드 실패:", error);
-      Alert.alert("업로드 실패", "파일을 업로드하는 중 오류가 발생했습니다.");
+      showNotification({
+        title: "업로드 실패",
+        description: "파일을 업로드하는 중 오류가 발생했습니다.",
+        status: "error",
+      });
     } finally {
-      setUploading(false); // ✅ 업로드 끝
+      setUploading(false);
     }
   };
 
@@ -138,19 +145,18 @@ export default function CommunityArchive() {
     try {
       await insertMetadata(data.metadata);
       await insertQuestions(data.metadata.id, data.questions);
-      Alert.alert(
-        "다운로드 완료",
-        `총 ${data.questions.length}문제가 등록되었습니다.`,
-        [
-          {
-            text: "확인",
-            // onPress: () => router.push("/"),
-          },
-        ]
-      );
+      showNotification({
+        title: "다운로드 완료",
+        description: `총 ${data.questions.length}문제가 등록되었습니다.`,
+        status: "success",
+      });
     } catch (err) {
       console.error("❌ 다운로드 실패:", err);
-      Alert.alert("오류", "다운로드 중 문제가 발생했습니다.");
+      showNotification({
+        title: "오류",
+        description: "다운로드 중 문제가 발생했습니다.",
+        status: "error",
+      });
     }
   };
 
