@@ -45,11 +45,8 @@ export default function Login() {
     }
   };
 
-  // webClientId가 없으면 소셜 로그인 버튼을 렌더링하지 않음
   if (!webClientId) {
-    // 또는 로딩 인디케이터나 에러 메시지를 보여줄 수 있습니다.
     console.error("Google Web Client ID가 설정되지 않았습니다.");
-    // 여기서는 간단히 null을 반환하거나, 에러 컴포넌트를 보여줄 수 있습니다.
   }
 
   return (

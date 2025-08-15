@@ -25,7 +25,6 @@ export default function RootLayout() {
   }, []);
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
@@ -33,11 +32,20 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <AuthProvider>
-          {/* <Stack initialRouteName="login"> */}
           <Stack initialRouteName="(tabs)">
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="login" />
             <Stack.Screen name="signup" />
+            {/* <Stack.Screen
+              name="subjectSettings"
+              options={{
+                presentation: "modal",
+                headerTitle: "과목 별 설정",
+                animation: "slide_from_bottom",
+                animationDuration: 1000,
+                // headerShown: false,
+              }}
+            /> */}
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />

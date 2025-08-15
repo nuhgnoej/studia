@@ -18,9 +18,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-// import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
-// import uuid from "react-native-uuid";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
