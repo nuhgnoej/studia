@@ -17,24 +17,21 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { commonStyles } from "../../styles/common";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { SectionCard, ActionButton } from "@/components/ui/ActionComponents";
 import { ValueRow, EditableRow } from "@/components/ui/SettingsRows";
 import { useNotification } from "@/contexts/NotificationContext";
+import LoginPrompt from "@/components/auth/LoginPrompt";
 
 export default function ProfileScreen() {
   const { user, profileImageUri, setProfileImageUri } = useAuth();
-  const { openAuthModal } = useAuthModal();
   const { showNotification } = useNotification();
 
   const [loading, setLoading] = useState(true);
   const [bio, setBio] = useState<string | null>(null);
-  // const [editMode, setEditMode] = useState(false);
   const [displayNameInput, setDisplayNameInput] = useState(
     user?.displayName ?? ""
   );
@@ -57,7 +54,6 @@ export default function ProfileScreen() {
         description: "프로필이 저장되었습니다.",
         status: "success",
       });
-      // setEditMode(false);
     } catch (e) {
       showNotification({
         title: "오류",
@@ -138,21 +134,33 @@ export default function ProfileScreen() {
     );
   }
 
+  // if (!user) {
+  //   return (
+  //     <View style={commonStyles.container}>
+  //       {/* 공통 헤더 컴포넌트 */}
+  //       <ScreenHeaderWithFAB
+  //         title="프로필"
+  //         description={"로그인 후 프로필을 확인할 수 있습니다."}
+  //       />
+  //       <TouchableOpacity
+  //         onPress={() => openAuthModal("login")}
+  //         activeOpacity={0.7}
+  //         style={styles.iosLoginButton}
+  //       >
+  //         <Text style={styles.iosLoginButtonText}>로그인하러 가기</Text>
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // }
+
   if (!user) {
     return (
       <View style={commonStyles.container}>
-        {/* 공통 헤더 컴포넌트 */}
         <ScreenHeaderWithFAB
           title="프로필"
           description={"로그인 후 프로필을 확인할 수 있습니다."}
         />
-        <TouchableOpacity
-          onPress={() => openAuthModal("login")}
-          activeOpacity={0.7}
-          style={styles.iosLoginButton}
-        >
-          <Text style={styles.iosLoginButtonText}>로그인하러 가기</Text>
-        </TouchableOpacity>
+        <LoginPrompt />
       </View>
     );
   }
