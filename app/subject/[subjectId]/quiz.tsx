@@ -1,4 +1,4 @@
-// app/quiz/[id].tsx
+// app/subject/[subjectId]/quiz.tsx
 
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";

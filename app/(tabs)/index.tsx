@@ -2,8 +2,8 @@
 
 import QuestionSetCard from "@/components/QuestionSetCard";
 import { getAllQuestionSets } from "@/lib/db/query";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { commonStyles } from "../../styles/common";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -16,6 +16,8 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { deleteQuestionSetById } from "@/lib/db/delete";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import * as Haptics from "expo-haptics";
+import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import SubjectStartContent from "@/components/SubjectStartContent";
 
 type ProgressInfo = {
   lastIndex: number;
@@ -24,8 +26,8 @@ type ProgressInfo = {
 };
 
 export default function Home() {
-  const router = useRouter();
   const { showNotification } = useNotification();
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const [sets, setSets] = useState<any[]>([]);
   const { user } = useAuth();
@@ -33,6 +35,7 @@ export default function Home() {
     {}
   );
   const [setForReset, setSetForReset] = useState<any | null>(null);
+  const [selectedSet, setSelectedSet] = useState<any | null>(null);
 
   const displaySets = useMemo(() => {
     if (sets.length % 2 === 1) {
@@ -120,6 +123,17 @@ export default function Home() {
     }
   };
 
+  // --- 2. BottomSheet 제어를 위한 ref 와 snap points ---
+  const handleCardPress = useCallback((item: any) => {
+    if (item.empty) return;
+    setSelectedSet(item);
+    bottomSheetRef.current?.present();
+  }, []);
+
+  const handleSheetDismiss = () => {
+    setSelectedSet(null);
+  };
+
   return (
     <View style={commonStyles.container}>
       {/* 공통 헤더 컴포넌트 */}
@@ -152,18 +166,13 @@ export default function Home() {
             return (
               <QuestionSetCard
                 item={item}
-                onPress={() =>
-                  item.empty ? {} : router.push(`/subject/${item.id}`)
-                }
+                onPress={() => handleCardPress(item)}
                 onLongPress={() => {
-                  // 2. 길게 누르는 동작은 중요하므로 Heavy 스타일을 사용합니다.
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
-                  // 3. 기존 로직을 실행합니다.
                   setSetForReset(item);
                 }}
                 progress={progressMap[item.id]}
-                invisible={item.empty} // 투명 여부를 결정할 prop 추가
+                invisible={item.empty}
               />
             );
           }}
@@ -185,6 +194,21 @@ export default function Home() {
         onConfirm={handleResetConfirm}
         onCancel={() => setSetForReset(null)}
       />
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={["90%"]}
+        onDismiss={handleSheetDismiss}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop
+            {...props}
+            appearsOnIndex={0}
+            disappearsOnIndex={-1}
+          />
+        )}
+      >
+        {selectedSet && <SubjectStartContent subjectId={selectedSet.id} />}
+      </BottomSheetModal>
     </View>
   );
 }
