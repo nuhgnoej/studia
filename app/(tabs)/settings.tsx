@@ -4,27 +4,21 @@ import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { initDatabase } from "@/lib/db";
 import { auth } from "@/lib/firebase/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Animated,
-  Easing,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Colors, CommonColorVariant } from "../../constants/Colors";
+import React, { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { commonStyles } from "../../styles/common";
+
+// --- 새로 추가된 import ---
+import {
+  SectionCard,
+  ActionButton,
+  Caption,
+} from "@/components/ui/ActionComponents";
+import { SwitchRow, ListRow } from "@/components/ui/SettingsRows";
+import { RadioSheet } from "@/components/sheets/RadioSheet";
+import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 
 /* ---------------- Types & Constants ---------------- */
 
@@ -117,34 +111,25 @@ export default function SettingsScreen() {
     }
   };
 
-  const AccountButton = useMemo(
-    () =>
-      isLoggedIn ? (
-        <ActionButton
-          icon="logout"
-          label="로그아웃"
-          onPress={handleLogout}
-          variant="neutral"
-          loading={loading === "logout"}
-        />
-      ) : (
-        <ActionButton
-          icon="login"
-          label="로그인 화면으로"
-          onPress={() => router.push("/login")}
-          variant="neutral"
-        />
-      ),
-    [isLoggedIn, loading]
+  const AccountButton = isLoggedIn ? (
+    <ActionButton
+      icon="logout"
+      label="로그아웃"
+      onPress={handleLogout}
+      variant="neutral"
+      loading={loading === "logout"}
+    />
+  ) : (
+    <ActionButton
+      icon="login"
+      label="로그인 화면으로"
+      onPress={() => router.push("/login")}
+      variant="neutral"
+    />
   );
 
   return (
-    <LinearGradient
-      colors={["#F5F7FA", "#E4EBF5"]}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
-      style={{ flex: 1 }}
-    >
+    <>
       <View style={commonStyles.container}>
         <ScreenHeaderWithFAB
           title="설정"
@@ -260,326 +245,8 @@ export default function SettingsScreen() {
           await actuallyResetDatabase();
         }}
       />
-    </LinearGradient>
+    </>
   );
-}
-
-/* ---------------- Reusable UI ---------------- */
-
-function SectionCard({
-  title,
-  badge,
-  children,
-}: {
-  title: string;
-  badge?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        {badge ? (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{badge}</Text>
-          </View>
-        ) : null}
-      </View>
-      <View style={{ gap: 10 }}>{children}</View>
-    </View>
-  );
-}
-
-function Caption({ children }: { children: React.ReactNode }) {
-  return <Text style={styles.caption}>{children}</Text>;
-}
-
-function ActionButton({
-  icon,
-  label,
-  onPress,
-  variant = "primary",
-  loading,
-}: {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
-  label: string;
-  onPress: () => void;
-  variant?: CommonColorVariant;
-  loading?: boolean;
-}) {
-  const palette = Colors.common[variant];
-
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: pressed ? palette.pressedBg : palette.bg },
-      ]}
-      disabled={!!loading}
-      android_ripple={{ color: "rgba(255,255,255,0.12)" }}
-    >
-      {loading ? (
-        <ActivityIndicator color={palette.fg} />
-      ) : (
-        <>
-          <MaterialIcons name={icon} size={20} color={palette.fg} />
-          <Text style={[styles.buttonText, { color: palette.fg }]}>
-            {label}
-          </Text>
-          <MaterialIcons name="chevron-right" size={20} color={palette.fg} />
-        </>
-      )}
-    </Pressable>
-  );
-}
-
-/* ---- Rows ---- */
-
-function SwitchRow({
-  icon,
-  label,
-  value,
-  onValueChange,
-  helper,
-}: {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
-  label: string;
-  value: boolean;
-  onValueChange: (v: boolean) => void;
-  helper?: string;
-}) {
-  return (
-    <View style={styles.row}>
-      <View style={styles.rowLeft}>
-        <View style={styles.rowIcon}>
-          <MaterialIcons name={icon} size={18} color="#111827" />
-        </View>
-        <View style={{ gap: 2 }}>
-          <Text style={styles.rowLabel}>{label}</Text>
-          {helper ? <Text style={styles.rowHelper}>{helper}</Text> : null}
-        </View>
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: "#E5E7EB", true: "#93C5FD" }}
-        thumbColor={value ? Colors.common.primary.bg : "#fff"}
-        ios_backgroundColor="#E5E7EB"
-      />
-    </View>
-  );
-}
-
-function ListRow({
-  icon,
-  label,
-  valueText,
-  onPress,
-}: {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
-  label: string;
-  valueText?: string;
-  onPress?: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
-    >
-      <View style={styles.rowLeft}>
-        <View style={styles.rowIcon}>
-          <MaterialIcons name={icon} size={18} color="#111827" />
-        </View>
-        <Text style={styles.rowLabel}>{label}</Text>
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-        {valueText ? <Text style={styles.valueText}>{valueText}</Text> : null}
-        <MaterialIcons name="chevron-right" size={20} color="#9CA3AF" />
-      </View>
-    </Pressable>
-  );
-}
-
-/* ---- Radio Sheet ---- */
-
-function RadioSheet({
-  title,
-  visible,
-  options,
-  selectedKey,
-  onSelect,
-  onClose,
-}: {
-  title: string;
-  visible: boolean;
-  options: { key: string; label: string; description?: string }[];
-  selectedKey?: string;
-  onSelect: (key: string) => void;
-  onClose: () => void;
-}) {
-  return (
-    <BottomSheet visible={visible} onClose={onClose}>
-      <View style={{ gap: 12 }}>
-        <Text style={styles.sheetTitle}>{title}</Text>
-        {options.map((opt) => {
-          const selected = opt.key === selectedKey;
-          return (
-            <Pressable
-              key={opt.key}
-              style={({ pressed }) => [
-                styles.radioRow,
-                pressed && styles.rowPressed,
-              ]}
-              onPress={() => {
-                onSelect(opt.key);
-                onClose();
-              }}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-            >
-              <View style={{ flex: 1 }}>
-                <Text style={styles.radioLabel}>{opt.label}</Text>
-                {opt.description ? (
-                  <Text style={styles.radioDesc}>{opt.description}</Text>
-                ) : null}
-              </View>
-              <MaterialIcons
-                name={
-                  selected ? "radio-button-checked" : "radio-button-unchecked"
-                }
-                size={22}
-                color={selected ? Colors.common.primary.bg : "#9CA3AF"}
-              />
-            </Pressable>
-          );
-        })}
-      </View>
-    </BottomSheet>
-  );
-}
-
-/* ---- Confirm Sheet ---- */
-
-function ConfirmSheet({
-  visible,
-  title,
-  description,
-  confirmText = "확인",
-  cancelText = "취소",
-  confirmVariant = "primary",
-  onConfirm,
-  onCancel,
-}: {
-  visible: boolean;
-  title: string;
-  description?: string;
-  confirmText?: string;
-  cancelText?: string;
-  confirmVariant?: CommonColorVariant;
-  onConfirm: () => void | Promise<void>;
-  onCancel: () => void;
-}) {
-  const palette = Colors.common[confirmVariant];
-
-  return (
-    <BottomSheet visible={visible} onClose={onCancel}>
-      <View style={{ gap: 12 }}>
-        <Text style={styles.sheetTitle}>{title}</Text>
-        {description ? (
-          <Text style={styles.sheetDesc}>{description}</Text>
-        ) : null}
-
-        <Pressable
-          onPress={onConfirm}
-          style={({ pressed }) => [
-            styles.sheetButton,
-            { backgroundColor: pressed ? palette.pressedBg : palette.bg },
-          ]}
-        >
-          <Text style={[styles.sheetButtonText, { color: palette.fg }]}>
-            {confirmText}
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={onCancel}
-          style={({ pressed }) => [
-            styles.sheetButton,
-            { backgroundColor: pressed ? "#E5E7EB" : "#F3F4F6" },
-          ]}
-        >
-          <Text style={[styles.sheetButtonText, { color: "#111827" }]}>
-            {cancelText}
-          </Text>
-        </Pressable>
-      </View>
-    </BottomSheet>
-  );
-}
-
-/* ---- BottomSheet primitive (no external libs) ---- */
-
-function BottomSheet({
-  visible,
-  onClose,
-  children,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const translateY = useRef(new Animated.Value(300)).current;
-
-  useEffect(() => {
-    if (visible) {
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 220,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [visible]);
-
-  const close = () => {
-    Animated.timing(translateY, {
-      toValue: 300,
-      duration: 180,
-      easing: Easing.in(Easing.cubic),
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) onClose();
-    });
-  };
-
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      onRequestClose={close}
-    >
-      <Pressable style={styles.sheetBackdrop} onPress={close} />
-      <Animated.View
-        style={[
-          styles.sheetContainer,
-          {
-            transform: [{ translateY }],
-          },
-        ]}
-      >
-        <View style={styles.sheetHandle} />
-        <View style={styles.sheetContent}>{children}</View>
-        <SafeAreaSpacer />
-      </Animated.View>
-    </Modal>
-  );
-}
-
-function SafeAreaSpacer() {
-  return <View style={{ height: Platform.OS === "ios" ? 12 : 8 }} />;
 }
 
 /* ---------------- Styles ---------------- */
