@@ -16,7 +16,7 @@ export default {
     android: {
       package: "com.odineyes2.studia",
       adaptiveIcon: {
-        foregroundImage: "./assets/images/splash-splash-image.png",
+        foregroundImage: "./assets/images/splash-image.png",
         backgroundColor: "#FFFFFF",
       },
     },
