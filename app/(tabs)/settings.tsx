@@ -17,7 +17,6 @@ import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { initDatabase } from "@/lib/db";
 import { auth } from "@/lib/firebase/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { useRouter } from "expo-router";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { commonStyles } from "../../styles/common";
@@ -29,8 +28,8 @@ import {
 import { SwitchRow, ListRow } from "@/components/ui/SettingsRows";
 import { RadioSheet } from "@/components/sheets/RadioSheet";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
-import { InfoSheet } from "@/components/sheets/InfoSheet";
 import { useAuthModal } from "@/contexts/AuthModalContext";
+import { useNotification } from "@/contexts/NotificationContext";
 
 /* ---------------- Types & Constants ---------------- */
 
@@ -38,17 +37,12 @@ type LoadingKey = null | "db" | "logout" | "async";
 type ThemeMode = "system" | "light" | "dark";
 const THEME_MODE_KEY = "settings.themeMode";
 const THEME_DARK_TOGGLE_KEY = "settings.darkToggle";
-type InfoSheetState = {
-  title: string;
-  description: string;
-  status: "success" | "error";
-} | null;
 
 /* ---------------- Main Screen ---------------- */
 
 export default function SettingsScreen() {
-  // const router = useRouter();
   const { openAuthModal } = useAuthModal();
+  const { showNotification } = useNotification();
 
   // auth
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,7 +55,6 @@ export default function SettingsScreen() {
   const [darkQuickToggle, setDarkQuickToggle] = useState(false);
   const [radioOpen, setRadioOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [info, setInfo] = useState<InfoSheetState>(null);
 
   // --- BottomSheet 제어를 위한 설정 ---
   const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -111,7 +104,7 @@ export default function SettingsScreen() {
       openAuthModal("login");
     } catch (error) {
       console.error("로그아웃 실패:", error);
-      setInfo({
+      showNotification({
         title: "오류",
         description: "로그아웃에 실패했습니다. 다시 시도해주세요.",
         status: "error",
@@ -125,13 +118,13 @@ export default function SettingsScreen() {
     try {
       setLoading("async");
       await AsyncStorage.clear();
-      setInfo({
+      showNotification({
         title: "성공",
         description: "AsyncStorage가 초기화되었습니다.",
         status: "success",
       });
     } catch (error) {
-      setInfo({
+      showNotification({
         title: "오류",
         description: "초기화에 실패했습니다.",
         status: "error",
@@ -149,7 +142,7 @@ export default function SettingsScreen() {
     try {
       setLoading("db");
       await initDatabase();
-      setInfo({
+      showNotification({
         title: "완료",
         description: "로컬 데이터베이스가 초기화되었습니다.",
         status: "success",
@@ -293,15 +286,6 @@ export default function SettingsScreen() {
             setConfirmOpen(false);
             await actuallyResetDatabase();
           }}
-        />
-
-        {/* 정보 알림용 Bottom Sheet 추가 */}
-        <InfoSheet
-          visible={!!info}
-          title={info?.title ?? ""}
-          description={info?.description ?? ""}
-          status={info?.status ?? "success"}
-          onClose={() => setInfo(null)}
         />
 
         {/* --- 화면에 표시될 BottomSheetModal --- */}

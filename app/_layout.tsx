@@ -14,6 +14,7 @@ import { ensureDatabaseInitialized } from "@/lib/db/bootstrap";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -33,13 +34,15 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <AuthProvider>
-          <AuthModalProvider>
-            <Stack initialRouteName="(tabs)">
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
-          </AuthModalProvider>
+          <NotificationProvider>
+            <AuthModalProvider>
+              <Stack initialRouteName="(tabs)">
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+            </AuthModalProvider>
+          </NotificationProvider>
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

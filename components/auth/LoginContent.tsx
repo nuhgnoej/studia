@@ -23,6 +23,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface LoginContentProps {
   onLoginSuccess: () => void;
@@ -33,6 +34,8 @@ export default function LoginContent({
   onLoginSuccess,
   onNavigateToSignup,
 }: LoginContentProps) {
+  const { showNotification } = useNotification();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +50,11 @@ export default function LoginContent({
     } catch (e: any) {
       console.error(e);
       setError(e?.message ?? "Login failed");
-      Alert.alert("Login failed", e?.message ?? "");
+      showNotification({
+        title: "로그인 실패",
+        description: error,
+        status: "error",
+      });
     } finally {
       setIsLoading(false);
     }
