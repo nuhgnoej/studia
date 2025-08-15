@@ -1,7 +1,14 @@
 // components/ui/SettingsRows.tsx
 
 import React from "react";
-import { View, Text, StyleSheet, Pressable, Switch } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Switch,
+  TextInput,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../../constants/Colors"; // 경로 확인 필요
 
@@ -70,6 +77,63 @@ export function ListRow({
   );
 }
 
+export function ValueRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.row}>
+      <View style={styles.rowLeft}>
+        <View style={styles.rowIcon}>
+          <MaterialIcons name={icon} size={18} color="#111827" />
+        </View>
+        <Text style={styles.rowLabel}>{label}</Text>
+      </View>
+      <Text style={styles.valueText}>{value}</Text>
+    </View>
+  );
+}
+
+export function EditableRow({
+  icon,
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  multiline,
+}: {
+  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  multiline?: boolean;
+}) {
+  return (
+    <View style={[styles.row, multiline && { alignItems: "flex-start" }]}>
+      <View style={[styles.rowLeft, multiline && { marginTop: 4 }]}>
+        <View style={styles.rowIcon}>
+          <MaterialIcons name={icon} size={18} color="#111827" />
+        </View>
+        <Text style={styles.rowLabel}>{label}</Text>
+      </View>
+      <TextInput
+        style={styles.textInput}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        multiline={multiline}
+        textAlignVertical={multiline ? "top" : "center"}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   row: {
     minHeight: 56,
@@ -110,5 +174,12 @@ const styles = StyleSheet.create({
   valueText: {
     fontSize: 13,
     color: "#6B7280",
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 15,
+    color: "#374151",
+    textAlign: "right",
+    paddingVertical: 0,
   },
 });

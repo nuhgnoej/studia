@@ -39,6 +39,12 @@ export const Colors = {
       fg: "#fff",
       pressedBg: "#1F2937", // 다크 그레이 눌림
     },
+    success: {
+      // 'success' 변형 추가
+      bg: "#16A34A", // Green 600
+      fg: "#FFFFFF",
+      pressedBg: "#15803D", // Green 700
+    },
   },
 } as const;
 
