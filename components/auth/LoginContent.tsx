@@ -48,13 +48,6 @@ export default function LoginContent({
       await signInWithEmailAndPassword(auth, email.trim(), password);
       onLoginSuccess();
     } catch (e: any) {
-      // console.error(e);
-      // setError(e?.message ?? "Login failed");
-      // showNotification({
-      //   title: "로그인 실패",
-      //   description: error,
-      //   status: "error",
-      // });
       let description = "아이디 또는 비밀번호를 확인해주세요.";
       if (e.code === "auth/invalid-credential") {
         description = "아이디 또는 비밀번호가 올바르지 않습니다.";
@@ -190,8 +183,14 @@ export default function LoginContent({
                   try {
                     const cred = GoogleAuthProvider.credential(idToken);
                     await signInWithCredential(auth, cred);
-                    // router.replace("/");
+                    onLoginSuccess();
                   } catch (e: any) {
+                    showNotification({
+                      title: "Google 로그인 실패",
+                      description:
+                        "로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.",
+                      status: "error",
+                    });
                     console.error("Firebase sign-in error", e);
                   } finally {
                     setIsLoading(false);
