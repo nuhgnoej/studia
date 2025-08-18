@@ -43,33 +43,7 @@ function SocialLogInButtons({
       offlineAccess: true,
     });
   }, [webClientId, iosClientId]);
-
-  // const handleGoogleLogin = async () => {
-  //   if (busy || disabled) return;
-  //   try {
-  //     setBusy(true);
-  //     await GoogleSignin.hasPlayServices();
-  //     const userInfo = await GoogleSignin.signIn();
-  //     // 아래와 같이 any로 캐스팅하여 타입 에러를 해결합니다.
-  //     const idToken = (userInfo as any).idToken;
-  //     if (idToken) {
-  //       onSuccess(idToken);
-  //     } else {
-  //       onError?.("Google 인증 토큰을 가져오지 못했습니다.");
-  //     }
-  //   } catch (error: any) {
-  //     console.error("Google Sign-In Error:", error);
-  //     if (error.code) {
-  //       if (error.code !== "12501") {
-  //         onError?.(`Google 로그인 오류 (${error.code})`);
-  //       }
-  //     } else {
-  //       onError?.("Google 로그인 중 오류가 발생했습니다.");
-  //     }
-  //   } finally {
-  //     setBusy(false);
-  //   }
-  // };
+  
   const handleGoogleLogin = async () => {
     if (busy || disabled) return;
     try {

@@ -16,10 +16,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { deleteQuestionSetById } from "@/lib/db/delete";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import * as Haptics from "expo-haptics";
-// import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-// import SubjectStartContent from "@/components/SubjectStartContent";
 import { useQuizModal } from "@/contexts/QuizModalContext";
-
 
 type ProgressInfo = {
   lastIndex: number;
@@ -29,7 +26,6 @@ type ProgressInfo = {
 
 export default function Home() {
   const { showNotification } = useNotification();
-  // const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showQuizStartSheet } = useQuizModal();
 
   const [sets, setSets] = useState<any[]>([]);
@@ -38,7 +34,6 @@ export default function Home() {
     {}
   );
   const [setForReset, setSetForReset] = useState<any | null>(null);
-  // const [selectedSet, setSelectedSet] = useState<any | null>(null);
 
   const displaySets = useMemo(() => {
     if (sets.length % 2 === 1) {

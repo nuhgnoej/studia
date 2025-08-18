@@ -1,12 +1,10 @@
 // components/auth/SignupContent.tsx
 import React, { useState } from "react";
 import { auth, db } from "@/lib/firebase/firebase";
-// import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -22,8 +20,9 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface SignupContentProps {
   onSignupSuccess: () => void;
@@ -34,6 +33,8 @@ export default function SignupContent({
   onSignupSuccess,
   onNavigateToLogin,
 }: SignupContentProps) {
+  const { showNotification } = useNotification();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -59,7 +60,11 @@ export default function SignupContent({
     setIsLoading(true);
 
     if (!email || !password || !displayName.trim()) {
-      Alert.alert("입력 오류", "이메일, 비밀번호, 이름을 모두 입력해주세요.");
+      showNotification({
+        title: "입력 오류",
+        description: `이메일, 비밀번호, 이름을 모두 입력해주세요..`,
+        status: "error",
+      });
       setIsLoading(false);
       return;
     }
@@ -72,35 +77,51 @@ export default function SignupContent({
       );
       const user = userCredential.user;
 
-      // 1. 선택한 이미지를 앱 내부에 저장 (Storage 업로드는 생략)
+      let photoDownloadURL: string | null = null;
+
       if (profileImageUri) {
-        const newPath = `${FileSystem.documentDirectory}${user.uid}_profile.jpg`;
-        await FileSystem.copyAsync({
-          from: profileImageUri,
-          to: newPath,
-        });
-        await AsyncStorage.setItem(`profileImageUri:${user.uid}`, newPath);
+        const storage = getStorage();
+        const storageRef = ref(
+          storage,
+          `profileImages/${user.uid}_profile.jpg`
+        );
+
+        const response = await fetch(profileImageUri);
+        const blob = await response.blob();
+
+        await uploadBytes(storageRef, blob);
+        photoDownloadURL = await getDownloadURL(storageRef);
+
+        // AsyncStorage에도 원격 URL 저장
+        await AsyncStorage.setItem(
+          `profileImageUri:${user.uid}`,
+          photoDownloadURL
+        );
       }
 
-      // 2. Firebase Auth 프로필 설정 (photoURL 생략)
       await updateProfile(user, {
         displayName,
+        photoURL: photoDownloadURL,
       });
 
-      // 3. Firestore에 사용자 정보 저장 (photoURL 생략 또는 null로 명시)
+      // Firestore에 사용자 정보 저장 (photoURL 추가) ---
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         displayName,
         bio,
-        photoURL: null,
+        photoURL: photoDownloadURL,
         createdAt: serverTimestamp(),
       });
 
-      //   Alert.alert("Success", "Account created!");
-      //   router.replace("/");
+      await user.reload();
+
       onSignupSuccess();
     } catch (error: any) {
-      Alert.alert("Signup failed", error.message);
+      showNotification({
+        title: "Signup failed",
+        description: `${error.message}`,
+        status: "error",
+      });
       console.log("Signup failed", error.message);
     } finally {
       setIsLoading(false);
@@ -187,7 +208,7 @@ export default function SignupContent({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.loginLinkWrapper} // 스타일 이름을 명확히 변경
+              style={styles.loginLinkWrapper}
               onPress={onNavigateToLogin}
             >
               <Text style={styles.loginText}>

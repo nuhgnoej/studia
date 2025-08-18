@@ -14,6 +14,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import LoginContent from "@/components/auth/LoginContent";
 import SignupContent from "@/components/auth/SignupContent";
+import { useNotification } from "./NotificationContext";
 
 type ModalType = "login" | "signup";
 
@@ -37,6 +38,7 @@ export const useAuthModal = () => {
 export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
   const loginSheetRef = useRef<BottomSheetModal>(null);
   const signupSheetRef = useRef<BottomSheetModal>(null);
+  const { showNotification } = useNotification();
 
   const snapPoints = useMemo(() => ["90%"], []);
 
@@ -52,6 +54,16 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
     loginSheetRef.current?.dismiss();
     signupSheetRef.current?.dismiss();
   }, []);
+
+  const handleSignupSuccess = useCallback(() => {
+    closeAuthModal(); // 우선 모달을 닫고
+    // 그 다음에 성공 알림을 띄웁니다.
+    showNotification({
+      title: "회원가입 완료",
+      description: "스터디아에 오신 것을 환영합니다!",
+      status: "success",
+    });
+  }, [closeAuthModal, showNotification]);
 
   // 로그인 모달에서 회원가입 모달로 전환하는 함수
   const switchToconUp = useCallback(() => {
@@ -85,7 +97,7 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
       </BottomSheetModal>
       <BottomSheetModal ref={signupSheetRef} index={0} snapPoints={snapPoints}>
         <SignupContent
-          onSignupSuccess={closeAuthModal}
+          onSignupSuccess={handleSignupSuccess}
           onNavigateToLogin={switchToLogin}
         />
       </BottomSheetModal>

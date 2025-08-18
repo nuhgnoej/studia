@@ -8,7 +8,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
-// import { LinearGradient } from "expo-linear-gradient";
 import { updateProfile } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -133,25 +132,6 @@ export default function ProfileScreen() {
       </View>
     );
   }
-
-  // if (!user) {
-  //   return (
-  //     <View style={commonStyles.container}>
-  //       {/* 공통 헤더 컴포넌트 */}
-  //       <ScreenHeaderWithFAB
-  //         title="프로필"
-  //         description={"로그인 후 프로필을 확인할 수 있습니다."}
-  //       />
-  //       <TouchableOpacity
-  //         onPress={() => openAuthModal("login")}
-  //         activeOpacity={0.7}
-  //         style={styles.iosLoginButton}
-  //       >
-  //         <Text style={styles.iosLoginButtonText}>로그인하러 가기</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // }
 
   if (!user) {
     return (
