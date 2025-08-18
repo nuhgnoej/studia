@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Choice, Question } from "../../lib/types";
 
 export default function ObjectiveQuestion({
@@ -46,7 +46,7 @@ export default function ObjectiveQuestion({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       {/* 문제 텍스트 */}
       <Text style={styles.questionText}>{question.question.questionText}</Text>
       {question.question.questionExplanation && (
@@ -107,7 +107,7 @@ export default function ObjectiveQuestion({
           </Pressable>
         );
       })}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -122,9 +122,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   choice: {
-    padding: 12,
-    borderRadius: 8,
     marginBottom: 10,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    borderRadius: 16,
+    padding: 14,
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(0,0,0,0.04)",
   },
   choiceText: {
     fontSize: 16,

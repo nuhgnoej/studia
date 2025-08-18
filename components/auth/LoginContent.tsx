@@ -39,11 +39,9 @@ export default function LoginContent({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState<string>("");
 
   const handleLogin = async () => {
     setIsLoading(true);
-    // setError("");
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       onLoginSuccess();
@@ -78,7 +76,7 @@ export default function LoginContent({
       await sendPasswordResetEmail(auth, email.trim());
       showNotification({
         title: "이메일 전송 완료",
-        description: `${email} 주소로 비밀번호 재설정 링크를 보냈습니다. 받은편지함을 확인해주세요.`,
+        description: `이메일 주소로 비밀번호 재설정 링크를 보냈습니다. 받은편지함을 확인해주세요.`,
         status: "success",
       });
     } catch (e: any) {
@@ -124,10 +122,6 @@ export default function LoginContent({
               editable={!isLoading}
               value={password}
             />
-
-            {/* {error ? (
-              <Text style={{ color: "#d00", marginBottom: 12 }}>{error}</Text>
-            ) : null} */}
 
             <TouchableOpacity
               style={styles.loginButton}

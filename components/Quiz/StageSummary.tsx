@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   StyleSheet,
-  ScrollView,
   ActivityIndicator,
   Alert,
 } from "react-native";
@@ -108,7 +107,7 @@ export default function StageSummary({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>✅ {stageNumber}단계 완료!</Text>
       <Text style={styles.summaryText}>총 시도 횟수: {totalAttempts}</Text>
       <Text style={styles.summaryText}>총 정답 수: {correct}</Text>
@@ -175,7 +174,7 @@ export default function StageSummary({
           color="#f59e0b"
         />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 

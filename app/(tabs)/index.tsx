@@ -117,20 +117,9 @@ export default function Home() {
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
-      setSetForReset(null); // 상태 초기화 및 ConfirmSheet 닫기
+      setSetForReset(null);
     }
   };
-
-  // --- 2. BottomSheet 제어를 위한 ref 와 snap points ---
-  // const handleCardPress = useCallback((item: any) => {
-  //   if (item.empty) return;
-  //   setSelectedSet(item);
-  //   bottomSheetRef.current?.present();
-  // }, []);
-
-  // const handleSheetDismiss = () => {
-  //   setSelectedSet(null);
-  // };
 
   return (
     <View style={commonStyles.container}>
@@ -191,22 +180,7 @@ export default function Home() {
         confirmVariant="danger"
         onConfirm={handleResetConfirm}
         onCancel={() => setSetForReset(null)}
-      />
-      {/* <BottomSheetModal
-        ref={bottomSheetRef}
-        index={0}
-        snapPoints={["90%"]}
-        onDismiss={handleSheetDismiss}
-        backdropComponent={(props) => (
-          <BottomSheetBackdrop
-            {...props}
-            appearsOnIndex={0}
-            disappearsOnIndex={-1}
-          />
-        )}
-      >
-        {selectedSet && <SubjectStartContent subjectId={selectedSet.id} />}
-      </BottomSheetModal> */}
+      />      
     </View>
   );
 }

@@ -1,15 +1,13 @@
 // components/ui/BottomSheet.tsx
 
-import React, { useEffect, useRef } from "react";
-import {
-  Animated,
+import React, { useEffect } from "react";
+import { Modal, Platform, Pressable, StyleSheet, View } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
   Easing,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+} from "react-native-reanimated";
 
 export function BottomSheet({
   visible,
@@ -20,29 +18,20 @@ export function BottomSheet({
   onClose: () => void;
   children: React.ReactNode;
 }) {
-  const translateY = useRef(new Animated.Value(300)).current;
+  const translateY = useSharedValue(300);
 
   useEffect(() => {
-    if (visible) {
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 220,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }).start();
-    }
+    translateY.value = withTiming(visible ? 0 : 300, {
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+    });
   }, [visible, translateY]);
 
-  const close = () => {
-    Animated.timing(translateY, {
-      toValue: 300,
-      duration: 180,
-      easing: Easing.in(Easing.cubic),
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) onClose();
-    });
-  };
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
 
   return (
     <Modal
@@ -50,17 +39,11 @@ export function BottomSheet({
       transparent
       animationType="fade"
       statusBarTranslucent
-      onRequestClose={close}
+      onRequestClose={onClose}
     >
-      <Pressable style={styles.sheetBackdrop} onPress={close} />
-      <Animated.View
-        style={[
-          styles.sheetContainer,
-          {
-            transform: [{ translateY }],
-          },
-        ]}
-      >
+      <Pressable style={styles.sheetBackdrop} onPress={onClose} />
+      {/* 6. reanimated의 Animated.View에 새로운 animatedStyle을 적용합니다. */}
+      <Animated.View style={[styles.sheetContainer, animatedStyle]}>
         <View style={styles.sheetHandle} />
         <View style={styles.sheetContent}>{children}</View>
         <SafeAreaSpacer />

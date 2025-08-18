@@ -9,6 +9,7 @@ import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 import StageQuiz from "@/components/Quiz/StageQuiz";
 import { MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 
 type Props = {
   subjectId: string;
@@ -76,13 +77,18 @@ export default function QuizContent({
       );
     }
     return (
-      <StageQuiz
-        questions={questions}
-        subjectId={subjectId}
-        stageSize={10}
-        onComplete={onComplete}
-        mode={mode}
-      />
+      <BottomSheetScrollView
+        contentContainerStyle={{ paddingBottom: 0 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <StageQuiz
+          questions={questions}
+          subjectId={subjectId}
+          stageSize={10}
+          onComplete={onComplete}
+          mode={mode}
+        />
+      </BottomSheetScrollView>
     );
   };
 

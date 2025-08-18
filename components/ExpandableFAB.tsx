@@ -1,18 +1,25 @@
 // components/ExpandableFAB.tsx
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Animated,
   Pressable,
   Text,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+} from "react-native-reanimated";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { useNotification } from "@/contexts/NotificationContext";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type Props = {
   isLoggedIn: boolean;
@@ -21,17 +28,13 @@ type Props = {
 
 export default function ExpandableFAB({ isLoggedIn, onDirectUpload }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const animation = useRef(new Animated.Value(0)).current;
+  const animation = useSharedValue(0);
   const router = useRouter();
   const { showNotification } = useNotification();
 
   const toggleMenu = () => {
     const toValue = isOpen ? 0 : 1;
-    Animated.spring(animation, {
-      toValue,
-      friction: 6,
-      useNativeDriver: true,
-    }).start();
+    animation.value = withSpring(toValue, { damping: 12, stiffness: 100 });
     setIsOpen(!isOpen);
   };
 
@@ -61,47 +64,52 @@ export default function ExpandableFAB({ isLoggedIn, onDirectUpload }: Props) {
   };
 
   // --- 애니메이션 스타일 ---
-  const menuStyle = {
-    transform: [
-      { scale: animation },
-      {
-        translateY: animation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -70],
-        }),
-      },
-    ],
-  };
-  const archiveStyle = {
-    transform: [
-      { scale: animation },
-      {
-        translateY: animation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -130],
-        }),
-      },
-    ],
-  };
-  const rotation = {
-    transform: [
-      {
-        rotate: animation.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["0deg", "45deg"],
-        }),
-      },
-    ],
-  };
+  const animatedRotation = useAnimatedStyle(() => {
+    const rotate = interpolate(animation.value, [0, 1], [0, 45]);
+    return {
+      transform: [{ rotate: `${rotate}deg` }],
+    };
+  });
+
+  const animatedMenuStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: animation.value },
+        { translateY: interpolate(animation.value, [0, 1], [0, -70]) },
+      ],
+      opacity: animation.value, // 부드러운 등장을 위해 opacity 추가
+    };
+  });
+
+  const animatedArchiveStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: animation.value },
+        { translateY: interpolate(animation.value, [0, 1], [0, -130]) },
+      ],
+      opacity: animation.value,
+    };
+  });
+
+  const animatedBackdropStyle = useAnimatedStyle(() => {
+    return {
+      opacity: animation.value,
+      // 메뉴가 닫혔을 때 터치되지 않도록 pointerEvents 설정
+      pointerEvents: animation.value === 1 ? "auto" : "none",
+    };
+  });
 
   return (
     <View style={styles.container}>
-      {isOpen && (
-        <Pressable style={StyleSheet.absoluteFill} onPress={toggleMenu} />
-      )}
+      <AnimatedPressable
+        style={[StyleSheet.absoluteFill, animatedBackdropStyle]}
+        onPress={toggleMenu}
+      />
 
       {isLoggedIn && (
-        <Animated.View style={[styles.subButtonContainer, archiveStyle]}>
+        <Animated.View
+          style={[styles.subButtonContainer, animatedArchiveStyle]}
+        >
           <TouchableOpacity
             style={styles.subButton}
             onPress={handleGoToArchive}
@@ -112,7 +120,11 @@ export default function ExpandableFAB({ isLoggedIn, onDirectUpload }: Props) {
         </Animated.View>
       )}
 
-      <Animated.View style={[styles.subButtonContainer, menuStyle]}>
+      {isOpen && (
+        <Pressable style={StyleSheet.absoluteFill} onPress={toggleMenu} />
+      )}
+
+      <Animated.View style={[styles.subButtonContainer, animatedMenuStyle]}>
         <TouchableOpacity style={styles.subButton} onPress={handleDirectUpload}>
           <MaterialIcons name="upload-file" size={24} color="#fff" />
         </TouchableOpacity>
@@ -124,7 +136,8 @@ export default function ExpandableFAB({ isLoggedIn, onDirectUpload }: Props) {
         onPress={toggleMenu}
         activeOpacity={0.8}
       >
-        <Animated.View style={rotation}>
+        {/* 7. Animated.View에 새로운 animated 스타일들을 적용합니다. */}
+        <Animated.View style={animatedRotation}>
           <MaterialIcons name="add" size={28} color="#fff" />
         </Animated.View>
       </TouchableOpacity>
