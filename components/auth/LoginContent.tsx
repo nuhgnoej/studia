@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { auth } from "@/lib/firebase/firebase";
-import SocialLogInButtons from "@/components/SocialLogInButtons";
+import SocialLogInButtons from "@/components/auth/SocialLogInButtons";
 import { iosClientId, webClientId } from "@/constants";
 import { LinearGradient } from "expo-linear-gradient";
 import {

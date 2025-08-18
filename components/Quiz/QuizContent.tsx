@@ -7,7 +7,7 @@ import getWrongAnsweredQuestionsBySubjectId, {
 import { Question } from "@/lib/types";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
-import StageQuiz from "@/components/StageQuiz"; // StageQuiz도 여기에 포함되거나 import
+import StageQuiz from "@/components/Quiz/StageQuiz";
 import { MaterialIcons } from "@expo/vector-icons";
 
 type Props = {

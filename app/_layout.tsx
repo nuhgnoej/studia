@@ -35,24 +35,24 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <AuthProvider>
-          <BottomSheetModalProvider>
-            <NotificationProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <BottomSheetModalProvider>
               <AuthModalProvider>
                 <QuizModalProvider>
-                <Stack initialRouteName="(tabs)">
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-                <StatusBar style="auto" />
+                  <Stack initialRouteName="(tabs)">
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <StatusBar style="auto" />
                 </QuizModalProvider>
               </AuthModalProvider>
-            </NotificationProvider>
-          </BottomSheetModalProvider>
-        </AuthProvider>
+            </BottomSheetModalProvider>
+          </AuthProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

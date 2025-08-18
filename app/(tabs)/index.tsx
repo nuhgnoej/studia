@@ -1,6 +1,6 @@
 // app/(tabs)/index.tsx
 
-import QuestionSetCard from "@/components/QuestionSetCard";
+import QuestionSetCard from "@/components/Quiz/QuestionSetCard";
 import { getAllQuestionSets } from "@/lib/db/query";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";

@@ -1,8 +1,7 @@
-import ObjectiveQuestion from "@/components/ObjectiveQuestion";
-import StageSummary from "@/components/StageSummary";
-import SubjectiveQuestion from "@/components/SubjectiveQuestion";
-import { useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useState, useRef } from "react";
+import ObjectiveQuestion from "@/components/Quiz/ObjectiveQuestion";
+import StageSummary from "@/components/Quiz//StageSummary";
+import SubjectiveQuestion from "@/components/Quiz//SubjectiveQuestion";
+import { useEffect, useState, useRef } from "react";
 import {
   Button,
   ImageBackground,
@@ -14,7 +13,7 @@ import {
   View,
   Animated,
 } from "react-native";
-import { Question } from "../lib/types";
+import { Question } from "../../lib/types";
 import TagsEditor from "./TagsEditor";
 import { insertAnswer } from "@/lib/db/insert";
 import { updateTags } from "@/lib/db/tagUtil";
@@ -40,7 +39,6 @@ export default function StageQuiz({
   onComplete,
   mode,
 }: Props) {
-
   // ✅ 상태들
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);

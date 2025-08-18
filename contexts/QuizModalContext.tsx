@@ -9,8 +9,8 @@ import React, {
   useEffect,
 } from "react";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import SubjectStartContent from "@/components/SubjectStartContent";
-import QuizContent from "@/components/QuizContent";
+import SubjectStartContent from "@/components/Quiz/SubjectStartContent";
+import QuizContent from "@/components/Quiz/QuizContent";
 import { BackHandler } from "react-native";
 
 type QuizMode = "normal" | "wrong";

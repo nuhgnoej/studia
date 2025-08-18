@@ -6,7 +6,7 @@ import { Alert, Text } from "react-native";
 
 import ErrorMessage from "@/components/ErrorMessage";
 import Loading from "@/components/Loading";
-import StageQuiz from "@/components/StageQuiz";
+import StageQuiz from "@/components/Quiz/StageQuiz";
 
 import getWrongAnsweredQuestionsBySubjectId, {
   getQuestionsBySubjectId,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Choice, Question } from "../lib/types";
+import { Choice, Question } from "../../lib/types";
 
 export default function ObjectiveQuestion({
   question,

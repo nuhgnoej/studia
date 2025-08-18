@@ -12,7 +12,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
-import SubjectSettingsContent from "@/components/SubjectSettingsContent";
+import SubjectSettingsContent from "@/components/settings/SubjectSettingsContent";
 import ScreenHeaderWithFAB from "@/components/ScreenHeaderWithFAB";
 import { initDatabase } from "@/lib/db";
 import { auth } from "@/lib/firebase/firebase";

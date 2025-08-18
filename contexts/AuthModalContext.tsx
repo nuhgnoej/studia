@@ -8,10 +8,7 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import LoginContent from "@/components/auth/LoginContent";
 import SignupContent from "@/components/auth/SignupContent";
 import { useNotification } from "./NotificationContext";
@@ -83,11 +80,10 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
   const value = { openAuthModal, closeAuthModal };
 
   return (
-    <BottomSheetModalProvider>
+    <>
       <AuthModalContext.Provider value={value}>
         {children}
       </AuthModalContext.Provider>
-
       {/* 앱 전역에 존재할 Bottom Sheet들을 여기에 정의 */}
       <BottomSheetModal ref={loginSheetRef} index={0} snapPoints={snapPoints}>
         <LoginContent
@@ -101,6 +97,6 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
           onNavigateToLogin={switchToLogin}
         />
       </BottomSheetModal>
-    </BottomSheetModalProvider>
+    </>
   );
 };

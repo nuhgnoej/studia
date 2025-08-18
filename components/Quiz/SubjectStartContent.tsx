@@ -9,9 +9,9 @@ import {
 } from "react-native";
 // import { useRouter } from "expo-router";
 import { getMetadataBySubjectId } from "@/lib/db";
-import { Metadata } from "../lib/types";
+import { Metadata } from "../../lib/types";
 import { SectionCard, ActionButton } from "@/components/ui/ActionComponents";
-import MetadataCard from "@/components/MetadataCard";
+import MetadataCard from "@/components/Quiz//MetadataCard";
 import { MaterialIcons } from "@expo/vector-icons";
 
 type Props = {

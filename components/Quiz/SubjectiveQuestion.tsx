@@ -1,4 +1,4 @@
-import { Question } from "../lib/types";
+import { Question } from "../../lib/types";
 import { useState } from "react";
 import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
 
