@@ -9,10 +9,10 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import {
   ActivityIndicator,
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -39,22 +39,66 @@ export default function LoginContent({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  // const [error, setError] = useState<string>("");
 
   const handleLogin = async () => {
     setIsLoading(true);
-    setError("");
+    // setError("");
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       onLoginSuccess();
     } catch (e: any) {
-      console.error(e);
-      setError(e?.message ?? "Login failed");
+      // console.error(e);
+      // setError(e?.message ?? "Login failed");
+      // showNotification({
+      //   title: "로그인 실패",
+      //   description: error,
+      //   status: "error",
+      // });
+      let description = "아이디 또는 비밀번호를 확인해주세요.";
+      if (e.code === "auth/invalid-credential") {
+        description = "아이디 또는 비밀번호가 올바르지 않습니다.";
+      }
       showNotification({
         title: "로그인 실패",
-        description: error,
+        description,
         status: "error",
       });
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email.trim()) {
+      showNotification({
+        title: "이메일 필요",
+        description: "비밀번호를 재설정할 이메일 주소를 입력해주세요.",
+        status: "error",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+      showNotification({
+        title: "이메일 전송 완료",
+        description: `${email} 주소로 비밀번호 재설정 링크를 보냈습니다. 받은편지함을 확인해주세요.`,
+        status: "success",
+      });
+    } catch (e: any) {
+      let description = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+      if (e.code === "auth/user-not-found") {
+        description = "가입되지 않은 이메일 주소입니다.";
+      }
+      showNotification({
+        title: "전송 실패",
+        description,
+        status: "error",
+      });
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -88,9 +132,9 @@ export default function LoginContent({
               value={password}
             />
 
-            {error ? (
+            {/* {error ? (
               <Text style={{ color: "#d00", marginBottom: 12 }}>{error}</Text>
-            ) : null}
+            ) : null} */}
 
             <TouchableOpacity
               style={styles.loginButton}
@@ -124,6 +168,17 @@ export default function LoginContent({
               </Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={styles.signupLink}
+              onPress={handlePasswordReset}
+              disabled={isLoading}
+            >
+              <Text style={styles.signupText}>
+                Forgot your password?{" "}
+                <Text style={styles.signupLink}>Reset your password</Text>
+              </Text>
+            </TouchableOpacity>
+
             {/* webClientId가 있을 때만 소셜 로그인 버튼을 보여줍니다. */}
             {webClientId && (
               <SocialLogInButtons
@@ -138,13 +193,17 @@ export default function LoginContent({
                     // router.replace("/");
                   } catch (e: any) {
                     console.error("Firebase sign-in error", e);
-                    Alert.alert("Google 로그인 실패", e?.message ?? "");
-                    setError(e?.message ?? "Google sign-in failed");
                   } finally {
                     setIsLoading(false);
                   }
                 }}
-                onError={(msg) => setError(msg)}
+                onError={(msg) => {
+                  showNotification({
+                    title: "소셜 로그인 오류",
+                    description: msg,
+                    status: "error",
+                  });
+                }}
               />
             )}
           </View>
