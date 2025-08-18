@@ -66,6 +66,18 @@ export default function ProfileScreen() {
   };
 
   const handlePickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      showNotification({
+        title: "알림",
+        description: "앨범에 접근하려면 권한이 필요합니다.",
+        status: "info",
+      });
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.7,
@@ -75,29 +87,37 @@ export default function ProfileScreen() {
 
     if (!result.canceled && user?.uid) {
       const uri = result.assets[0].uri;
-
-      // Firebase Storage 경로 설정
-      const storageRef = ref(
-        getStorage(),
-        `profileImages/${user.uid}_profile.jpg`
-      );
+      const storage = getStorage();
+      const storageRef = ref(storage, `profileImages/${user.uid}_profile.jpg`);
 
       try {
-        // 이미지 데이터를 Blob으로 변환
+        showNotification({
+          title: "알림",
+          description: "이미지를 업로드하고 있습니다...",
+          status: "info",
+        });
         const response = await fetch(uri);
         const blob = await response.blob();
-
-        // Firebase Storage에 업로드
         await uploadBytes(storageRef, blob);
-
-        // 업로드 완료 후 이미지 URL 가져오기
         const imageURL = await getDownloadURL(storageRef);
-
-        // AsyncStorage에 프로필 이미지 URL 저장
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, { photoURL: imageURL });
+        await updateProfile(user, { photoURL: imageURL });
         await AsyncStorage.setItem(`profileImageUri:${user.uid}`, imageURL);
-        setProfileImageUri(imageURL); // 상태 업데이트
+        setProfileImageUri(imageURL);
+        await user.reload();
+        showNotification({
+          title: "성공",
+          description: "프로필 이미지가 변경되었습니다.",
+          status: "success",
+        });
       } catch (error) {
         console.error("이미지 업로드 실패", error);
+        showNotification({
+          title: "오류",
+          description: "이미지 업로드에 실패했습니다.",
+          status: "error",
+        });
       }
     }
   };

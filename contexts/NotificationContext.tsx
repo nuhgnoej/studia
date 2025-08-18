@@ -12,7 +12,7 @@ import { InfoSheet } from "@/components/sheets/InfoSheet";
 type InfoSheetState = {
   title: string;
   description: string;
-  status: "success" | "error";
+  status: "success" | "error" | "info";
 } | null;
 
 interface NotificationContextType {
@@ -52,7 +52,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         visible={!!info}
         title={info?.title ?? ""}
         description={info?.description ?? ""}
-        status={info?.status ?? "success"}
+        status={info?.status ?? "info"} 
         onClose={() => setInfo(null)}
       />
     </NotificationContext.Provider>

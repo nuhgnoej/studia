@@ -1,9 +1,10 @@
 // lib/contexts/AuthContext.tsx
 
-import { auth } from "@/lib/firebase/firebase";
+import { createContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { createContext, useEffect, useState } from "react";
+import { auth, db } from "@/lib/firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 type AuthContextType = {
   user: User | null;
@@ -24,19 +25,45 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        try {
+          const userDocRef = doc(db, "users", authUser.uid);
+          const userDoc = await getDoc(userDocRef);
 
-      if (user) {
-        const uri = await AsyncStorage.getItem(`profileImageUri:${user.uid}`);
-        setProfileImageUri(uri || null);
+          if (userDoc.exists()) {
+            const photoURL = userDoc.data().photoURL || null;
+            setProfileImageUri(photoURL);
+            if (photoURL) {
+              await AsyncStorage.setItem(
+                `profileImageUri:${authUser.uid}`,
+                photoURL
+              );
+            } else {
+              await AsyncStorage.removeItem(`profileImageUri:${authUser.uid}`);
+            }
+          } else {
+            setProfileImageUri(null);
+          }
+        } catch (error) {
+          console.error("프로필 이미지 URI 가져오기 실패:", error);
+          const cachedUri = await AsyncStorage.getItem(
+            `profileImageUri:${authUser.uid}`
+          );
+          setProfileImageUri(cachedUri);
+        }
       } else {
+        if (user) {
+          await AsyncStorage.removeItem(`profileImageUri:${user.uid}`);
+        }
+        setUser(null);
         setProfileImageUri(null);
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [user]);
 
   return (
     <AuthContext.Provider
@@ -44,7 +71,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         isLoggedIn: !!user,
         profileImageUri,
-        setProfileImageUri,
+        setProfileImageUri: async (uri: string | null) => {
+          setProfileImageUri(uri);
+          if (user) {
+            if (uri) {
+              await AsyncStorage.setItem(`profileImageUri:${user.uid}`, uri);
+            } else {
+              await AsyncStorage.removeItem(`profileImageUri:${user.uid}`);
+            }
+          }
+        },
       }}
     >
       {children}

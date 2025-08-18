@@ -5,13 +5,13 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheet } from "../ui/BottomSheet";
 
-type InfoSheetStatus = "success" | "error";
+export type InfoSheetStatus = "success" | "error" | "info";
 
 export function InfoSheet({
   visible,
   title,
   description,
-  status = "success",
+  status = "info",
   onClose,
 }: {
   visible: boolean;
@@ -28,6 +28,10 @@ export function InfoSheet({
     error: {
       icon: "error" as const,
       color: "#DC2626", // Red
+    },
+    info: {
+      icon: "info" as const,
+      color: "#3B82F6", // Blue
     },
   };
 
