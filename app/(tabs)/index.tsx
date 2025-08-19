@@ -154,9 +154,11 @@ export default function Home() {
               return (
                 <QuestionSetCard
                   item={item}
-                  onPress={() =>
-                    item.empty ? {} : showQuizStartSheet(item.id)
-                  }
+                  onPress={() => {
+                    if (item.empty) return;
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    showQuizStartSheet(item.id);
+                  }}
                   onLongPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                     setSetForReset(item);

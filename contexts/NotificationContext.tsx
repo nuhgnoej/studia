@@ -13,6 +13,7 @@ type InfoSheetState = {
   title: string;
   description: string;
   status: "success" | "error" | "info";
+  onConfirm?: () => void;
 } | null;
 
 interface NotificationContextType {
@@ -52,8 +53,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         visible={!!info}
         title={info?.title ?? ""}
         description={info?.description ?? ""}
-        status={info?.status ?? "info"} 
-        onClose={() => setInfo(null)}
+        status={info?.status ?? "info"}
+        onClose={() => {
+          info?.onConfirm?.(); // 콜백이 있으면 실행
+          setInfo(null); // 그 후에 시트 닫기
+        }}
       />
     </NotificationContext.Provider>
   );

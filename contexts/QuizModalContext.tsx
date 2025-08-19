@@ -12,6 +12,7 @@ import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import SubjectStartContent from "@/components/Quiz/SubjectStartContent";
 import QuizContent from "@/components/Quiz/QuizContent";
 import { BackHandler } from "react-native";
+import { useNotification } from "@/contexts/NotificationContext";
 
 type QuizMode = "normal" | "wrong";
 
@@ -31,6 +32,7 @@ export const useQuizModal = () => {
 };
 
 export const QuizModalProvider = ({ children }: { children: ReactNode }) => {
+  const { showNotification } = useNotification();
   const startSheetRef = useRef<BottomSheetModal>(null);
   const quizSheetRef = useRef<BottomSheetModal>(null);
 
@@ -78,8 +80,15 @@ export const QuizModalProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const handleQuizComplete = useCallback(() => {
-    quizSheetRef.current?.dismiss();
-  }, []);
+    showNotification({
+      title: "🎉 퀴즈 완료",
+      description: "축하합니다. 퀴즈를 완료했습니다. 홈으로 돌아갑니다.",
+      status: "success",
+      onConfirm: () => {
+        quizSheetRef.current?.dismiss();
+      },
+    });
+  }, [showNotification]);
 
   return (
     <QuizModalContext.Provider value={{ showQuizStartSheet }}>
