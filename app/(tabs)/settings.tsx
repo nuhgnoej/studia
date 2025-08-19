@@ -33,6 +33,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FeedbackSheet from "@/components/sheets/FeedbackSheet";
+import SupportDeveloperCard from "@/components/settings/SupportDeveloperCard";
 // import * as StoreReview from "expo-store-review";
 // import * as Linking from "expo-linking";
 // import { ANDROID_STORE_ID, IOS_STORE_ID } from "@/constants";
@@ -285,6 +286,9 @@ export default function SettingsScreen() {
                   개발자에게 건의사항이 보내거나 피드백을 주세요.
                 </Caption>
               </SectionCard>
+
+              {/* 개발자 후원 */}
+              <SupportDeveloperCard />
 
               {/* 개발자용 설정 */}
               <SectionCard title="개발자 전용" badge="DEV">
