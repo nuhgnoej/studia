@@ -25,6 +25,8 @@ import { ValueRow, EditableRow } from "@/components/ui/SettingsRows";
 import { useNotification } from "@/contexts/NotificationContext";
 import LoginPrompt from "@/components/auth/LoginPrompt";
 import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
+import InterestSection from "@/components/profile/InterestSection";
+import InterestSelectModal from "@/components/profile/InterestSelectModal";
 
 export default function ProfileScreen() {
   const { user, profileImageUri, setProfileImageUri } = useAuth();
@@ -37,6 +39,8 @@ export default function ProfileScreen() {
   );
   const [bioInput, setBioInput] = useState(bio ?? "");
   const [saving, setSaving] = useState(false);
+  const [interests, setInterests] = useState<string[]>([]);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -63,6 +67,29 @@ export default function ProfileScreen() {
       console.error(e);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveInterests = async (newInterests: string[]) => {
+    if (!user) return;
+
+    try {
+      const ref = doc(db, "users", user.uid);
+      await updateDoc(ref, { interests: newInterests });
+      setInterests(newInterests);
+      setModalVisible(false); // 모달 닫기
+      showNotification({
+        title: "성공",
+        description: "관심분야가 저장되었습니다.",
+        status: "success",
+      });
+    } catch (e) {
+      console.error(e);
+      showNotification({
+        title: "오류",
+        description: "저장에 실패했습니다.",
+        status: "error",
+      });
     }
   };
 
@@ -126,6 +153,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) {
+        setInterests([]); // 로그아웃 시 초기화
         setBio(null);
         setLoading(false);
         return;
@@ -138,6 +166,7 @@ export default function ProfileScreen() {
         const data = docSnap.data();
         setBio(data.bio ?? null);
         setDisplayNameInput(data.displayName ?? user?.displayName ?? "");
+        setInterests(data.interests ?? []);
       }
 
       setLoading(false);
@@ -227,6 +256,12 @@ export default function ProfileScreen() {
             />
           </SectionCard>
 
+          {/* ✨ 관심분야 카드✨ */}
+          <InterestSection
+            interests={interests}
+            onPressEdit={() => setModalVisible(true)}
+          />
+
           {/* --- 계정 정보 카드 --- */}
           <SectionCard title="계정 정보">
             <ValueRow icon="vpn-key" label="UID" value={user.uid} />
@@ -252,6 +287,14 @@ export default function ProfileScreen() {
               loading={saving}
             />
           </View>
+
+          {/* ✨ 새로운 모달 컴포넌트 ✨ */}
+          <InterestSelectModal
+            visible={isModalVisible}
+            initialInterests={interests}
+            onClose={() => setModalVisible(false)}
+            onSave={handleSaveInterests}
+          />
         </ScrollView>
       </ScreenWithBackground>
     </View>

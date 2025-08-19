@@ -8,6 +8,7 @@ import {
   Pressable,
   Switch,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../../constants/Colors"; // 경로 확인 필요
@@ -99,6 +100,28 @@ export function ValueRow({
   );
 }
 
+export const CheckboxRow = ({
+  label,
+  value,
+  onValueChange,
+}: {
+  label: string;
+  value: boolean;
+  onValueChange: () => void;
+}) => (
+  <TouchableOpacity
+    onPress={onValueChange}
+    style={[styles.row, { paddingVertical: 14 }]}
+  >
+    <Text style={styles.label}>{label}</Text>
+    <MaterialIcons
+      name={value ? "check-box" : "check-box-outline-blank"}
+      size={24}
+      color={value ? "#007AFF" : "#ccc"}
+    />
+  </TouchableOpacity>
+);
+
 export function EditableRow({
   icon,
   label,
@@ -181,5 +204,11 @@ const styles = StyleSheet.create({
     color: "#374151",
     textAlign: "right",
     paddingVertical: 0,
+  },
+  label: {
+    fontSize: 16,
+    color: "#111827",
+    flex: 1,
+    marginRight: 8,
   },
 });

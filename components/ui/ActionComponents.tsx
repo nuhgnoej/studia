@@ -15,10 +15,12 @@ export function SectionCard({
   title,
   badge,
   children,
+  actionButton,
 }: {
   title: string;
   badge?: string;
   children: React.ReactNode;
+  actionButton?: React.ReactNode;
 }) {
   return (
     <View style={styles.card}>
@@ -29,6 +31,7 @@ export function SectionCard({
             <Text style={styles.badgeText}>{badge}</Text>
           </View>
         ) : null}
+        {actionButton}
       </View>
       <View style={{ gap: 10 }}>{children}</View>
     </View>
@@ -107,15 +110,17 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 4,
+    alignItems: "center",
+    marginBottom: 12,
+    borderBottomColor: "#f0f0f0",
+    borderBottomWidth: 1,
+    paddingBottom: 12,
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "700",
-    letterSpacing: 0.2,
-    color: "#111827",
+    fontWeight: "bold",
+    color: "#333",
   },
   badge: {
     paddingHorizontal: 8,
