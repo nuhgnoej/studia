@@ -17,6 +17,7 @@ import { ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useNotification } from "@/contexts/NotificationContext";
+import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
 
 type ArchiveItem = {
   id: string;
@@ -162,23 +163,25 @@ export default function CommunityArchive() {
 
   return (
     <View style={styles.container}>
-      {loading || uploading ? (
-        <ActivityIndicator size="large" style={{ marginTop: 32 }} />
-      ) : (
-        <ArchiveList
-          data={archives}
-          onRefresh={handleRefresh}
-          refreshing={refreshing}
-          onImport={handleJsonData}
-          onDownload={async (item) => {
-            await updateDoc(doc(db, "communityArchives", item.id), {
-              downloadCount: increment(1),
-            });
-            await fetchArchives();
-          }}
-        />
-      )}
-      <FAB icon="upload-file" label="업로드" onPress={handleUpload} />
+      <ScreenWithBackground>
+        {loading || uploading ? (
+          <ActivityIndicator size="large" style={{ marginTop: 32 }} />
+        ) : (
+          <ArchiveList
+            data={archives}
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
+            onImport={handleJsonData}
+            onDownload={async (item) => {
+              await updateDoc(doc(db, "communityArchives", item.id), {
+                downloadCount: increment(1),
+              });
+              await fetchArchives();
+            }}
+          />
+        )}
+        <FAB icon="upload-file" label="업로드" onPress={handleUpload} />
+      </ScreenWithBackground>
     </View>
   );
 }

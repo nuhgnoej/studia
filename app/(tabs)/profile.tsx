@@ -24,6 +24,7 @@ import { SectionCard, ActionButton } from "@/components/ui/ActionComponents";
 import { ValueRow, EditableRow } from "@/components/ui/SettingsRows";
 import { useNotification } from "@/contexts/NotificationContext";
 import LoginPrompt from "@/components/auth/LoginPrompt";
+import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
 
 export default function ProfileScreen() {
   const { user, profileImageUri, setProfileImageUri } = useAuth();
@@ -171,82 +172,88 @@ export default function ProfileScreen() {
         title="프로필"
         description="계정 정보와 프로필 사진을 변경할 수 있어요."
       />
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* --- 프로필 요약 카드 --- */}
-        <SectionCard title={user.displayName || "No Name"}>
-          <View style={styles.profileSummaryContainer}>
-            <TouchableOpacity
-              onPress={handlePickImage}
-              style={styles.profileImageWrapper}
-            >
-              {profileImageUri ? (
-                <Image
-                  source={{ uri: profileImageUri }}
-                  style={styles.profileImage}
+      <ScreenWithBackground>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* --- 프로필 요약 카드 --- */}
+          <SectionCard title={user.displayName || "No Name"}>
+            <View style={styles.profileSummaryContainer}>
+              <TouchableOpacity
+                onPress={handlePickImage}
+                style={styles.profileImageWrapper}
+              >
+                {profileImageUri ? (
+                  <Image
+                    source={{ uri: profileImageUri }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <FontAwesome name="user-circle" size={64} color="#bbb" />
+                )}
+                <View style={styles.cameraIconOverlay}>
+                  <FontAwesome name="camera" size={14} color="#fff" />
+                </View>
+              </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                <EditableRow
+                  icon="badge"
+                  label="이름"
+                  value={displayNameInput}
+                  onChangeText={setDisplayNameInput}
+                  placeholder="이름을 입력하세요"
                 />
-              ) : (
-                <FontAwesome name="user-circle" size={64} color="#bbb" />
-              )}
-              <View style={styles.cameraIconOverlay}>
-                <FontAwesome name="camera" size={14} color="#fff" />
+                <ValueRow
+                  icon="email"
+                  label="이메일"
+                  value={user.email || ""}
+                />
               </View>
-            </TouchableOpacity>
-            <View style={{ flex: 1 }}>
-              <EditableRow
-                icon="badge"
-                label="이름"
-                value={displayNameInput}
-                onChangeText={setDisplayNameInput}
-                placeholder="이름을 입력하세요"
-              />
-              <ValueRow icon="email" label="이메일" value={user.email || ""} />
             </View>
+          </SectionCard>
+
+          {/* --- 자기소개 카드 --- */}
+          <SectionCard title="자기소개">
+            <EditableRow
+              icon="notes"
+              label="소개글"
+              value={bioInput}
+              onChangeText={setBioInput}
+              placeholder="자기소개를 입력하세요."
+              multiline
+            />
+          </SectionCard>
+
+          {/* --- 계정 정보 카드 --- */}
+          <SectionCard title="계정 정보">
+            <ValueRow icon="vpn-key" label="UID" value={user.uid} />
+            <ValueRow
+              icon="event"
+              label="가입일"
+              value={formatDate(user.metadata.creationTime)}
+            />
+            <ValueRow
+              icon="login"
+              label="최근 로그인"
+              value={formatDate(user.metadata.lastSignInTime)}
+            />
+          </SectionCard>
+
+          {/* --- 액션 버튼 --- */}
+          <View style={styles.buttonContainer}>
+            <ActionButton
+              icon="save"
+              label="프로필 저장"
+              onPress={handleSaveProfile}
+              variant="primary"
+              loading={saving}
+            />
           </View>
-        </SectionCard>
-
-        {/* --- 자기소개 카드 --- */}
-        <SectionCard title="자기소개">
-          <EditableRow
-            icon="notes"
-            label="소개글"
-            value={bioInput}
-            onChangeText={setBioInput}
-            placeholder="자기소개를 입력하세요."
-            multiline
-          />
-        </SectionCard>
-
-        {/* --- 계정 정보 카드 --- */}
-        <SectionCard title="계정 정보">
-          <ValueRow icon="vpn-key" label="UID" value={user.uid} />
-          <ValueRow
-            icon="event"
-            label="가입일"
-            value={formatDate(user.metadata.creationTime)}
-          />
-          <ValueRow
-            icon="login"
-            label="최근 로그인"
-            value={formatDate(user.metadata.lastSignInTime)}
-          />
-        </SectionCard>
-
-        {/* --- 액션 버튼 --- */}
-        <View style={styles.buttonContainer}>
-          <ActionButton
-            icon="save"
-            label="프로필 저장"
-            onPress={handleSaveProfile}
-            variant="primary"
-            loading={saving}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </ScreenWithBackground>
     </View>
   );
 }

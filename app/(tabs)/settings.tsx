@@ -30,6 +30,7 @@ import { RadioSheet } from "@/components/sheets/RadioSheet";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import { useAuthModal } from "@/contexts/AuthModalContext";
 import { useNotification } from "@/contexts/NotificationContext";
+import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
 
 /* ---------------- Types & Constants ---------------- */
 
@@ -177,72 +178,73 @@ export default function SettingsScreen() {
             title="설정"
             description="앱 사용 환경을 원하는 대로 설정하세요."
           />
+          <ScreenWithBackground>
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* 디스플레이 / 테마 */}
+              <SectionCard title="디스플레이">
+                <SwitchRow
+                  icon="dark-mode"
+                  label="다크 모드 (빠른 전환)"
+                  value={darkQuickToggle}
+                  onValueChange={setDarkQuickToggle}
+                  helper="즉시 다크 테마로 전환합니다. 테마 모드(시스템/라이트/다크)와 별개로 동작합니다."
+                />
+                <ListRow
+                  icon="palette"
+                  label="테마 모드"
+                  valueText={
+                    themeMode === "system"
+                      ? "시스템 기본"
+                      : themeMode === "light"
+                      ? "라이트"
+                      : "다크"
+                  }
+                  onPress={() => setRadioOpen(true)}
+                />
+              </SectionCard>
 
-          <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {/* 디스플레이 / 테마 */}
-            <SectionCard title="디스플레이">
-              <SwitchRow
-                icon="dark-mode"
-                label="다크 모드 (빠른 전환)"
-                value={darkQuickToggle}
-                onValueChange={setDarkQuickToggle}
-                helper="즉시 다크 테마로 전환합니다. 테마 모드(시스템/라이트/다크)와 별개로 동작합니다."
-              />
-              <ListRow
-                icon="palette"
-                label="테마 모드"
-                valueText={
-                  themeMode === "system"
-                    ? "시스템 기본"
-                    : themeMode === "light"
-                    ? "라이트"
-                    : "다크"
-                }
-                onPress={() => setRadioOpen(true)}
-              />
-            </SectionCard>
+              {/* 일반 설정 */}
+              <SectionCard title="일반">
+                <ActionButton
+                  icon="tune"
+                  label="각 과목 별 초기화 (문제세트, 진행률)"
+                  onPress={handlePresentModalPress}
+                  variant="primary"
+                />
+                <ActionButton
+                  icon="delete-forever"
+                  label="로컬 DB 초기화 (문제 세트, 진행률)"
+                  onPress={requestResetDatabase}
+                  variant="danger"
+                  loading={loading === "db"}
+                />
+                <Caption>
+                  초기화 시 기기에 저장된 문제 세트와 진행률이 모두 삭제됩니다.
+                  되돌릴 수 없습니다.
+                </Caption>
+                {AccountButton}
+              </SectionCard>
 
-            {/* 일반 설정 */}
-            <SectionCard title="일반">
-              <ActionButton
-                icon="tune"
-                label="각 과목 별 초기화 (문제세트, 진행률)"
-                onPress={handlePresentModalPress}
-                variant="primary"
-              />
-              <ActionButton
-                icon="delete-forever"
-                label="로컬 DB 초기화 (문제 세트, 진행률)"
-                onPress={requestResetDatabase}
-                variant="danger"
-                loading={loading === "db"}
-              />
-              <Caption>
-                초기화 시 기기에 저장된 문제 세트와 진행률이 모두 삭제됩니다.
-                되돌릴 수 없습니다.
-              </Caption>
-              {AccountButton}
-            </SectionCard>
-
-            {/* 개발자용 설정 */}
-            <SectionCard title="개발자 전용" badge="DEV">
-              <ActionButton
-                icon="cleaning-services"
-                label="AsyncStorage 초기화"
-                onPress={clearAsyncStorage}
-                variant="danger"
-                loading={loading === "async"}
-              />
-              <Caption>
-                디버깅용. 사용자 데이터에 영향이 있을 수 있습니다.
-              </Caption>
-            </SectionCard>
-          </ScrollView>
+              {/* 개발자용 설정 */}
+              <SectionCard title="개발자 전용" badge="DEV">
+                <ActionButton
+                  icon="cleaning-services"
+                  label="AsyncStorage 초기화"
+                  onPress={clearAsyncStorage}
+                  variant="danger"
+                  loading={loading === "async"}
+                />
+                <Caption>
+                  디버깅용. 사용자 데이터에 영향이 있을 수 있습니다.
+                </Caption>
+              </SectionCard>
+            </ScrollView>
+          </ScreenWithBackground>
         </View>
 
         {/* Radio Sheet: 테마 모드 선택 */}

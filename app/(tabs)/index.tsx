@@ -17,6 +17,7 @@ import { deleteQuestionSetById } from "@/lib/db/delete";
 import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import * as Haptics from "expo-haptics";
 import { useQuizModal } from "@/contexts/QuizModalContext";
+import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
 
 type ProgressInfo = {
   lastIndex: number;
@@ -133,43 +134,46 @@ export default function Home() {
         }
       />
 
-      <View style={{ marginBottom: 12 }} />
-
-      {sets && sets.length > 0 ? (
-        <FlatList
-          data={displaySets}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          contentContainerStyle={{
-            paddingHorizontal: 12,
-            paddingTop: 12,
-            paddingBottom: 40,
-          }}
-          columnWrapperStyle={{
-            gap: 12,
-            marginBottom: 12,
-          }}
-          renderItem={({ item }) => {
-            return (
-              <QuestionSetCard
-                item={item}
-                onPress={() => (item.empty ? {} : showQuizStartSheet(item.id))}
-                onLongPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                  setSetForReset(item);
-                }}
-                progress={progressMap[item.id]}
-                invisible={item.empty}
-              />
-            );
-          }}
-        />
-      ) : (
-        <View style={styles.emptyContainer}>
-          <MaterialIcons name="cloud-upload" size={48} color="#ccc" />
-          <Text style={styles.emptyText}>아직 문제 세트가 없습니다.</Text>
-        </View>
-      )}
+      {/* <View style={{ marginBottom: 12 }} /> */}
+      <ScreenWithBackground>
+        {sets && sets.length > 0 ? (
+          <FlatList
+            data={displaySets}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            contentContainerStyle={{
+              paddingHorizontal: 12,
+              paddingTop: 12,
+              paddingBottom: 40,
+            }}
+            columnWrapperStyle={{
+              gap: 12,
+              marginBottom: 12,
+            }}
+            renderItem={({ item }) => {
+              return (
+                <QuestionSetCard
+                  item={item}
+                  onPress={() =>
+                    item.empty ? {} : showQuizStartSheet(item.id)
+                  }
+                  onLongPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                    setSetForReset(item);
+                  }}
+                  progress={progressMap[item.id]}
+                  invisible={item.empty}
+                />
+              );
+            }}
+          />
+        ) : (
+          <View style={styles.emptyContainer}>
+            <MaterialIcons name="cloud-upload" size={48} color="#ccc" />
+            <Text style={styles.emptyText}>아직 문제 세트가 없습니다.</Text>
+          </View>
+        )}
+      </ScreenWithBackground>
 
       <ExpandableFAB isLoggedIn={!!user} onDirectUpload={handleJsonData} />
       <ConfirmSheet
@@ -180,12 +184,15 @@ export default function Home() {
         confirmVariant="danger"
         onConfirm={handleResetConfirm}
         onCancel={() => setSetForReset(null)}
-      />      
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImageContainer: {
+    flex: 1,
+  },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",

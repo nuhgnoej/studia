@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useNotification } from "@/contexts/NotificationContext";
+import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
 
 export default function CommunityArchive() {
   const { showNotification } = useNotification();
@@ -81,22 +82,24 @@ export default function CommunityArchive() {
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" style={{ marginTop: 32 }} />
-      ) : (
-        <ArchiveList
-          data={archives}
-          onRefresh={handleRefresh}
-          refreshing={refreshing}
-          onImport={handleJsonData}
-          onDownload={async (item) => {
-            await updateDoc(doc(db, "officialArchives", item.id), {
-              downloadCount: increment(1),
-            });
-            await fetchArchives();
-          }}
-        />
-      )}
+      <ScreenWithBackground>
+        {loading ? (
+          <ActivityIndicator size="large" style={{ marginTop: 32 }} />
+        ) : (
+          <ArchiveList
+            data={archives}
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
+            onImport={handleJsonData}
+            onDownload={async (item) => {
+              await updateDoc(doc(db, "officialArchives", item.id), {
+                downloadCount: increment(1),
+              });
+              await fetchArchives();
+            }}
+          />
+        )}
+      </ScreenWithBackground>
     </View>
   );
 }

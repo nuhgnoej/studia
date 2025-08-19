@@ -46,7 +46,7 @@ export default function ArchiveScreen() {
       </View>
     );
   }
- 
+
   return (
     <SafeAreaView style={commonStyles.container} edges={["left", "right"]}>
       {/* 공통 헤더 컴포넌트 */}
