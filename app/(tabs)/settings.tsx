@@ -18,7 +18,7 @@ import { initDatabase } from "@/lib/db";
 import { auth } from "@/lib/firebase/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { commonStyles } from "../../styles/common";
 import {
   SectionCard,
@@ -31,6 +31,11 @@ import { ConfirmSheet } from "@/components/sheets/ConfirmSheet";
 import { useAuthModal } from "@/contexts/AuthModalContext";
 import { useNotification } from "@/contexts/NotificationContext";
 import ScreenWithBackground from "@/components/ui/ScreenWithBackground";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import FeedbackSheet from "@/components/sheets/FeedbackSheet";
+// import * as StoreReview from "expo-store-review";
+// import * as Linking from "expo-linking";
+// import { ANDROID_STORE_ID, IOS_STORE_ID } from "@/constants";
 
 /* ---------------- Types & Constants ---------------- */
 
@@ -56,6 +61,7 @@ export default function SettingsScreen() {
   const [darkQuickToggle, setDarkQuickToggle] = useState(false);
   const [radioOpen, setRadioOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [feedbackSheetOpen, setFeedbackSheetOpen] = useState(false);
 
   // --- BottomSheet 제어를 위한 설정 ---
   const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -170,6 +176,27 @@ export default function SettingsScreen() {
     />
   );
 
+  const handleStoreReview = async () => {
+    const storeName = Platform.OS === "ios" ? "앱스토어" : "플레이스토어";
+    showNotification({
+      title: "임시메뉴",
+      description: `${storeName}에 별점을 매겨주세요.(구현 준비 중)`,
+      status: "info",
+    });
+    // if (await StoreReview.isAvailableAsync()) {
+    //   StoreReview.requestReview();
+    // } else {
+    //   const storeUrl = Platform.select({
+    //     ios: `itms-apps://itunes.apple.com/app/apple-store/id${IOS_STORE_ID}?action=write-review`,
+    //     android: `market://details?id=${ANDROID_STORE_ID}`,
+    //   });
+
+    //   if (storeUrl) {
+    //     Linking.openURL(storeUrl);
+    //   }
+    // }
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
@@ -228,6 +255,35 @@ export default function SettingsScreen() {
                   되돌릴 수 없습니다.
                 </Caption>
                 {AccountButton}
+              </SectionCard>
+
+              {/* 피드백 보내기 */}
+              <SectionCard title="피드백">
+                <ActionButton
+                  // 3. ActionButton은 이제 두 가지 prop을 모두 이해합니다.
+                  iconNode={
+                    <MaterialCommunityIcons
+                      name={Platform.select({
+                        ios: "apple",
+                        android: "google-play",
+                      })}
+                      size={24}
+                      color="#fff"
+                    />
+                  }
+                  label="스토어에 리뷰 남기기"
+                  onPress={handleStoreReview}
+                  variant="neutral"
+                />
+                <ActionButton
+                  icon="email" // 기존 방식도 문제없이 작동합니다.
+                  label="개발자에게 피드백 보내기"
+                  onPress={() => setFeedbackSheetOpen(true)}
+                  variant="neutral"
+                />
+                <Caption>
+                  개발자에게 건의사항이 보내거나 피드백을 주세요.
+                </Caption>
               </SectionCard>
 
               {/* 개발자용 설정 */}
@@ -299,6 +355,11 @@ export default function SettingsScreen() {
         >
           <SubjectSettingsContent onClose={handleDismissModal} />
         </BottomSheetModal>
+
+        <FeedbackSheet
+          visible={feedbackSheetOpen}
+          onClose={() => setFeedbackSheetOpen(false)}
+        />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );

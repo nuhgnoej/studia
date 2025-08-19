@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Colors, CommonColorVariant } from "../../constants/Colors"; // 경로 확인 필요
+import { Colors, CommonColorVariant } from "../../constants/Colors";
 
 export function SectionCard({
   title,
@@ -41,18 +41,29 @@ export function Caption({ children }: { children: React.ReactNode }) {
 
 export function ActionButton({
   icon,
+  iconNode,
   label,
   onPress,
   variant = "primary",
   loading,
 }: {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  icon?: React.ComponentProps<typeof MaterialIcons>["name"];
+  iconNode?: React.ReactNode;
   label: string;
   onPress: () => void;
   variant?: CommonColorVariant;
   loading?: boolean;
 }) {
   const palette = Colors.common[variant];
+  const renderIcon = () => {
+    if (iconNode) {
+      return iconNode;
+    }
+    if (icon) {
+      return <MaterialIcons name={icon} size={20} color={palette.fg} />;
+    }
+    return null;
+  };
 
   return (
     <Pressable
@@ -68,7 +79,8 @@ export function ActionButton({
         <ActivityIndicator color={palette.fg} />
       ) : (
         <>
-          <MaterialIcons name={icon} size={20} color={palette.fg} />
+          {/* <MaterialIcons name={icon} size={20} color={palette.fg} /> */}
+          {renderIcon()}
           <Text style={[styles.buttonText, { color: palette.fg }]}>
             {label}
           </Text>
