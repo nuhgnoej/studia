@@ -1,3 +1,5 @@
+// components/Quiz/SubjectStartContent.tsx
+
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -6,13 +8,17 @@ import {
   ActivityIndicator,
   Pressable,
   ScrollView,
+  ImageBackground,
 } from "react-native";
-// import { useRouter } from "expo-router";
 import { getMetadataBySubjectId } from "@/lib/db";
 import { Metadata } from "../../lib/types";
 import { SectionCard, ActionButton } from "@/components/ui/ActionComponents";
 import MetadataCard from "@/components/Quiz//MetadataCard";
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+  defaultBackground,
+  tagToBackgroundImage,
+} from "@/lib/tagToBackgroundImage";
 
 type Props = {
   subjectId: string;
@@ -25,7 +31,6 @@ export default function SubjectStartContent({
   onStartQuiz,
   onClose,
 }: Props) {
-  // const router = useRouter();
   const [meta, setMeta] = useState<Metadata | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +40,16 @@ export default function SubjectStartContent({
       setLoading(true);
       try {
         const data = await getMetadataBySubjectId(subjectId);
+
+        if (data && typeof data.tags === "string") {
+          try {
+            data.tags = JSON.parse(data.tags);
+          } catch (e) {
+            console.error("Tags 파싱 실패:", e);
+            data.tags = [];
+          }
+        }
+        console.log(JSON.stringify(data));
         setMeta(data);
       } catch (e) {
         console.error("문제 정보 불러오기 실패:", e);
@@ -61,45 +76,53 @@ export default function SubjectStartContent({
     );
   }
 
+  const displayTag = meta.tags?.[0] ?? "default";
+  // console.log(`displayTag: ${displayTag}`);
+  const backgroundSource =
+    tagToBackgroundImage[displayTag] ?? defaultBackground;
+  // const log =
+  //   backgroundSource === defaultBackground
+  //     ? "기본이미지 출력됨"
+  //     : "백그라운드 이미지 출력됨";
+  // console.log(log);
+
   return (
     <View style={styles.container}>
-      {/* --- 헤더 및 닫기 버튼 추가 --- */}
+      <ImageBackground
+        source={backgroundSource}
+        style={StyleSheet.absoluteFill} // 부모 뷰를 꽉 채우는 스타일
+        imageStyle={{ opacity: 0.1 }} // 이미지 투명도 조절
+        resizeMode="cover" // 화면을 꽉 채우도록 설정
+      />
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>문제 풀기</Text>
+        <Text style={styles.headerTitle}>{meta.title}</Text>
         <Pressable onPress={onClose} style={styles.closeButton}>
           <MaterialIcons name="close" size={26} color="#6B7280" />
         </Pressable>
       </View>
 
-      {/* 기존 콘텐츠 (ScrollView로 감싸서 스크롤 가능하게) */}
-      {!loading && meta && (
-        <ScrollView>
-          <SectionCard title={meta.title}>
-            <View style={styles.buttonContainer}>
-              <ActionButton
-                icon="play-arrow"
-                label="문제 풀기 시작"
-                // onPress={() => router.push(`/subject/${subjectId}/quiz`)}
-                onPress={() => onStartQuiz("normal")}
-                variant="primary"
-              />
-              <ActionButton
-                icon="playlist-add-check"
-                label="틀린 문제만 풀기"
-                onPress={() => onStartQuiz("wrong")}
-                // onPress={() => router.push(`/subject/${subjectId}/quiz?mode=wrong`)}
-                variant="neutral"
-              />
-            </View>
-          </SectionCard>
-        </ScrollView>
-      )}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <SectionCard title="퀴즈 시작하기">
+          <View style={styles.buttonContainer}>
+            <ActionButton
+              icon="play-arrow"
+              label="문제 풀기 시작"
+              onPress={() => onStartQuiz("normal")}
+              variant="primary"
+            />
+            <ActionButton
+              icon="playlist-add-check"
+              label="틀린 문제만 풀기"
+              onPress={() => onStartQuiz("wrong")}
+              variant="neutral"
+            />
+          </View>
+        </SectionCard>
 
-      <View style={{ marginTop: 16 }} />
-
-      <SectionCard title="문제 세트 정보">
-        <MetadataCard meta={meta} />
-      </SectionCard>
+        <SectionCard title="문제 세트 정보">
+          <MetadataCard meta={meta} />
+        </SectionCard>
+      </ScrollView>
     </View>
   );
 }
@@ -128,6 +151,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  // ✨ ScrollView 내부 콘텐츠를 위한 스타일 추가
+  scrollContent: {
+    padding: 16, // 전체적인 안쪽 여백
+    gap: 20, // 각 섹션 카드 사이의 간격
   },
   buttonContainer: {
     gap: 12,

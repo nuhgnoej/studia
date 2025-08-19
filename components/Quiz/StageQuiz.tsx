@@ -6,11 +6,10 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  TouchableOpacity, // TouchableOpacity 임포트
+  TouchableOpacity,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -20,7 +19,7 @@ import Animated, {
   Easing,
   runOnJS,
 } from "react-native-reanimated";
-import { Question } from "../../lib/types";
+import { Metadata, Question } from "../../lib/types";
 import TagsEditor from "./TagsEditor";
 import { insertAnswer } from "@/lib/db/insert";
 import { updateTags } from "@/lib/db/tagUtil";
@@ -30,6 +29,7 @@ import {
   tagToBackgroundImage,
 } from "@/lib/tagToBackgroundImage";
 import { saveProgress, loadLastProgress } from "@/lib/db/progress";
+import { getMetadataBySubjectId } from "@/lib/db";
 
 // Reusable NavButton component with modern styling
 const NavButton = ({
@@ -78,6 +78,7 @@ export default function StageQuiz({
   const [tags, setTags] = useState<string[]>([]);
   const [showIntroMessage, setShowIntroMessage] = useState(false);
   const [hasShownIntroMessage, setHasShownIntroMessage] = useState(false);
+  const [meta, setMeta] = useState<Metadata | null>(null);
 
   const currentQuestion =
     currentIndex !== null && currentIndex < questions.length
@@ -129,6 +130,23 @@ export default function StageQuiz({
       );
     }
   }, [showIntroMessage, fadeAnimOpacity]);
+
+  useEffect(() => {
+    const fetchMeta = async () => {
+      if (!subjectId) return;
+      const metaData = await getMetadataBySubjectId(subjectId);
+      if (metaData && typeof metaData.tags === "string") {
+        try {
+          metaData.tags = JSON.parse(metaData.tags);
+        } catch (e) {
+          console.error("Tags 파싱 실패:", e);
+          metaData.tags = [];
+        }
+      }
+      setMeta(metaData);
+    };
+    fetchMeta();
+  }, [subjectId]);
 
   const animatedMessageStyle = useAnimatedStyle(() => {
     return {
@@ -255,66 +273,70 @@ export default function StageQuiz({
     setIsStageSummary(false);
   };
 
-  const displayTag = currentQuestion.tags?.[0] ?? "default";
+  const displayTag = meta?.tags?.[0] ?? "default";
+  console.log(`displayTag: ${displayTag}`);
   const backgroundSource =
     tagToBackgroundImage[displayTag] ?? defaultBackground;
+  const log =
+    backgroundSource === defaultBackground
+      ? "기본이미지 출력됨"
+      : "백그라운드 이미지 출력됨";
+  console.log(log);
 
   return (
-    <View style={styles.background}>
+    <View style={styles.rootContainer}>
       <ImageBackground
         source={backgroundSource}
         style={StyleSheet.absoluteFill}
         imageStyle={{ opacity: 0.2 }}
+        resizeMode="cover"
       />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={80}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.container}>
-            <Text style={styles.stageText}>
-              📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
-              {Math.min(stageSize, stageEnd - stageStart)} — 전체{" "}
-              {currentIndex + 1} / {questions.length}
-            </Text>
+        <View style={styles.contentContainer}>
+          <Text style={styles.stageText}>
+            📦 단계 {currentStage} / {totalStages} — 문제 {questionInStage} /{" "}
+            {Math.min(stageSize, stageEnd - stageStart)} — 전체{" "}
+            {currentIndex + 1} / {questions.length}
+          </Text>
 
-            <View style={styles.navigationContainer}>
-              <NavButton
-                title="<<"
-                onPress={handlePreviousStage}
-                disabled={currentStage <= 1}
-              />
-              <NavButton
-                title="<"
-                onPress={handlePreviousQuestion}
-                disabled={currentIndex === 0}
-              />
-              <NavButton
-                title={currentIndex === questions.length - 1 ? "✔️" : ">"}
-                onPress={handleNext}
-              />
-              <NavButton
-                title=">>"
-                onPress={handleSkipStage}
-                disabled={currentStage >= totalStages}
-              />
-            </View>
+          <View style={styles.navigationContainer}>
+            <NavButton
+              title="<<"
+              onPress={handlePreviousStage}
+              disabled={currentStage <= 1}
+            />
+            <NavButton
+              title="<"
+              onPress={handlePreviousQuestion}
+              disabled={currentIndex === 0}
+            />
+            <NavButton
+              title={currentIndex === questions.length - 1 ? "✔️" : ">"}
+              onPress={handleNext}
+            />
+            <NavButton
+              title=">>"
+              onPress={handleSkipStage}
+              disabled={currentStage >= totalStages}
+            />
+          </View>
 
-            <View style={{ minHeight: 24, marginBottom: 8 }}>
-              {showIntroMessage && (
-                <Animated.Text
-                  style={[styles.introMessage, animatedMessageStyle]}
-                >
-                  이전에 {currentIndex + 1}번 문제까지 완료했습니다. 이어서 계속
-                  진행합니다.
-                </Animated.Text>
-              )}
-            </View>
+          <View style={{ minHeight: 24, marginBottom: 8 }}>
+            {showIntroMessage && (
+              <Animated.Text
+                style={[styles.introMessage, animatedMessageStyle]}
+              >
+                이전에 {currentIndex + 1}번 문제까지 완료했습니다. 이어서 계속
+                진행합니다.
+              </Animated.Text>
+            )}
+          </View>
 
+          <View style={styles.quizArea}>
             {isStageSummary ? (
               <StageSummary
                 subjectId={subjectId}
@@ -327,20 +349,22 @@ export default function StageQuiz({
               />
             ) : (
               <>
-                {currentQuestion.type === "objective" ? (
-                  <ObjectiveQuestion
-                    question={currentQuestion}
-                    onSubmit={handleSubmitAnswer}
-                    isAnswered={isAnswered}
-                    isCorrect={isCorrect}
-                  />
-                ) : (
-                  <SubjectiveQuestion
-                    question={currentQuestion}
-                    onSubmit={handleSubmitAnswer}
-                    isAnswered={isAnswered}
-                  />
-                )}
+                <View style={{ paddingBottom: 10 }}>
+                  {currentQuestion.type === "objective" ? (
+                    <ObjectiveQuestion
+                      question={currentQuestion}
+                      onSubmit={handleSubmitAnswer}
+                      isAnswered={isAnswered}
+                      isCorrect={isCorrect}
+                    />
+                  ) : (
+                    <SubjectiveQuestion
+                      question={currentQuestion}
+                      onSubmit={handleSubmitAnswer}
+                      isAnswered={isAnswered}
+                    />
+                  )}
+                </View>
 
                 <TagsEditor
                   tags={tags}
@@ -357,26 +381,37 @@ export default function StageQuiz({
               </>
             )}
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  // [FIX 2] Added flexGrow and justifyContent
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  quizArea: {
+    flex: 1,
+    justifyContent: "flex-start",
+  },
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
     paddingBottom: 40,
   },
   container: {
-    paddingHorizontal: 16,
+    flex: 1,
+    paddingHorizontal: 2,
   },
   stageText: {
     fontSize: 16,
@@ -402,10 +437,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     gap: 8,
   },
-  // [FIX 1] New color scheme for buttons
   navButton: {
     flex: 1,
-    backgroundColor: "#4B5563", // Dark Gray
+    backgroundColor: "#4B5563",
     paddingVertical: 10,
     borderRadius: 8,
     elevation: 2,
@@ -417,7 +451,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   navButtonDisabled: {
-    backgroundColor: "#9CA3AF", // Lighter Gray
+    backgroundColor: "#9CA3AF",
     elevation: 0,
   },
   navButtonText: {
@@ -426,6 +460,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   navButtonTextDisabled: {
-    color: "#E5E7EB", // Off-white for better contrast
+    color: "#E5E7EB",
+  },
+  contentWrapper: {
+    flex: 1,
+    // justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingBottom: 40,
   },
 });

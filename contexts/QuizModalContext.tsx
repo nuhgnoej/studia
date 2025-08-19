@@ -124,7 +124,7 @@ export const QuizModalProvider = ({ children }: { children: ReactNode }) => {
         index={0}
         snapPoints={snapPoints}
         onDismiss={() => setIsSheetOpen(false)}
-        enablePanDownToClose={false} // 퀴즈 푸는 중에는 드래그로 닫기 비활성화
+        enablePanDownToClose={false}
         backdropComponent={(props) => (
           <BottomSheetBackdrop
             {...props}

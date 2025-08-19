@@ -1,15 +1,17 @@
-// components/QuizContent.tsx
+// components/Quiz/QuizContent.tsx
+
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import getWrongAnsweredQuestionsBySubjectId, {
   getQuestionsBySubjectId,
 } from "@/lib/db/query";
-import { Question } from "@/lib/types";
+import { Metadata, Question } from "@/lib/types";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 import StageQuiz from "@/components/Quiz/StageQuiz";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { getMetadataBySubjectId } from "@/lib/db";
 
 type Props = {
   subjectId: string;
@@ -25,6 +27,7 @@ export default function QuizContent({
   onClose,
 }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [meta, setMeta] = useState<Metadata | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -37,6 +40,16 @@ export default function QuizContent({
             ? await getWrongAnsweredQuestionsBySubjectId(subjectId)
             : await getQuestionsBySubjectId(subjectId);
         setQuestions(data);
+        const metaData = await getMetadataBySubjectId(subjectId);
+        if (metaData && typeof metaData.tags === "string") {
+          try {
+            metaData.tags = JSON.parse(metaData.tags);
+          } catch (e) {
+            console.error("Tags 파싱 실패:", e);
+            metaData.tags = [];
+          }
+        }
+        setMeta(metaData);
       } catch (err) {
         setError(`문제를 불러오지 못했습니다.:${err}`);
       } finally {
@@ -46,17 +59,7 @@ export default function QuizContent({
     load();
   }, [subjectId, mode]);
 
-  //   if (loading) return <Loading />;
-  //   if (error) return <ErrorMessage message={error} />;
-  //   if (questions.length === 0) {
-  //     return (
-  //       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //         <Text>해당 조건의 문제가 없습니다.</Text>
-  //       </View>
-  //     );
-  //   }
-
-  const renderContent = () => {
+  const renderQuizArea = () => {
     if (loading) {
       return <Loading />;
     }
@@ -64,7 +67,6 @@ export default function QuizContent({
       return <ErrorMessage message={error} />;
     }
     if (questions.length === 0) {
-      // '문제가 없습니다' 메시지를 스타일링된 컴포넌트로 변경
       return (
         <View style={styles.emptyContainer}>
           <MaterialIcons
@@ -77,39 +79,41 @@ export default function QuizContent({
       );
     }
     return (
-      <BottomSheetScrollView
-        contentContainerStyle={{ paddingBottom: 0 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <StageQuiz
-          questions={questions}
-          subjectId={subjectId}
-          stageSize={10}
-          onComplete={onComplete}
-          mode={mode}
-        />
-      </BottomSheetScrollView>
+      <StageQuiz
+        questions={questions}
+        subjectId={subjectId}
+        stageSize={10}
+        onComplete={onComplete}
+        mode={mode}
+      />
     );
   };
 
   return (
-    <View style={styles.container}>
-      {/* 1. 헤더와 닫기 버튼을 항상 렌더링하도록 바깥으로 꺼냅니다. */}
+    <BottomSheetScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {/* 헤더를 스크롤뷰의 일부로 포함시킵니다. */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>문제 풀이</Text>
+        <Text style={styles.headerTitle}>{meta?.title || "문제 풀이"}</Text>
         <Pressable onPress={onClose} style={styles.closeButton}>
           <MaterialIcons name="close" size={26} color="#6B7280" />
         </Pressable>
       </View>
 
-      {/* 2. 로딩/에러/결과에 따라 내용 부분만 조건부로 렌더링합니다. */}
-      <View style={styles.contentArea}>{renderContent()}</View>
-    </View>
+      {/* 조건부 렌더링 영역 */}
+      {renderQuizArea()}
+    </BottomSheetScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: "row",
@@ -127,14 +131,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
   },
-  contentArea: {
-    flex: 1, // 헤더를 제외한 나머지 공간을 모두 차지
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    minHeight: 300,
   },
   emptyText: {
     fontSize: 18,

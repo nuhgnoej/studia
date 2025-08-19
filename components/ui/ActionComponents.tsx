@@ -82,7 +82,6 @@ export function ActionButton({
         <ActivityIndicator color={palette.fg} />
       ) : (
         <>
-          {/* <MaterialIcons name={icon} size={20} color={palette.fg} /> */}
           {renderIcon()}
           <Text style={[styles.buttonText, { color: palette.fg }]}>
             {label}
@@ -96,7 +95,7 @@ export function ActionButton({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "rgba(255,255,255,0.9)",
+    backgroundColor: Colors.light.card,
     borderRadius: 16,
     padding: 14,
     gap: 12,

@@ -4,21 +4,14 @@
     "title": "복합발전운전(주관식)",
     "description": "2024년도 2분기 복합발전운전원 시험문제(3급)",
     "subject": "복합발전운전(주관식)",
-    "category": [
-      "HRSG",
-      "보호계통"
-    ],
+    "category": ["HRSG", "보호계통"],
     "difficulty": "Grade3",
     "version": "v1.0",
     "created_at": "2025-06-25",
     "updated_at": "2025-06-25",
     "author": "ChatGPT + User",
     "source": "직접 제작",
-    "tags": [
-      "발전설비",
-      "HRSG",
-      "보호계통"
-    ],
+    "tags": ["발전"],
     "license": "CC BY-NC-SA",
     "num_questions": 158
   },
@@ -31,16 +24,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "병류식",
-          "향류식",
-          "혼류식"
-        ],
+        "answerText": ["병류식", "향류식", "혼류식"],
         "answerExplanation": "HRSG는 열회수 보일러로, 유체의 흐름 방향에 따라 병류식(parallel flow), 향류식(counter flow), 혼류식(cross/mixed flow)으로 분류됩니다."
       },
-      "tags": [
-        "HRSG"
-      ]
+      "tags": ["HRSG"]
     },
     {
       "id": 2,
@@ -61,9 +48,7 @@
         ],
         "answerExplanation": "Hydraulic Power System은 고압 오일을 여러 제어 밸브 및 트립 계통에 공급합니다. 대표적인 공급처로는 HP/IP/LP STM Control Vv, HP/IP/LP Stop Vv, Emergency Trip 계통 등이 있습니다."
       },
-      "tags": [
-        "보호계통"
-      ]
+      "tags": ["보호계통"]
     },
     {
       "id": 3,
@@ -75,11 +60,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "30",
-          "열화",
-          "금속표면부식"
-        ],
+        "answerText": ["30", "열화", "금속표면부식"],
         "answerExplanation": "Main Oil Tank는 윤활유 내 거품 발생을 고려해 약 30%의 여유 공간을 확보하며, 윤활유 청정기는 윤활유의 열화 및 금속 표면 부식을 방지하기 위해 설치됩니다."
       },
       "tags": []
@@ -94,10 +75,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "Hogging",
-          "Holding"
-        ],
+        "answerText": ["Hogging", "Holding"],
         "answerExplanation": "ST Vacuum Pump는 초기 진공을 형성하는 Hogging Mode와, 진공을 유지하는 Holding Mode 두 가지 운전 모드를 가집니다."
       },
       "tags": []
@@ -110,9 +88,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "CTCS"
-        ],
+        "answerText": ["CTCS"],
         "answerExplanation": "복수기 튜브 내 이물질 제거를 위해 CTCS(Condenser Tube Cleaning System)가 설치되어, 튜브의 열전달 효율을 유지합니다."
       },
       "tags": []
@@ -125,9 +101,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "HPU"
-        ],
+        "answerText": ["HPU"],
         "answerExplanation": "HPU(Hydraulic Power Unit)는 터빈 제어 밸브 계통에 고압 오일을 공급하여 유압 작동을 가능하게 하는 핵심 설비입니다."
       },
       "tags": []
@@ -140,14 +114,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "임계속도"
-        ],
+        "answerText": ["임계속도"],
         "answerExplanation": "임계속도(Critical Speed)는 로터의 고유 진동수와 회전으로 인해 발생하는 진동수가 일치하여 공진 현상이 발생하는 회전속도입니다."
       },
-      "tags": [
-        "터빈"
-      ]
+      "tags": ["터빈"]
     },
     {
       "id": 8,
@@ -164,10 +134,7 @@
         ],
         "answerExplanation": "Thermal Nox는 고온의 연소 조건에서 질소와 산소가 반응하여 발생합니다. 이를 억제하기 위해 연소온도를 낮추고, 산소 농도를 줄이며, 연소가스의 고온 체류 시간을 최소화합니다."
       },
-      "tags": [
-        "연소",
-        "온도"
-      ]
+      "tags": ["연소", "온도"]
     },
     {
       "id": 9,
@@ -193,18 +160,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "압축",
-          "가열",
-          "팽창",
-          "방열"
-        ],
+        "answerText": ["압축", "가열", "팽창", "방열"],
         "answerExplanation": "가스터빈은 공기를 압축한 뒤 연료를 혼합하여 가열하고, 팽창된 고온가스를 통해 터빈을 구동하며, 이후 열을 방출하는 과정을 반복합니다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "가스터빈"]
     },
     {
       "id": 11,
@@ -214,19 +173,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "입구 안내익",
-          "IGV",
-          "Inlet Guide Vane"
-        ],
+        "answerText": ["입구 안내익", "IGV", "Inlet Guide Vane"],
         "answerExplanation": "입구 안내익(IGV, Inlet Guide Vane)은 압축기의 Surge를 방지하고, 부분부하 조건에서의 효율과 안전성을 확보하며, 복합 발전 시 열회수 보일러의 열회수량을 조절하여 복합 효율을 높이는 역할을 합니다."
       },
-      "tags": [
-        "터빈",
-        "온도",
-        "가스터빈",
-        "압축기"
-      ]
+      "tags": ["터빈", "온도", "가스터빈", "압축기"]
     },
     {
       "id": 12,
@@ -236,17 +186,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "고정익",
-          "Nozzle"
-        ],
+        "answerText": ["고정익", "Nozzle"],
         "answerExplanation": "고정익(Nozzle)은 연소가스를 가속시켜 터빈 버켓에 직접 전달하는 역할을 하며, 터빈 로터를 회전시키는 동력을 제공합니다."
       },
-      "tags": [
-        "연소",
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["연소", "터빈", "가스터빈"]
     },
     {
       "id": 13,
@@ -264,11 +207,7 @@
         ],
         "answerExplanation": "각 복합발전소는 설비 특성과 설계 기준에 따라 고유한 베어링 진동 Trip 임계값을 가지고 있으며, 이상 진동이 해당 값을 초과하면 자동으로 GT가 정지됩니다."
       },
-      "tags": [
-        "터빈",
-        "보호계통",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "보호계통", "가스터빈"]
     },
     {
       "id": 14,
@@ -278,18 +217,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "온도",
-          "화염",
-          "진동"
-        ],
+        "answerText": ["온도", "화염", "진동"],
         "answerExplanation": "가스터빈 보호계통은 고온 이상, 연소 불안정(화염 소실 또는 역화), 과도한 진동 등을 실시간 감시하여, 이상 발생 시 트립 또는 경고를 통해 기기의 손상을 방지합니다."
       },
-      "tags": [
-        "터빈",
-        "온도",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "온도", "가스터빈"]
     },
     {
       "id": 15,
@@ -308,13 +239,7 @@
         ],
         "answerExplanation": "가스터빈 성능은 흡입 공기의 온도, 습도, 압력 조건에 크게 좌우되며, 흡배기계의 손실이나 운전 시간에 따른 마모, 오염 등도 영향을 미칩니다."
       },
-      "tags": [
-        "가스터빈",
-        "배기",
-        "온도",
-        "터빈",
-        "성능"
-      ]
+      "tags": ["가스터빈", "배기", "온도", "터빈", "성능"]
     },
     {
       "id": 16,
@@ -326,19 +251,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "터빈 출력",
-          "출력",
-          "효율"
-        ],
+        "answerText": ["터빈 출력", "출력", "효율"],
         "answerExplanation": "가스터빈은 차가운 공기를 흡입할수록 밀도가 높아져 출력이 증가하며, 습도 상승은 연소 특성 및 열효율에 영향을 미쳐 출력과 효율을 다소 감소시킵니다."
       },
-      "tags": [
-        "터빈",
-        "온도",
-        "가스터빈",
-        "성능"
-      ]
+      "tags": ["터빈", "온도", "가스터빈", "성능"]
     },
     {
       "id": 17,
@@ -348,14 +264,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "슈라우드 블록"
-        ],
+        "answerText": ["슈라우드 블록"],
         "answerExplanation": "슈라우드 블록은 터빈 버킷 팁 주위를 감싸며 간극을 최소화해 고온 연소가스의 누설을 줄이고, 열전달을 제어하여 케이싱 보호 역할도 수행합니다."
       },
-      "tags": [
-        "터빈"
-      ]
+      "tags": ["터빈"]
     },
     {
       "id": 18,
@@ -373,11 +285,7 @@
         ],
         "answerExplanation": "각 발전소는 설치된 가스터빈 기종 및 운전 조건에 따라 연소기 개수가 상이하며, GE 프레임 계열 기준으로 서인천과 태안 IGCC는 14기, 평택2복합과 군산복합은 16기를 설치하고 있습니다."
       },
-      "tags": [
-        "연소",
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["연소", "터빈", "가스터빈"]
     },
     {
       "id": 19,
@@ -389,17 +297,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "15",
-          "1.013",
-          "60"
-        ],
+        "answerText": ["15", "1.013", "60"],
         "answerExplanation": "ISO 표준 조건은 가스터빈 정격 성능 비교를 위한 기준으로, 대기 온도 15도, 대기압 1.013 bar, 상대습도 60%를 기준으로 합니다."
       },
-      "tags": [
-        "온도",
-        "터빈"
-      ]
+      "tags": ["온도", "터빈"]
     },
     {
       "id": 20,
@@ -411,15 +312,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "콘서베이터"
-        ],
+        "answerText": ["콘서베이터"],
         "answerExplanation": "부흐흘쯔 계전기는 유중가스 또는 아크에 의한 내부 고장을 감지하기 위해 설치되며, 일반적으로 변압기 본체와 콘서베이터(유보통) 사이의 오일 파이프라인 중간에 장착됩니다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "가스터빈"]
     },
     {
       "id": 21,
@@ -429,18 +325,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "압축기"
-        ],
+        "answerText": ["압축기"],
         "answerExplanation": "가스터빈 압축기는 운전 중 공기세정을 통해 오염을 줄이고 성능을 유지하며, A급 계획예방정비 시 분해 및 정밀 점검 대상입니다."
       },
-      "tags": [
-        "가스터빈",
-        "압축기",
-        "세정",
-        "터빈",
-        "성능"
-      ]
+      "tags": ["가스터빈", "압축기", "세정", "터빈", "성능"]
     },
     {
       "id": 22,
@@ -460,11 +348,7 @@
         ],
         "answerExplanation": "CO₂ 소화설비는 화재 감지 → 터빈 정지(TBN Trip) → 환기팬 정지 → CO₂ 방출의 순서로 작동하며, 이는 인명 보호 및 효과적인 소화 작용을 위한 절차입니다."
       },
-      "tags": [
-        "터빈",
-        "보호계통",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "보호계통", "가스터빈"]
     },
     {
       "id": 23,
@@ -483,13 +367,7 @@
         ],
         "answerExplanation": "가스터빈은 공기를 유입하고 압축한 후 연료와 혼합하여 연소시킨 뒤, 연소가스를 이용해 터빈을 회전시키고 배기하는 일련의 구성요소로 이루어져 있습니다."
       },
-      "tags": [
-        "가스터빈",
-        "압축기",
-        "배기",
-        "연소",
-        "터빈"
-      ]
+      "tags": ["가스터빈", "압축기", "배기", "연소", "터빈"]
     },
     {
       "id": 24,
@@ -499,9 +377,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "고위발열량 기준"
-        ],
+        "answerText": ["고위발열량 기준"],
         "answerExplanation": "일반적으로 발전소의 열효율은 고위발열량(HHV, Higher Heating Value)을 기준으로 계산되며, 연료의 응축열까지 포함한 총 발열량을 기준으로 합니다."
       },
       "tags": []
@@ -517,19 +393,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "향상",
-          "향상"
-        ],
+        "answerText": ["향상", "향상"],
         "answerExplanation": "가스터빈은 입구 가스온도와 압력비가 증가할수록 연소가스의 에너지 활용 효율이 높아져 열효율이 향상됩니다."
       },
-      "tags": [
-        "가스터빈",
-        "온도",
-        "터빈",
-        "압력",
-        "성능"
-      ]
+      "tags": ["가스터빈", "온도", "터빈", "압력", "성능"]
     },
     {
       "id": 26,
@@ -539,9 +406,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "자연순환보일러"
-        ],
+        "answerText": ["자연순환보일러"],
         "answerExplanation": "자연순환보일러는 밀도 차이에 의해 증기와 물이 자연스럽게 순환하도록 설계되어 별도의 순환펌프가 필요하지 않습니다."
       },
       "tags": []
@@ -554,9 +419,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "DCS Mode"
-        ],
+        "answerText": ["DCS Mode"],
         "answerExplanation": "DCS Mode는 발전소 자체 제어 시스템에 의해 출력이 고정되며, 계통 신호에 따라 출력을 조정하는 AGC(Automatic Generation Control)와는 반대되는 개념입니다."
       },
       "tags": []
@@ -571,18 +434,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1): CO2",
-          "(2): H2",
-          "(3): Air"
-        ],
+        "answerText": ["(1): CO2", "(2): H2", "(3): Air"],
         "answerExplanation": "발전기 내부 수소 치환은 안전을 위해 중간 기체인 CO₂를 사용하여 수소와 공기가 직접 접촉하지 않도록 합니다. 순서는 CO₂ 주입 → 수소 퍼지 → CO₂ 농도 측정 → 공기 주입 → 밀봉유 계통 정지입니다."
       },
-      "tags": [
-        "보호계통",
-        "운전절차",
-        "발전기"
-      ]
+      "tags": ["보호계통", "운전절차", "발전기"]
     },
     {
       "id": 29,
@@ -601,9 +456,7 @@
         ],
         "answerExplanation": "기계적 밀봉장치는 회전체와 고정체 사이의 유체 누설을 효과적으로 차단하며, 마찰 저감과 축 보호, 공간 효율성 등의 다양한 장점이 있어 산업 현장에서 널리 사용됩니다."
       },
-      "tags": [
-        "Seal"
-      ]
+      "tags": ["Seal"]
     },
     {
       "id": 30,
@@ -619,14 +472,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "LP Drum"
-        ],
+        "answerText": ["LP Drum"],
         "answerExplanation": "LP Drum은 저압 영역에서 물을 저장하고, 증기와 물을 분리하며, 펌프의 NPSH 확보 및 기동 시 팽창 여유 공간 역할을 수행합니다."
       },
-      "tags": [
-        "배기"
-      ]
+      "tags": ["배기"]
     },
     {
       "id": 31,
@@ -636,14 +485,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "Can Annular"
-        ],
+        "answerText": ["Can Annular"],
         "answerExplanation": "Can Annular형 연소기는 각각의 라이너가 화염 전파관으로 연결되어 있어 연소 안정성이 높고, 연소 영역 전체의 균일한 온도 분포를 확보하는 데 유리합니다."
       },
-      "tags": [
-        "연소"
-      ]
+      "tags": ["연소"]
     },
     {
       "id": 32,
@@ -653,15 +498,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "발전기 가능출력곡선"
-        ],
+        "answerText": ["발전기 가능출력곡선"],
         "answerExplanation": "발전기 가능출력곡선은 주어진 조건에서 발전기가 안정적으로 출력할 수 있는 범위를 정의하며, 과부하 방지와 운전 효율 유지에 중요한 기준이 됩니다."
       },
-      "tags": [
-        "온도",
-        "발전기"
-      ]
+      "tags": ["온도", "발전기"]
     },
     {
       "id": 33,
@@ -674,15 +514,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1): 1/14, (2): 1.5"
-        ],
+        "answerText": ["(1): 1/14, (2): 1.5"],
         "answerExplanation": "수소는 공기에 비해 밀도가 약 1/14 수준으로 낮고, 열전달율은 약 1.5배 높아 고속 회전체의 냉각에 매우 효과적입니다."
       },
-      "tags": [
-        "냉각",
-        "발전기"
-      ]
+      "tags": ["냉각", "발전기"]
     },
     {
       "id": 34,
@@ -692,14 +527,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "소선간 전압균형"
-        ],
+        "answerText": ["소선간 전압균형"],
         "answerExplanation": "고정자 권선 내 다수의 소선을 전위시키는 이유는 유도전압 불균형을 방지하고, 각 소선 간 전압 분포를 균일하게 하여 절연 파괴나 발열을 막기 위함입니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 35,
@@ -709,16 +540,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "상간단락",
-          "지락",
-          "층간단락"
-        ],
+        "answerText": ["상간단락", "지락", "층간단락"],
         "answerExplanation": "발전기 권선 고장에는 상간단락(상과 상 사이의 단락), 지락(대지와의 절연 파괴), 층간단락(동일 권선 내 절연 파괴) 등이 있으며, 고장 원인에 따라 보호 계전기의 동작 방식이 달라집니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 36,
@@ -736,13 +561,7 @@
         ],
         "answerExplanation": "Seal Oil 압력은 수소보다 높게 유지되어야 수소가 외부로 누출되지 않으며, 각 발전소는 설비 조건에 따라 정해진 기준차를 유지하고 운전됩니다."
       },
-      "tags": [
-        "가스터빈",
-        "Seal",
-        "터빈",
-        "압력",
-        "발전기"
-      ]
+      "tags": ["가스터빈", "Seal", "터빈", "압력", "발전기"]
     },
     {
       "id": 37,
@@ -752,15 +571,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "수소 - 상부",
-          "탄산 - 하부"
-        ],
+        "answerText": ["수소 - 상부", "탄산 - 하부"],
         "answerExplanation": "치환 시 안전성을 확보하기 위해 상대적으로 가벼운 수소는 발전기 상부에서 주입되고, 무거운 탄산가스는 하부에서 주입되어 효과적인 기체 치환이 이루어지도록 설계됩니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 38,
@@ -770,15 +584,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "발전기 무효전력을 크게",
-          "발전기 계자전류를 크게"
-        ],
+        "answerText": ["발전기 무효전력을 크게", "발전기 계자전류를 크게"],
         "answerExplanation": "역률을 작게(진상 혹은 지상 방향으로 이동) 하기 위해서는 무효전력을 증가시키거나, 계자전류를 조정하여 발전기의 전기자 반작용을 변화시킬 수 있습니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 39,
@@ -790,15 +599,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "비계획정비정지"
-        ],
+        "answerText": ["비계획정비정지"],
         "answerExplanation": "비계획정비정지는 발전기 고장 또는 긴급한 설비 이상 등에 의해 예정되지 않았던 정지를 전력거래소에 사전 통보 후 조정한 경우에 해당합니다."
       },
-      "tags": [
-        "보호계통",
-        "발전기"
-      ]
+      "tags": ["보호계통", "발전기"]
     },
     {
       "id": 40,
@@ -810,17 +614,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1)상승",
-          "(2)저하",
-          "(3)저하"
-        ],
+        "answerText": ["(1)상승", "(2)저하", "(3)저하"],
         "answerExplanation": "진상운전 시 발전기 단부에 과열이 발생할 수 있어 단부 온도가 상승하며, 시스템의 전기적 안정도와 소내 전압이 저하되는 문제가 발생합니다."
       },
-      "tags": [
-        "온도",
-        "발전기"
-      ]
+      "tags": ["온도", "발전기"]
     },
     {
       "id": 41,
@@ -830,14 +627,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "발전기 회전자 표면 과열"
-        ],
+        "answerText": ["발전기 회전자 표면 과열"],
         "answerExplanation": "불평형 부하 운전 시 역상 전류가 발생하여 회전자 표면에 과열이 집중되며, 이는 절연 열화 및 기기 수명 단축의 주요 원인이 됩니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 42,
@@ -847,19 +640,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "주파수",
-          "전압",
-          "위상",
-          "상회전 방향",
-          "파형"
-        ],
+        "answerText": ["주파수", "전압", "위상", "상회전 방향", "파형"],
         "answerExplanation": "발전기를 병입(병렬 접속)하기 위해서는 계통과의 동기 조건이 일치해야 하며, 그 조건으로는 주파수, 전압, 위상, 상회전 방향, 파형이 동일해야 합니다."
       },
-      "tags": [
-        "병입절차",
-        "발전기"
-      ]
+      "tags": ["병입절차", "발전기"]
     },
     {
       "id": 43,
@@ -869,16 +653,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "송전손실 감소",
-          "송전용량 증대",
-          "전압강하율 감소"
-        ],
+        "answerText": ["송전손실 감소", "송전용량 증대", "전압강하율 감소"],
         "answerExplanation": "고전압 송전은 전류를 줄여 송전선에서의 I²R 손실을 줄이고, 더 많은 전력을 안정적으로 전달할 수 있으며, 전압 강하율 또한 줄여 효율적인 송전을 가능하게 합니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 44,
@@ -898,10 +676,7 @@
         ],
         "answerExplanation": "발전소의 회전자는 운전 종료 후에도 Rotor Turning Gear를 통해 저속 회전되며, 이는 회전체 휨 방지와 열 균형 유지에 중요합니다. 발전소마다 설비에 따라 회전속도가 다릅니다."
       },
-      "tags": [
-        "보호계통",
-        "가스터빈"
-      ]
+      "tags": ["보호계통", "가스터빈"]
     },
     {
       "id": 45,
@@ -913,9 +688,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "수격작용"
-        ],
+        "answerText": ["수격작용"],
         "answerExplanation": "수격작용(Water Hammer)은 유체 흐름의 급격한 정지나 변화로 인해 관로 내 압력이 순간적으로 급상승하는 현상이다."
       }
     },
@@ -927,16 +700,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "질소봉입보존",
-          "습식보존",
-          "건식보존"
-        ],
+        "answerText": ["질소봉입보존", "습식보존", "건식보존"],
         "answerExplanation": "배열회수 보일러(HRSG)는 장기 정지 시 튜브 내면의 부식을 방지하기 위해 질소봉입보존(질소충전), 습식보존(탈산수 사용), 건식보존(제습제 또는 열풍 사용) 방법이 활용됩니다."
       },
-      "tags": [
-        "보호계통"
-      ]
+      "tags": ["보호계통"]
     },
     {
       "id": 47,
@@ -946,11 +713,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "증발기",
-          "절탄기",
-          "과열기"
-        ],
+        "answerText": ["증발기", "절탄기", "과열기"],
         "answerExplanation": "배열회수보일러 내에서 열흡수비가 가장 큰 순서는 일반적으로 증발기 > 절탄기 > 과열기이며, 이는 각 기기에서의 열전달 특성과 작동 조건에 따른 결과입니다."
       },
       "tags": []
@@ -968,12 +731,7 @@
         ],
         "answerExplanation": "HRSG(Heat Recovery Steam Generator)는 가스터빈에서 배출되는 고온 배기가스를 이용하여 증기를 생산하는 장치로, 복합발전의 열효율을 높이는 핵심 설비입니다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "HRSG",
-        "배기"
-      ]
+      "tags": ["터빈", "가스터빈", "HRSG", "배기"]
     },
     {
       "id": 49,
@@ -983,9 +741,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "재열기"
-        ],
+        "answerText": ["재열기"],
         "answerExplanation": "재열기(Reheater)는 HRSG의 입구측 고온 배기가스와 직접 접촉하는 열교환기로, 증기를 재가열하여 터빈 후단에 공급함으로써 열효율을 높이는 역할을 합니다."
       },
       "tags": []
@@ -1005,10 +761,7 @@
         ],
         "answerExplanation": "베어링 온도 상승은 마찰과 윤활 부족 또는 정렬 문제로 인해 발생하며, 장기간 방치 시 축계 손상의 원인이 됩니다."
       },
-      "tags": [
-        "온도",
-        "터빈"
-      ]
+      "tags": ["온도", "터빈"]
     },
     {
       "id": 51,
@@ -1018,15 +771,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "충격 압력계전기",
-          "Sudden Pressure Relay"
-        ],
+        "answerText": ["충격 압력계전기", "Sudden Pressure Relay"],
         "answerExplanation": "충격 압력계전기(Sudden Pressure Relay)는 변압기 내부 고장 시 발생하는 급격한 압력 상승을 감지하여 빠르게 보호동작을 수행합니다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 52,
@@ -1036,14 +784,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "표류부하손"
-        ],
+        "answerText": ["표류부하손"],
         "answerExplanation": "표류부하손은 부하 전류에 의해 발생한 누설 자속이 변압기 외부 구조물과 쇄교하면서 생기는 부가 손실입니다."
       },
-      "tags": [
-        "냉각"
-      ]
+      "tags": ["냉각"]
     },
     {
       "id": 53,
@@ -1062,9 +806,7 @@
         ],
         "answerExplanation": "공동현상은 펌프 내 증기 기포로 인한 캐비테이션 현상이며, 충분한 NPSH 확보 및 배관 설계 최적화로 예방할 수 있습니다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 54,
@@ -1096,12 +838,7 @@
         ],
         "answerExplanation": "복수기 튜브가 오염되면 열전달 저하와 냉각 불량이 발생하며, 이는 진공도 저하 및 열교환 성능 저하로 이어집니다."
       },
-      "tags": [
-        "진공",
-        "온도",
-        "냉각",
-        "압력"
-      ]
+      "tags": ["진공", "온도", "냉각", "압력"]
     },
     {
       "id": 56,
@@ -1123,12 +860,7 @@
         ],
         "answerExplanation": "복수기 진공 저하는 냉각성능 저하, 구조적 결함, 또는 계통 이상 등 다양한 원인에 의해 발생하며, 조기 감지 및 원인 분석이 중요합니다."
       },
-      "tags": [
-        "진공",
-        "온도",
-        "냉각",
-        "Seal"
-      ]
+      "tags": ["진공", "온도", "냉각", "Seal"]
     },
     {
       "id": 57,
@@ -1138,11 +870,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "물을 채우는 방법",
-          "와전류 탐상검사",
-          "포말을 이용"
-        ],
+        "answerText": ["물을 채우는 방법", "와전류 탐상검사", "포말을 이용"],
         "answerExplanation": "복수기 튜브 누설 탐지는 기본적인 수압 시험 외에도 와전류(eddy current)나 기포를 활용한 방법으로 정밀 검사가 가능합니다."
       },
       "tags": []
@@ -1155,9 +883,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "15"
-        ],
+        "answerText": ["15"],
         "answerExplanation": "전도도 15μS/cm 이상은 해수 유입이 의심되는 수치로, 화학적 수질 분석 기준 중 하나로 사용됩니다."
       },
       "tags": []
@@ -1187,14 +913,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "펌프 흡입성능 저하 방지"
-        ],
+        "answerText": ["펌프 흡입성능 저하 방지"],
         "answerExplanation": "Barrel Vent Line은 펌프 작동 전 내부 공기를 제거하여 흡입 불량이나 캐비테이션 현상을 방지합니다."
       },
-      "tags": [
-        "성능"
-      ]
+      "tags": ["성능"]
     },
     {
       "id": 61,
@@ -1221,12 +943,7 @@
         ],
         "answerExplanation": "복합발전은 열효율이 높고, 운전 유연성이 뛰어난 시스템으로, 기상 조건 및 연료 종류에 따라 성능이 영향을 받습니다."
       },
-      "tags": [
-        "온도",
-        "보호계통",
-        "성능",
-        "연료"
-      ]
+      "tags": ["온도", "보호계통", "성능", "연료"]
     },
     {
       "id": 62,
@@ -1236,9 +953,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "비율차동계전기"
-        ],
+        "answerText": ["비율차동계전기"],
         "answerExplanation": "비율차동계전기(Restricted Earth Fault Relay)는 내부 고장만 감지하고 외부 고장에는 비감응입니다."
       },
       "tags": []
@@ -1251,14 +966,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "속도조정률"
-        ],
+        "answerText": ["속도조정률"],
         "answerExplanation": "속도조정률(Droop)은 부하 변화에 따른 속도 변화 비율로 발전기의 부하 분담 특성을 나타냅니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 64,
@@ -1270,19 +981,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "15.4",
-          "22.5",
-          "21",
-          "18"
-        ],
+        "answerText": ["15.4", "22.5", "21", "18"],
         "answerExplanation": "가스터빈 압축비는 설계에 따라 다르며, 각 복합발전소의 터빈 모델 사양에 따라 수치가 상이합니다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "압축기"
-      ]
+      "tags": ["터빈", "가스터빈", "압축기"]
     },
     {
       "id": 65,
@@ -1292,14 +994,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "시송전 선로"
-        ],
+        "answerText": ["시송전 선로"],
         "answerExplanation": "시송전 선로는 계통정전 복구를 위한 전력 전송을 담당하는 전략적 송전선입니다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 66,
@@ -1316,10 +1014,7 @@
         ],
         "answerExplanation": "서지 방지를 위해 흡입계통 정비 및 압력조정 계통이 적절히 작동해야 하며, 유량 조절 및 정비가 핵심입니다."
       },
-      "tags": [
-        "세정",
-        "압축기"
-      ]
+      "tags": ["세정", "압축기"]
     },
     {
       "id": 67,
@@ -1337,10 +1032,7 @@
         ],
         "answerExplanation": "압축기 실속은 급격한 작동 변화나 흡입계통의 문제, 내부 손상 등으로 발생할 수 있습니다."
       },
-      "tags": [
-        "보호계통",
-        "압축기"
-      ]
+      "tags": ["보호계통", "압축기"]
     },
     {
       "id": 68,
@@ -1350,18 +1042,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "가스터빈 효율 저하",
-          "가스터빈 호기별 출력편차 증대"
-        ],
+        "answerText": ["가스터빈 효율 저하", "가스터빈 호기별 출력편차 증대"],
         "answerExplanation": "오염 누적은 압축비 저하와 효율 감소, 출력 불균형을 초래하여 유지보수 필요성이 큽니다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "세정",
-        "압축기"
-      ]
+      "tags": ["터빈", "가스터빈", "세정", "압축기"]
     },
     {
       "id": 69,
@@ -1373,16 +1057,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1)화염온도",
-          "(2)체류시간"
-        ],
+        "answerText": ["(1)화염온도", "(2)체류시간"],
         "answerExplanation": "Thermal NOx는 고온 환경에서 질소가 산화되어 생성되며, 이는 화염온도와 반응 지속시간에 직접 연관됩니다."
       },
-      "tags": [
-        "연소",
-        "온도"
-      ]
+      "tags": ["연소", "온도"]
     },
     {
       "id": 70,
@@ -1392,16 +1070,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "역전력 계전기",
-          "32G"
-        ],
+        "answerText": ["역전력 계전기", "32G"],
         "answerExplanation": "32G는 역전력 상태 감지 시 동작하여 모터링을 방지하고, 발전기 보호에 사용됩니다."
       },
-      "tags": [
-        "보호계통",
-        "발전기"
-      ]
+      "tags": ["보호계통", "발전기"]
     },
     {
       "id": 71,
@@ -1413,36 +1085,23 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "국부과열",
-          "열 불평형",
-          "불평형 팽창"
-        ],
+        "answerText": ["국부과열", "열 불평형", "불평형 팽창"],
         "answerExplanation": "회전하지 않는 상태에서 증기가 주입되면 열이 고르게 분산되지 못해 구조물에 국부적인 팽창과 변형이 발생함."
       },
-      "tags": [
-        "Seal"
-      ]
+      "tags": ["Seal"]
     },
     {
       "id": 72,
       "type": "subjective",
       "question": {
         "questionText": "가스터빈 기본사이클 과정에서 일어나는 열역학적 과정이다. 다음 빈칸에 들어갈 과정은?",
-        "questionExplanation": [
-          "단열압축 -> 등압가열 -> 단열팽창 -> ( )"
-        ]
+        "questionExplanation": ["단열압축 -> 등압가열 -> 단열팽창 -> ( )"]
       },
       "answer": {
-        "answerText": [
-          "등압방열"
-        ],
+        "answerText": ["등압방열"],
         "answerExplanation": "브레이턴 사이클(Brayton cycle)의 마지막 단계는 등압 상태에서 열을 방출하는 과정이다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "가스터빈"]
     },
     {
       "id": 73,
@@ -1452,16 +1111,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "약 5~15%"
-        ],
+        "answerText": ["약 5~15%"],
         "answerExplanation": "천연가스는 공기 중에 약 5~15% 농도에서 연소 또는 폭발이 가능하다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "연료"
-      ]
+      "tags": ["터빈", "가스터빈", "연료"]
     },
     {
       "id": 74,
@@ -1471,17 +1124,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "트랜지션피스",
-          "Transition Piece"
-        ],
+        "answerText": ["트랜지션피스", "Transition Piece"],
         "answerExplanation": "트랜지션 피스는 연소기와 터빈 사이에서 연소가스를 적절히 분배하고 가속시키는 역할을 한다."
       },
-      "tags": [
-        "연소",
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["연소", "터빈", "가스터빈"]
     },
     {
       "id": 75,
@@ -1491,17 +1137,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "추기밸브",
-          "Air Bleed Valve"
-        ],
+        "answerText": ["추기밸브", "Air Bleed Valve"],
         "answerExplanation": "Air Bleed Valve는 과도한 압력 누적으로 인한 서지를 방지하기 위해 사용된다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "압축기"
-      ]
+      "tags": ["터빈", "가스터빈", "압축기"]
     },
     {
       "id": 76,
@@ -1511,15 +1150,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "화염전파관",
-          "Cross Fire Tube"
-        ],
+        "answerText": ["화염전파관", "Cross Fire Tube"],
         "answerExplanation": "점화된 화염은 Cross Fire Tube를 통해 다른 화염통으로 전달된다."
       },
-      "tags": [
-        "연소"
-      ]
+      "tags": ["연소"]
     },
     {
       "id": 77,
@@ -1531,14 +1165,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "편심"
-        ],
+        "answerText": ["편심"],
         "answerExplanation": "편심(eccentricity)은 축의 중심과 회전 중심의 불일치로, 지속되면 장비 손상을 야기할 수 있다."
       },
-      "tags": [
-        "터빈"
-      ]
+      "tags": ["터빈"]
     },
     {
       "id": 78,
@@ -1550,16 +1180,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "AT",
-          "Approach Temperature"
-        ],
+        "answerText": ["AT", "Approach Temperature"],
         "answerExplanation": "Approach Temperature는 열전달 최종 온도차로, 열교환기 효율과 설계에 중요한 지표다."
       },
-      "tags": [
-        "온도",
-        "압력"
-      ]
+      "tags": ["온도", "압력"]
     },
     {
       "id": 79,
@@ -1571,17 +1195,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "Pinch Point Temperature",
-          "PPT"
-        ],
+        "answerText": ["Pinch Point Temperature", "PPT"],
         "answerExplanation": "Pinch Point Temperature는 열전달 최적화를 위한 설계 기준이며 전열면적에 직접 영향을 미친다."
       },
-      "tags": [
-        "온도",
-        "압력",
-        "배기"
-      ]
+      "tags": ["온도", "압력", "배기"]
     },
     {
       "id": 80,
@@ -1593,17 +1210,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "자동전압조정기",
-          "AVR",
-          "여자기",
-          "Excitor"
-        ],
+        "answerText": ["자동전압조정기", "AVR", "여자기", "Excitor"],
         "answerExplanation": "AVR은 Excitor에 인가하는 전류를 제어하여 발전기 단자 전압을 일정하게 유지한다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 81,
@@ -1615,17 +1225,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "압력비"
-        ],
+        "answerText": ["압력비"],
         "answerExplanation": "브레이튼 사이클의 효율은 압축비(=압력비)가 클수록 높아지며, 터빈입구온도가 높을수록 열효율이 증가한다."
       },
-      "tags": [
-        "터빈",
-        "온도",
-        "가스터빈",
-        "압력"
-      ]
+      "tags": ["터빈", "온도", "가스터빈", "압력"]
     },
     {
       "id": 82,
@@ -1637,18 +1240,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1) 증가",
-          "(2) 감소"
-        ],
+        "answerText": ["(1) 증가", "(2) 감소"],
         "answerExplanation": "압축기 오염은 압축 효율을 떨어뜨려 출구압력 저하 및 열 소비 증가를 유발한다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "압력",
-        "압축기"
-      ]
+      "tags": ["터빈", "가스터빈", "압력", "압축기"]
     },
     {
       "id": 83,
@@ -1660,14 +1255,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "공기밀도"
-        ],
+        "answerText": ["공기밀도"],
         "answerExplanation": "온도가 낮아지면 공기밀도가 증가하고, 동일 체적 대비 더 많은 산소가 포함되어 출력 증가로 이어진다."
       },
-      "tags": [
-        "온도"
-      ]
+      "tags": ["온도"]
     },
     {
       "id": 84,
@@ -1679,14 +1270,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "수평형"
-        ],
+        "answerText": ["수평형"],
         "answerExplanation": "수직 배기가스 흐름에 대응하기 위해 튜브는 수평으로 배치되어 열전달을 극대화한다."
       },
-      "tags": [
-        "배기"
-      ]
+      "tags": ["배기"]
     },
     {
       "id": 85,
@@ -1698,16 +1285,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "증기온도",
-          "금속온도"
-        ],
+        "answerText": ["증기온도", "금속온도"],
         "answerExplanation": "두 온도 차가 클 경우 열 팽창 불균형으로 인해 구조적 손상을 일으킬 수 있다."
       },
-      "tags": [
-        "온도",
-        "터빈"
-      ]
+      "tags": ["온도", "터빈"]
     },
     {
       "id": 86,
@@ -1719,38 +1300,23 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1) 브레이튼",
-          "(2) 랭킨"
-        ],
+        "answerText": ["(1) 브레이튼", "(2) 랭킨"],
         "answerExplanation": "복합발전은 고온 가스 터빈의 브레이튼 사이클과, 폐열 회수 증기 터빈의 랭킨 사이클 조합이다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "가스터빈"]
     },
     {
       "id": 87,
       "type": "subjective",
       "question": {
         "questionText": "다음은 가스터빈의 4개 작동과정을 나타낸 것이다. 괄호 안에 알맞은 말을 쓰시오.",
-        "questionExplanation": [
-          "압축 -> (1) -> (2) -> (3)"
-        ]
+        "questionExplanation": ["압축 -> (1) -> (2) -> (3)"]
       },
       "answer": {
-        "answerText": [
-          "(1) 가열",
-          "(2) 팽창",
-          "(3) 방열"
-        ],
+        "answerText": ["(1) 가열", "(2) 팽창", "(3) 방열"],
         "answerExplanation": "브레이튼 사이클 구성은 압축(Compressor) → 가열(Combustion) → 팽창(Turbine) → 방열(Exhaust)이다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈"
-      ]
+      "tags": ["터빈", "가스터빈"]
     },
     {
       "id": 88,
@@ -1762,10 +1328,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "서징",
-          "Surging"
-        ],
+        "answerText": ["서징", "Surging"],
         "answerExplanation": "압축기나 송풍기에서 정상 작동 범위를 벗어나 압력과 유량이 반복적으로 요동치는 현상."
       },
       "tags": []
@@ -1775,15 +1338,10 @@
       "type": "subjective",
       "question": {
         "questionText": "다음은 차단기 표준동작책무 중 고속도 재투입용 동작책무이다. 괄호안에 알맞은 내용을 각각 쓰시오.",
-        "questionExplanation": [
-          "O -> [(1)] -> CO -> [(2)] -> CO"
-        ]
+        "questionExplanation": ["O -> [(1)] -> CO -> [(2)] -> CO"]
       },
       "answer": {
-        "answerText": [
-          "(1) 0.3초",
-          "(2) 3분"
-        ],
+        "answerText": ["(1) 0.3초", "(2) 3분"],
         "answerExplanation": "고속도 재투입(Autoreclosing) 시험 조건을 뜻하며, 전력 설비 보호 동작 시간 기준이다."
       },
       "tags": []
@@ -1796,35 +1354,23 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "열정산"
-        ],
+        "answerText": ["열정산"],
         "answerExplanation": "발전소 전체 열 에너지 흐름을 항목별로 추적 분석하여 효율 및 손실요인을 파악하기 위한 열 수지 계산."
       },
-      "tags": [
-        "연소",
-        "연료"
-      ]
+      "tags": ["연소", "연료"]
     },
     {
       "id": 91,
       "type": "subjective",
       "question": {
         "questionText": "발전기 고장정지유형별 기준을 나열하였다. 아래 빈칸을 채우시오.",
-        "questionExplanation": [
-          "불시정지. ( ). 기동실패. 비계획정비정지"
-        ]
+        "questionExplanation": ["불시정지. ( ). 기동실패. 비계획정비정지"]
       },
       "answer": {
-        "answerText": [
-          "파급정지"
-        ],
+        "answerText": ["파급정지"],
         "answerExplanation": "파급정지는 외부요인으로 인한 연쇄정지를 의미한다."
       },
-      "tags": [
-        "보호계통",
-        "발전기"
-      ]
+      "tags": ["보호계통", "발전기"]
     },
     {
       "id": 92,
@@ -1839,15 +1385,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(2) → (3) → (1) → (4)"
-        ],
+        "answerText": ["(2) → (3) → (1) → (4)"],
         "answerExplanation": "전압형성과 병입조건 확인 순서를 따른다."
       },
-      "tags": [
-        "병입절차",
-        "발전기"
-      ]
+      "tags": ["병입절차", "발전기"]
     },
     {
       "id": 93,
@@ -1857,15 +1398,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "코일보호환",
-          "Retaining Ring"
-        ],
+        "answerText": ["코일보호환", "Retaining Ring"],
         "answerExplanation": "회전자 코일 고정을 위해 사용되는 구조물."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 94,
@@ -1875,10 +1411,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "0.43",
-          "43%"
-        ],
+        "answerText": ["0.43", "43%"],
         "answerExplanation": "효율 = 860 / Heat Rate = 860 / 2000 = 0.43"
       },
       "tags": []
@@ -1891,15 +1424,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "UPS",
-          "무정전 전원장치"
-        ],
+        "answerText": ["UPS", "무정전 전원장치"],
         "answerExplanation": "비상 시 전원공급을 유지하여 제어설비 보호"
       },
-      "tags": [
-        "보호계통"
-      ]
+      "tags": ["보호계통"]
     },
     {
       "id": 96,
@@ -1909,9 +1437,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "유전정접 시험"
-        ],
+        "answerText": ["유전정접 시험"],
         "answerExplanation": "유전체의 손실계수를 측정해 절연상태를 판단"
       },
       "tags": []
@@ -1924,15 +1450,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "전압비 같아야 함",
-          "%임피던스 같아야 함"
-        ],
+        "answerText": ["전압비 같아야 함", "%임피던스 같아야 함"],
         "answerExplanation": "두 조건이 다를 경우 부하 불균형 및 순환전류 발생"
       },
-      "tags": [
-        "병렬운전"
-      ]
+      "tags": ["병렬운전"]
     },
     {
       "id": 98,
@@ -1942,14 +1463,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "열손실법"
-        ],
+        "answerText": ["열손실법"],
         "answerExplanation": "보일러의 연소손실 및 배기가스 손실 등 계산"
       },
-      "tags": [
-        "성능"
-      ]
+      "tags": ["성능"]
     },
     {
       "id": 99,
@@ -1959,15 +1476,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "파열판",
-          "Rupture Disc"
-        ],
+        "answerText": ["파열판", "Rupture Disc"],
         "answerExplanation": "복수기 내부 과압 방지를 위한 안전장치"
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 100,
@@ -1988,12 +1500,7 @@
         ],
         "answerExplanation": "진공저하는 응축불량 및 열효율 저하로 이어짐"
       },
-      "tags": [
-        "진공",
-        "온도",
-        "냉각",
-        "성능"
-      ]
+      "tags": ["진공", "온도", "냉각", "성능"]
     },
     {
       "id": 101,
@@ -2005,19 +1512,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "증가",
-          "높아",
-          "저하"
-        ],
+        "answerText": ["증가", "높아", "저하"],
         "answerExplanation": "진공이 과도하면 배기손실이 커지고 열손실도 증가"
       },
-      "tags": [
-        "진공",
-        "터빈",
-        "냉각",
-        "배기"
-      ]
+      "tags": ["진공", "터빈", "냉각", "배기"]
     },
     {
       "id": 102,
@@ -2035,13 +1533,7 @@
         ],
         "answerExplanation": "복합발전은 가스 및 증기 조건의 복합적 영향을 받음"
       },
-      "tags": [
-        "가스터빈",
-        "압축기",
-        "온도",
-        "터빈",
-        "압력"
-      ]
+      "tags": ["가스터빈", "압축기", "온도", "터빈", "압력"]
     },
     {
       "id": 103,
@@ -2060,9 +1552,7 @@
         ],
         "answerExplanation": "Black Out 발생 시 초기 비상 대응 조치는 필수 전원 확보 및 중요 설비 상태 확인에 중점을 둬야 한다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 104,
@@ -2072,11 +1562,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "Debris Filter",
-          "CTCS",
-          "TWS"
-        ],
+        "answerText": ["Debris Filter", "CTCS", "TWS"],
         "answerExplanation": "순환수 계통의 이물질 제거 장치는 설비 손상을 방지하고 계통 효율을 유지하기 위해 필수적이다."
       },
       "tags": []
@@ -2089,9 +1575,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "황색 차단기"
-        ],
+        "answerText": ["황색 차단기"],
         "answerExplanation": "황색 차단기는 정전 시 신속한 송전 복구를 위한 전략적 유지 차단기이다."
       },
       "tags": []
@@ -2106,15 +1590,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "과열도"
-        ],
+        "answerText": ["과열도"],
         "answerExplanation": "과열도는 열역학 상태에서 증기의 품질과 효율성을 판단하는 핵심 지표이다."
       },
-      "tags": [
-        "온도",
-        "압력"
-      ]
+      "tags": ["온도", "압력"]
     },
     {
       "id": 107,
@@ -2126,17 +1605,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "발산냉각",
-          "Transpiration Cooling"
-        ],
+        "answerText": ["발산냉각", "Transpiration Cooling"],
         "answerExplanation": "발산냉각은 가스터빈에서 고온 환경에 노출된 부품을 보호하는 고효율 냉각 기술이다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "냉각"
-      ]
+      "tags": ["터빈", "가스터빈", "냉각"]
     },
     {
       "id": 108,
@@ -2148,15 +1620,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "실속",
-          "Stall"
-        ],
+        "answerText": ["실속", "Stall"],
         "answerExplanation": "실속은 압축기 블레이드의 공기유입 각도 이상으로 인한 공력 성능 저하 현상이다."
       },
-      "tags": [
-        "압축기"
-      ]
+      "tags": ["압축기"]
     },
     {
       "id": 109,
@@ -2187,16 +1654,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "밀봉선",
-          "Seal Line"
-        ],
+        "answerText": ["밀봉선", "Seal Line"],
         "answerExplanation": "용적식 펌프의 공회전은 내부 밀봉 구조물에 치명적인 손상을 줄 수 있으므로 반드시 우회 유로를 개방해야 한다."
       },
-      "tags": [
-        "연료",
-        "Seal"
-      ]
+      "tags": ["연료", "Seal"]
     },
     {
       "id": 111,
@@ -2208,15 +1669,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(a) 흡입압력",
-          "(b) 낮을"
-        ],
+        "answerText": ["(a) 흡입압력", "(b) 낮을"],
         "answerExplanation": "원심펌프의 공동현상은 저흡입압 상태에서 발생하며 이는 펌프 손상과 효율 저하로 이어진다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 112,
@@ -2228,17 +1684,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1) 크고",
-          "(2) 작고",
-          "(3) 낮고",
-          "(4) 적고"
-        ],
+        "answerText": ["(1) 크고", "(2) 작고", "(3) 낮고", "(4) 적고"],
         "answerExplanation": "유압유는 압력 전송, 윤활, 냉각 등 다양한 기능을 수행하며, 안정적인 유체 특성이 요구된다."
       },
-      "tags": [
-        "온도"
-      ]
+      "tags": ["온도"]
     },
     {
       "id": 113,
@@ -2248,15 +1697,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "어큐뮬레이터",
-          "Accumulator"
-        ],
+        "answerText": ["어큐뮬레이터", "Accumulator"],
         "answerExplanation": "어큐뮬레이터는 유압시스템 내 압력 에너지를 저장하고 순간적인 압력보상을 위한 핵심 구성 요소이다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 114,
@@ -2266,16 +1710,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "냉각작용",
-          "감마작용",
-          "밀봉작용"
-        ],
+        "answerText": ["냉각작용", "감마작용", "밀봉작용"],
         "answerExplanation": "윤활유는 기계 마찰을 줄이고 열을 분산시켜 장비의 수명과 효율성을 향상시킨다."
       },
-      "tags": [
-        "냉각"
-      ]
+      "tags": ["냉각"]
     },
     {
       "id": 115,
@@ -2285,10 +1723,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "(1) 발전량",
-          "(2) 운전가능시간(또는 입찰참여 시간)"
-        ],
+        "answerText": ["(1) 발전량", "(2) 운전가능시간(또는 입찰참여 시간)"],
         "answerExplanation": "이용률과 가동률은 발전설비의 운전 효율과 계획 신뢰도를 판단하는 주요 지표이다."
       },
       "tags": []
@@ -2301,9 +1736,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "Fool Proof System"
-        ],
+        "answerText": ["Fool Proof System"],
         "answerExplanation": "Fool Proof는 사용자의 실수 가능성을 구조적으로 원천 차단하기 위한 설계 철학이다."
       },
       "tags": []
@@ -2316,16 +1749,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "고장파급방지장치",
-          "SPS"
-        ],
+        "answerText": ["고장파급방지장치", "SPS"],
         "answerExplanation": "SPS는 전력망에서 특정 고장 시 계통 불안정을 방지하기 위해 발전기 차단을 자동으로 수행하는 시스템이다."
       },
-      "tags": [
-        "보호계통",
-        "발전기"
-      ]
+      "tags": ["보호계통", "발전기"]
     },
     {
       "id": 118,
@@ -2359,10 +1786,7 @@
         ],
         "answerExplanation": "급전 지시는 실시간 계통 운영의 핵심으로, 주파수와 전압 유지를 위해 필수적으로 수행된다."
       },
-      "tags": [
-        "병입절차",
-        "발전기"
-      ]
+      "tags": ["병입절차", "발전기"]
     },
     {
       "id": 120,
@@ -2372,15 +1796,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "계통안정화장치",
-          "Power System Stabilizer"
-        ],
+        "answerText": ["계통안정화장치", "Power System Stabilizer"],
         "answerExplanation": "계통안정화장치는 전력계통 내 발전기 동기화와 진동 억제를 위한 핵심 장치이다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 121,
@@ -2424,10 +1843,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "(1) ±5분",
-          "(2) ±10분"
-        ],
+        "answerText": ["(1) ±5분", "(2) ±10분"],
         "answerExplanation": "정산 기준 시간 초과 시 감점 또는 패널티가 적용될 수 있으므로 엄수해야 한다."
       },
       "tags": []
@@ -2440,11 +1856,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "드럼수위",
-          "급수유량",
-          "증기유량"
-        ],
+        "answerText": ["드럼수위", "급수유량", "증기유량"],
         "answerExplanation": "급수제어는 보일러 운전의 핵심으로, 드럼 수위 유지를 통해 안전 운전을 도모한다."
       },
       "tags": []
@@ -2457,12 +1869,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "런백",
-          "로드런백",
-          "Runback",
-          "Load Runback"
-        ],
+        "answerText": ["런백", "로드런백", "Runback", "Load Runback"],
         "answerExplanation": "런백은 중요기기 이상 시 자동으로 출력을 조정하여 계통 불안을 예방하는 보호 기능이다."
       },
       "tags": []
@@ -2475,16 +1882,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "기동실패"
-        ],
+        "answerText": ["기동실패"],
         "answerExplanation": "기동실패는 발전기 가동 중 이상 발생으로 병입에 실패한 상태를 의미한다."
       },
-      "tags": [
-        "병입절차",
-        "보호계통",
-        "발전기"
-      ]
+      "tags": ["병입절차", "보호계통", "발전기"]
     },
     {
       "id": 127,
@@ -2494,16 +1895,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "방압장치",
-          "브흐흘쯔계전기",
-          "충격압력계전기"
-        ],
+        "answerText": ["방압장치", "브흐흘쯔계전기", "충격압력계전기"],
         "answerExplanation": "주변압기 보호장치는 내부 이상 발생 시 신속한 차단 및 사고 확산 방지를 위해 설치된다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 128,
@@ -2519,20 +1914,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5"
-        ],
+        "answerText": ["1", "2", "3", "4", "5"],
         "answerExplanation": "드레인 밸브 누설 대응은 점검 → 기록 → 조치 → 정비의 순으로 절차화되어 있다."
       },
-      "tags": [
-        "온도",
-        "보호계통",
-        "운전절차"
-      ]
+      "tags": ["온도", "보호계통", "운전절차"]
     },
     {
       "id": 129,
@@ -2545,15 +1930,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "Vapor Extractor"
-        ],
+        "answerText": ["Vapor Extractor"],
         "answerExplanation": "Vapor Extractor는 윤활유 계통에서 증기 및 가스를 배출하여 압력 균형과 누유 방지를 돕는 장치이다."
       },
-      "tags": [
-        "터빈",
-        "압력"
-      ]
+      "tags": ["터빈", "압력"]
     },
     {
       "id": 130,
@@ -2563,15 +1943,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "-",
-          "Rotor Short"
-        ],
+        "answerText": ["-", "Rotor Short"],
         "answerExplanation": "케이싱의 팽창이 더 클 경우 로터가 짧다는 의미로 'Rotor Short' 또는 부호 '-'로 표시된다."
       },
-      "tags": [
-        "터빈"
-      ]
+      "tags": ["터빈"]
     },
     {
       "id": 131,
@@ -2581,17 +1956,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "Vacuum Breaker",
-          "진공 파괴밸브"
-        ],
+        "answerText": ["Vacuum Breaker", "진공 파괴밸브"],
         "answerExplanation": "진공 파괴밸브는 터빈 내부 진공을 빠르게 해제하여 안전하게 임계속도를 통과하게 돕는다."
       },
-      "tags": [
-        "진공",
-        "보호계통",
-        "터빈"
-      ]
+      "tags": ["진공", "보호계통", "터빈"]
     },
     {
       "id": 132,
@@ -2601,16 +1969,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "점화원",
-          "산소",
-          "가연물"
-        ],
+        "answerText": ["점화원", "산소", "가연물"],
         "answerExplanation": "연소의 3요소는 화학 반응을 일으키기 위한 필수 조건이며, 하나라도 없으면 연소가 일어나지 않는다."
       },
-      "tags": [
-        "연소"
-      ]
+      "tags": ["연소"]
     },
     {
       "id": 133,
@@ -2622,15 +1984,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1) 추력",
-          "(2) Thrust Bearing"
-        ],
+        "answerText": ["(1) 추력", "(2) Thrust Bearing"],
         "answerExplanation": "추력은 회전 방향 반대방향의 힘이며, Thrust Bearing은 이를 흡수해 축의 위치를 유지한다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 134,
@@ -2647,10 +2004,7 @@
         ],
         "answerExplanation": "축류형 압축기는 항공 및 발전 분야에서 널리 쓰이며, 고속 회전에 최적화되어 있음."
       },
-      "tags": [
-        "성능",
-        "압축기"
-      ]
+      "tags": ["성능", "압축기"]
     },
     {
       "id": 135,
@@ -2660,16 +2014,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "Turning Gear",
-          "T/G"
-        ],
+        "answerText": ["Turning Gear", "T/G"],
         "answerExplanation": "Turning Gear는 열 변형 방지 및 로터 균형 유지를 위해 저속으로 회전시키는 장치이다."
       },
-      "tags": [
-        "보호계통",
-        "터빈"
-      ]
+      "tags": ["보호계통", "터빈"]
     },
     {
       "id": 136,
@@ -2679,14 +2027,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "상대팽창"
-        ],
+        "answerText": ["상대팽창"],
         "answerExplanation": "상대팽창은 운전 중 로터와 케이싱 간의 팽창 차이를 모니터링하는 주요 지표이다."
       },
-      "tags": [
-        "터빈"
-      ]
+      "tags": ["터빈"]
     },
     {
       "id": 137,
@@ -2696,16 +2040,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "슈라우드 판",
-          "Shroud Band",
-          "Shroud Ring"
-        ],
+        "answerText": ["슈라우드 판", "Shroud Band", "Shroud Ring"],
         "answerExplanation": "슈라우드 판은 회전익의 구조적 안정성을 유지하며 진동을 억제하는 데 중요한 역할을 한다."
       },
-      "tags": [
-        "터빈"
-      ]
+      "tags": ["터빈"]
     },
     {
       "id": 138,
@@ -2717,9 +2055,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "필요흡입수두"
-        ],
+        "answerText": ["필요흡입수두"],
         "answerExplanation": "필요흡입수두보다 유효흡입수두가 높아야 공동현상을 방지할 수 있다."
       },
       "tags": []
@@ -2732,9 +2068,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "공진"
-        ],
+        "answerText": ["공진"],
         "answerExplanation": "공진은 진폭이 급격히 커지며 구조적 손상을 유발할 수 있는 위험한 상태이다."
       },
       "tags": []
@@ -2747,9 +2081,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "황색 차단기"
-        ],
+        "answerText": ["황색 차단기"],
         "answerExplanation": "황색 차단기는 광역정전 시 계통 복구를 위해 병입 상태를 유지해야 하는 중요한 차단기이다."
       },
       "tags": []
@@ -2762,15 +2094,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "상분리 모선",
-          "IPB"
-        ],
+        "answerText": ["상분리 모선", "IPB"],
         "answerExplanation": "상분리 모선(IPB)은 고전류 대용량 계통에서 안정성과 안전성을 확보하는 데 필수적이다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 142,
@@ -2780,10 +2107,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "인터록",
-          "Interlock"
-        ],
+        "answerText": ["인터록", "Interlock"],
         "answerExplanation": "인터록 회로는 안전성과 논리적 순서를 보장하기 위해 입력 신호 간 상호 배제를 수행한다."
       },
       "tags": []
@@ -2796,15 +2120,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "오일 휩",
-          "Oil Whip"
-        ],
+        "answerText": ["오일 휩", "Oil Whip"],
         "answerExplanation": "오일 휩은 베어링 내에서 유막 불안정으로 인한 진동으로 기계 이상을 유발할 수 있다."
       },
-      "tags": [
-        "압력"
-      ]
+      "tags": ["압력"]
     },
     {
       "id": 144,
@@ -2814,9 +2133,7 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "시정수"
-        ],
+        "answerText": ["시정수"],
         "answerExplanation": "시정수(Time Constant)는 시스템 응답 속도를 나타내는 동특성 지표이다."
       },
       "tags": []
@@ -2829,16 +2146,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "블로우다운밸브",
-          "BDV"
-        ],
+        "answerText": ["블로우다운밸브", "BDV"],
         "answerExplanation": "BDV는 터빈 정지 시 잔류 증기를 배출하여 회전속도 과잉을 억제하는 안전장치이다."
       },
-      "tags": [
-        "보호계통",
-        "터빈"
-      ]
+      "tags": ["보호계통", "터빈"]
     },
     {
       "id": 146,
@@ -2853,18 +2164,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "배기재연식"
-        ],
+        "answerText": ["배기재연식"],
         "answerExplanation": "배기재연식 배열회수보일러는 연소공기로 가스터빈 배기가스를 사용하여 에너지 효율을 높이고 연료 선택 폭을 넓힌다."
       },
-      "tags": [
-        "가스터빈",
-        "배기",
-        "연소",
-        "터빈",
-        "연료"
-      ]
+      "tags": ["가스터빈", "배기", "연소", "터빈", "연료"]
     },
     {
       "id": 147,
@@ -2876,9 +2179,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "1종 구역"
-        ],
+        "answerText": ["1종 구역"],
         "answerExplanation": "1종 구역은 가연성 가스나 증기가 정기적으로 존재할 수 있는 위험 장소로 분류된다."
       },
       "tags": []
@@ -2891,14 +2192,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "동태 안정도"
-        ],
+        "answerText": ["동태 안정도"],
         "answerExplanation": "동태 안정도는 단시간 내 계통의 작은 교란에도 안정된 상태를 유지하는 능력을 의미한다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 149,
@@ -2910,16 +2207,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "Turn up loss"
-        ],
+        "answerText": ["Turn up loss"],
         "answerExplanation": "Turn up loss는 터빈 최종단에서 과도한 팽창비로 인해 유속이 과도하게 증가하며 발생하는 손실이다."
       },
-      "tags": [
-        "터빈",
-        "압력",
-        "배기"
-      ]
+      "tags": ["터빈", "압력", "배기"]
     },
     {
       "id": 150,
@@ -2931,14 +2222,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "자기여자"
-        ],
+        "answerText": ["자기여자"],
         "answerExplanation": "자기여자는 무여자 상태에서도 잔류자속에 의해 단자전압이 상승하는 현상이다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 151,
@@ -2950,11 +2237,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "(1) 임계속도",
-          "(2) 고유진동수",
-          "(3) 공진"
-        ],
+        "answerText": ["(1) 임계속도", "(2) 고유진동수", "(3) 공진"],
         "answerExplanation": "임계속도는 기계 시스템에서 고유진동수와 외력 주파수가 일치하는 공진점을 나타내며, 설계 시 회피해야 하는 위험 구간이다."
       },
       "tags": []
@@ -2969,18 +2252,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "압력비",
-          "Pressure Ratio"
-        ],
+        "answerText": ["압력비", "Pressure Ratio"],
         "answerExplanation": "압력비는 가스터빈 사이클의 효율성과 직접적으로 관련되며, 일반적으로 높을수록 열효율이 향상된다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "압력",
-        "압축기"
-      ]
+      "tags": ["터빈", "가스터빈", "압력", "압축기"]
     },
     {
       "id": 153,
@@ -2992,18 +2267,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "열병합",
-          "열병합 복합"
-        ],
+        "answerText": ["열병합", "열병합 복합"],
         "answerExplanation": "열병합발전은 열과 전기를 동시에 생산하여 에너지 활용도를 극대화하는 시스템이다."
       },
-      "tags": [
-        "연소",
-        "터빈",
-        "가스터빈",
-        "연료"
-      ]
+      "tags": ["연소", "터빈", "가스터빈", "연료"]
     },
     {
       "id": 154,
@@ -3015,16 +2282,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "열정산도",
-          "Heat Balance Diagram"
-        ],
+        "answerText": ["열정산도", "Heat Balance Diagram"],
         "answerExplanation": "열정산도는 발전소의 에너지 흐름을 시각화하여 효율 분석에 활용된다."
       },
-      "tags": [
-        "연소",
-        "연료"
-      ]
+      "tags": ["연소", "연료"]
     },
     {
       "id": 155,
@@ -3036,9 +2297,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "직렬 갭"
-        ],
+        "answerText": ["직렬 갭"],
         "answerExplanation": "직렬 갭은 이상 전압이 인가될 때 방전을 유도하며 회로 보호를 수행한다."
       },
       "tags": []
@@ -3054,9 +2313,7 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "Finned Tube"
-        ],
+        "answerText": ["Finned Tube"],
         "answerExplanation": "Finned Tube는 표면적 증가로 열전달 효율을 높이며, 보일러 설비를 소형화할 수 있게 해준다."
       },
       "tags": []
@@ -3071,14 +2328,10 @@
         ]
       },
       "answer": {
-        "answerText": [
-          "회생제동"
-        ],
+        "answerText": ["회생제동"],
         "answerExplanation": "회생제동은 전동기를 발전기로 동작시켜 운동에너지를 전기에너지로 환원시키는 방식이다."
       },
-      "tags": [
-        "발전기"
-      ]
+      "tags": ["발전기"]
     },
     {
       "id": 158,
@@ -3088,17 +2341,10 @@
         "questionExplanation": []
       },
       "answer": {
-        "answerText": [
-          "공기막 냉각",
-          "Air Film Cooling"
-        ],
+        "answerText": ["공기막 냉각", "Air Film Cooling"],
         "answerExplanation": "Air Film Cooling은 냉각 공기를 표면에 분사하여 단열층을 형성, 고온가스로부터 부품을 보호한다."
       },
-      "tags": [
-        "터빈",
-        "가스터빈",
-        "냉각"
-      ]
+      "tags": ["터빈", "가스터빈", "냉각"]
     }
   ]
 }

@@ -134,7 +134,6 @@ export default function Home() {
         }
       />
 
-      {/* <View style={{ marginBottom: 12 }} /> */}
       <ScreenWithBackground>
         {sets && sets.length > 0 ? (
           <FlatList
