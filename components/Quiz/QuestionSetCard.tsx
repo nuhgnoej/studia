@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: "100%", // 변경: 70% -> 100%
-    height: "100%", // 변경: 70% -> 100%
+    width: "100%",
+    height: "100%",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -162,11 +162,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 이미지와 잘 보이도록 살짝 어두운 배경 추가
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
   progressBarBackground: {
     height: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.5)", // 배경과 대비되도록 수정
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 4,
   },
   progressBarFill: {
@@ -176,11 +176,11 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 12,
-    color: "#fff", // 어두운 배경에 잘 보이도록 흰색으로 변경
+    color: "#fff",
     fontWeight: "500",
     marginTop: 4,
     textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.75)", // 텍스트 가독성을 위한 그림자
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },

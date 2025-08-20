@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, or } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase"; // Firebase 설정 파일 경로
 
 // Image source prop은 { uri: string } 또는 require()의 결과(숫자)를 받을 수 있습니다.
@@ -20,13 +20,26 @@ export function useTagIcon(tags: string[]) {
     const fetchIcon = async () => {
       setIsLoading(true);
       let found = false;
+      const qTagsCollectionRef = collection(db, "qTags");
+
       for (const tag of tags) {
         try {
-          const docRef = doc(db, "qTags", tag);
-          const docSnap = await getDoc(docRef);
+          const lowercasedTag = tag.toLowerCase();
 
-          if (docSnap.exists()) {
+          const q = query(
+            qTagsCollectionRef,
+            or(
+              where("tag_ko_lowercase", "==", lowercasedTag),
+              where("tag_en_lowercase", "==", lowercasedTag)
+            )
+          );
+
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const docSnap = querySnapshot.docs[0];
             const data = docSnap.data();
+
             if (data.iconURL) {
               setIconSource({ uri: data.iconURL });
               found = true;
@@ -38,7 +51,6 @@ export function useTagIcon(tags: string[]) {
         }
       }
 
-      // 루프가 끝날 때까지 아이콘을 찾지 못했다면 기본 아이콘을 유지합니다.
       if (!found) {
         setIconSource(DEFAULT_ICON);
       }
@@ -47,7 +59,7 @@ export function useTagIcon(tags: string[]) {
     };
 
     fetchIcon();
-  }, [tags]); // tags 배열이 변경될 때만 이 effect를 다시 실행합니다.
+  }, [tags]);
 
   return { iconSource, isLoading };
 }
