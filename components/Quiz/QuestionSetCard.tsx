@@ -1,13 +1,22 @@
 // components/QuestionSetCard.tsx
 
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useTagIcon } from "@/hooks/useTagIcon";
+import { useMemo } from "react";
 
 type Props = {
   item: {
     id: string;
     title: string;
     description?: string;
-    image?: string;
+    tags?: string;
   };
   onPress?: () => void;
   onLongPress: () => void;
@@ -32,6 +41,21 @@ export default function QuestionSetCard({
       : progress.lastIndex + 1
     : 0;
   const cardStyle = [styles.container, invisible && { opacity: 0 }];
+
+  const parsedTags = useMemo(() => {
+    if (item.tags && typeof item.tags === "string") {
+      try {
+        return JSON.parse(item.tags);
+      } catch (e) {
+        console.error("Failed to parse tags:", item.tags, e);
+        return [];
+      }
+    }
+    return [];
+  }, [item.tags]);
+
+  const { iconSource, isLoading } = useTagIcon(parsedTags);
+
   return (
     <View style={cardStyle}>
       <TouchableOpacity
@@ -39,15 +63,20 @@ export default function QuestionSetCard({
         onPress={onPress}
         onLongPress={onLongPress}
       >
-        <Image
-          source={
-            item.image
-              ? { uri: item.image }
-              : require("@/assets/images/default-card.png")
-          }
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {/* 아이콘 이미지 (배경 역할) */}
+        <View style={styles.imageContainer}>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#4338ca" />
+          ) : (
+            <Image
+              source={iconSource}
+              style={styles.image} // 스타일 변경
+              resizeMode="cover"
+            />
+          )}
+        </View>
+
+        {/* 제목과 설명이 포함된 반투명 오버레이 */}
         <View style={styles.overlay}>
           <Text style={styles.cardTitle} numberOfLines={2}>
             {item.title}
@@ -59,28 +88,18 @@ export default function QuestionSetCard({
           )}
         </View>
 
+        {/* 진행률 표시 바 (내부로 이동) */}
         {progress && (
-          <View style={{ marginTop: 8 }}>
-            <View
-              style={{ height: 6, backgroundColor: "#eee", borderRadius: 4 }}
-            >
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBarBackground}>
               <View
-                style={{
-                  width: `${Math.round(progress.percent * 100)}%`,
-                  height: "100%",
-                  backgroundColor: "#10b981",
-                  borderRadius: 4,
-                }}
+                style={[
+                  styles.progressBarFill,
+                  { width: `${Math.round(progress.percent * 100)}%` },
+                ]}
               />
             </View>
-            <Text
-              style={{
-                fontSize: 12,
-                color: "#4b5563",
-                marginTop: 4,
-                textAlign: "center",
-              }}
-            >
+            <Text style={styles.progressText}>
               {solved} / {progress.total} 문제 완료 (
               {Math.round(progress.percent * 100)}%)
             </Text>
@@ -106,16 +125,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     position: "relative",
-    backgroundColor: "#fff",
+    backgroundColor: "#f3f4f6",
+  },
+  imageContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
+    width: "100%", // 변경: 70% -> 100%
+    height: "100%", // 변경: 70% -> 100%
   },
   overlay: {
-    flex: 1,
-    backgroundColor: "rgba(255,255,255,0.7)",
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255, 255, 255, 0.75)",
     justifyContent: "center",
     alignItems: "center",
     padding: 12,
@@ -131,5 +154,34 @@ const styles = StyleSheet.create({
     color: "#555",
     textAlign: "center",
     marginTop: 6,
+  },
+  progressContainer: {
+    // 변경: 스타일 수정
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 12,
+    backgroundColor: "rgba(0, 0, 0, 0.2)", // 배경 이미지와 잘 보이도록 살짝 어두운 배경 추가
+  },
+  progressBarBackground: {
+    height: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.5)", // 배경과 대비되도록 수정
+    borderRadius: 4,
+  },
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: "#10b981",
+    borderRadius: 4,
+  },
+  progressText: {
+    fontSize: 12,
+    color: "#fff", // 어두운 배경에 잘 보이도록 흰색으로 변경
+    fontWeight: "500",
+    marginTop: 4,
+    textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.75)", // 텍스트 가독성을 위한 그림자
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });
